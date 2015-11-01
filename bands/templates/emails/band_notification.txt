@@ -1,0 +1,8 @@
+{{ band.group.name }},
+
+Something something, need to fill this in later.
+
+This email will definitely include a link to where they can view their band stuff and fill out the form, etc:
+{{ c.URL_BASE }}/bands/confirm?id={{ band.id }}
+
+{{ c.BAND_EMAIL_SIGNATURE }}

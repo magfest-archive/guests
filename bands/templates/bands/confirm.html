@@ -1,0 +1,50 @@
+{% extends "preregistration/preregbase.html" %}
+{% block title %}Band Agreement{% endblock %}
+{% block content %}
+
+<style type="text/css">
+    table { max-width: 100%; }
+    table td, table th { padding: 5px; }
+    table td ul { margin: 0px; }
+    .return-link {
+        display: block;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .game-display {
+        font-family: Courier;
+        padding-top: 7px;
+    }
+</style>
+<div class="masthead"></div>
+<div class="panel panel-default" style="padding-left:15px">
+    <h2>Band Agreement for {{ band.group.name }}</h2>
+
+    I'm not sure what information we need to put here or what information we'll ask for.
+    One thing we'll probably do is link them to
+    <a href="../preregistration/group_members?id={{ band.group.id }}">their group members page</a>
+    where they can fill out their group members.  Maybe some other info and/or instructions for
+    filling out the form below.
+
+    <br/> <br/>
+
+    <form method="post" action="confirm" class="form-horizontal" role="form">
+        <input type="hidden" name="id" value="{{ band.id }}" />
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Form Field:</label>
+            <div class="col-sm-6">
+                <input class="form-control focus" type="text" name="form_field" value="" placeholder="This is where we will put form fields" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-6 col-sm-offset-2">
+                <button type="submit" class="btn btn-primary">Confirm (or whatever)</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

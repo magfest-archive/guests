@@ -1,0 +1,6 @@
+.idea
+*.pyc
+*.egg-info
+.eggs/
+screenshots/
+development.ini
