@@ -1,0 +1,69 @@
+{% extends "base-admin.html" %}
+{% block content %}
+
+<style type="text/css">
+    .datatable td, .datatable th {
+        padding: 5px 20px 5px 20px;
+    }
+</style>
+
+<h2>Bands and Other Groups</h2>
+
+<div><input type="checkbox" id="only-bands" /> Show only bands</div>
+
+<table class="datatable">
+    <thead>
+        <tr>
+            <th>Group</th>
+            <th>Band?</th>
+            <th>Response Received</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for group in groups %}
+        <tr id="{{ group.id }}" class="{{ group.band|yesno:"band,nonband" }}">
+            <td><a href="../groups/form?id={{ group.id }}">{{ group.name }}</a></td>
+            <td class="band">
+                {% if group.band %}
+                    <a href="band_info?id={{ group.id }}">Band Info</a>
+                {% else %}
+                    <button onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
+                {% endif %}
+            </td>
+            <td>
+                {% if group.band %}
+                    TODO: figure out what to put here
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    $.fn.dataTable.defaults.pageLength = 'All';
+    var markAsBand = function (groupId) {
+        var $band = $('#' + groupId).find('.band').text('Marking...');
+        $.ajax({
+            method: 'POST',
+            url: 'mark_as_band',
+            data: {
+                group_id: groupId,
+                csrf_token: csrf_token
+            },
+            success: function (response) {
+                $band.empty().append(
+                    $('<a>Band Info</a>').attr('href', 'band_info?id=' + groupId)
+                ).parents('tr').removeClass('nonband').addClass('band');
+                toastr.info(response.message);
+            }
+        });
+    };
+    $(function () {
+        var $onlyBands = $('#only-bands').on('click', function () {
+            setVisible('.nonband', !$onlyBands.prop('checked'))
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,67 +1,110 @@
-{% extends "base-admin.html" %}
-{% block content %}
+{% extends "bandbase.html" %}
+{% block body %}
 
 <style type="text/css">
-    .datatable td, .datatable th {
-        padding: 5px 20px 5px 20px;
+    td img {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        vertical-align: top;
     }
 </style>
 
-<h2>Bands and Other Groups</h2>
+<h2>Band Checklist for {{ band.group.name }}</h2>
 
-<div><input type="checkbox" id="only-bands" /> Show only bands</div>
+Here is a list of things which {{ c.EVENT_NAME }} needs from you before the event. <br/> <br/>
 
-<table class="datatable">
-    <thead>
-        <tr>
-            <th>Group</th>
-            <th>Band?</th>
-            <th>Response Received</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for group in groups %}
-        <tr id="{{ group.id }}" class="{{ group.band|yesno:"band,nonband" }}">
-            <td><a href="../groups/form?id={{ group.id }}">{{ group.name }}</a></td>
-            <td class="band">
-                {% if group.band %}
-                    Yes
-                {% else %}
-                    <button onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
+<table style="width:auto">
+
+    <tr>
+        <td width="25"> <img src="../static/images/{% if band.completed_bio %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a href="bio?id={{ band.id }}">Completed Band Bio</a></b></td>
+        <td><i>Deadline:</i> {{ c.BAND_BIO_DEADLINE|datetime }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% if band.completed_bio %}
+                You have already provided us with your bio information, but you can use the link above to update it.
+                {% if not band.uploaded_bio_pic %}
+                    We encourage you to upload a bio pic for your band (which you have NOT yet done) so that we can
+                    include it on our website.
                 {% endif %}
-            </td>
-            <td>
-                {% if group.band %}
-                    TODO: figure out what to put here
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
+            {% else %}
+                Use the link above to provide us with the bio information we can put on our website.
+            {% endif %}
+            <br/></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td width="25"> <img src="../static/images/{% if band.completed_agreement %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a href="agreement?id={{ band.id }}">Completed Band Agreement</a></b></td>
+        <td><i>Deadline:</i> {{ c.BAND_AGREEMENT_DEADLINE|datetime }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% if band.completed_agreement %}
+                You have already provided all the information required as part of your badge agreement.  You may edit your
+                information (e.g. if you've discovered that you'll be arriving on a different day or time) using the link above.
+            {% else %}
+                Use the link above to provide us with the necessary information we require about your band.
+            {% endif %}
+            <br/></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td width="25"> <img src="../static/images/{% if band.completed_w9 %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a href="w9?id={{ band.id }}">Completed W9</a></b></td>
+        <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% if band.completed_w9 %}
+                You have already uploaded your W9 form, but if you need to make changes you can upload a new one
+                using the link above.
+            {% else %}
+                Use the link above to upload a completed W9 form (a link will be provided to a blank form).
+            {% endif %}
+            <br/></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td width="25"> <img src="../static/images/{% if band.all_badges_claimed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a target="_blank" href="../preregistration/group_members?id={{ band.group.id }}">Assign Your Unclaimed Badges</a></b></td>
+        <td><i>Deadline:</i> {{ c.BAND_BADGE_DEADLINE|datetime }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% if band.all_badges_claimed %}
+                You have already assigned all badges which have been assigned to your group, but you may change who your
+                complementary badges are assigned to using the link above anytime until the start of {{ c.EVENT_NAME }}.
+            {% else %}
+                You currently have {{ band.group.floating|length }} unassigned complementary
+                badge{{ band.group.floating|length|pluralize }} available to your group.  You may use the link above to
+                assign these badges.
+            {% endif %}
+            <br/><br/>
+            By default, each performer receives a badge for themselves, plus an additional badge for a guest.
+            Additional complimentary badges may be issued upon request.
+            <br/></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td width="25"> <img src="../static/images/{% if band.stage_agreement_completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b>Final Showtimes and Stage Layouts</b></td>
+        <td><i>Deadline:</i> {{ c.STAGE_AGREEMENT_DEADLINE|datetime }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            This step is forthcoming; you'll receive an email providing you with your exact showtimes and stage layouts, etc.
+            At this time you will be asked for a final confirmation that all details are correct and acceptable.
+            <br/></br>
+        </td>
+    </tr>
+
 </table>
-
-<script>
-    $.fn.dataTable.defaults.pageLength = 'All';
-    var markAsBand = function (groupId) {
-        var $band = $('#' + groupId).find('.band').text('Marking...');
-        $.ajax({
-            method: 'POST',
-            url: 'mark_as_band',
-            data: {
-                group_id: groupId,
-                csrf_token: csrf_token
-            },
-            success: function (response) {
-                $band.text('Yes').parents('tr').removeClass('nonband').addClass('band');
-                toastr.info(response.message);
-            }
-        });
-    };
-    $(function () {
-        var $onlyBands = $('#only-bands').on('click', function () {
-            setVisible('.nonband', !$onlyBands.prop('checked'))
-        });
-    });
-</script>
 
 {% endblock %}

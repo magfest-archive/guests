@@ -1,3 +1,5 @@
+import shutil
+
 from uber.common import *
 from panels import *
 from bands._version import __version__

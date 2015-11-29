@@ -1,0 +1,17 @@
+{% extends "bandbase.html" %}
+{% block body %}
+
+<h2>Completed W9 for {{ band.group.name }}</h2>
+
+You can find a blank W9 form <a target="_blank" href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">here</a>.  Please upload
+a filled out copy of this form below:
+
+<br/> <br/>
+
+<form method="post" action="w9" enctype="multipart/form-data">
+<input type="hidden" name="id" value="{{ band.id }}" />
+<input type="file" name="w9" />
+<input type="submit" value="Upload Completed Form" />
+</form>
+
+{% endblock %}
