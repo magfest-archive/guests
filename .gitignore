@@ -1,0 +1,8 @@
+.idea
+*.pyc
+*.egg-info
+.eggs/
+screenshots/
+development.ini
+uploaded_files/bio_pics/*
+uploaded_files/w9_forms/*
