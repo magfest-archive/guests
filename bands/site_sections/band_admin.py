@@ -15,4 +15,18 @@ class Root:
         if not group.band:
             group.band = Band()
             session.commit()
-        return {'message': '{} has been marked as a band'.format(group.name)}
+
+        return {
+            'id': group.band.id,
+            'message': '{} has been marked as a band'.format(group.name)
+        }
+
+    def band_info(self, session, message='', **params):
+        band = session.band(params)
+        if cherrypy.request.method == 'POST':
+            raise HTTPRedirect('index?message={}{}', band.group.name, ' data uploaded')
+
+        return {
+            'band': band,
+            'message': message
+        }

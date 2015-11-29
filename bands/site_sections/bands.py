@@ -10,7 +10,7 @@ class Root:
         }
 
     def agreement(self, session, message='', **params):
-        band = session.band(params)
+        band = session.band(params, restricted=True)
         if cherrypy.request.method == 'POST':
             if not band.performer_count:
                 message = 'You must tell us how many people are in your band'
@@ -18,7 +18,7 @@ class Root:
                 message = 'You must enter an on-site point-of-contact cellphone number'
             elif not band.arrival_time:
                 message = 'You must enter your expected arrival time'
-            elif band.bringing_vehicle and not band.vehicle_information:
+            elif band.bringing_vehicle and not band.vehicle_info:
                 message = 'You must provide your vehicle information'
             else:
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your band information has been uploaded')
@@ -29,7 +29,7 @@ class Root:
         }
 
     def bio(self, session, message='', bio_pic=None, **params):
-        band = session.band(params)
+        band = session.band(params, restricted=True)
         if cherrypy.request.method == 'POST':
             if not band.bio:
                 message = 'Please provide a brief bio for our website'
@@ -69,3 +69,11 @@ class Root:
             'band': band,
             'message': message
         }
+
+    def view_bio_pic(self, session, id):
+        band = session.band(id)
+        return serve_file(band.bio_pic_fpath, name=band.bio_pic_filename, content_type=band.bio_pic_content_type)
+
+    def view_w9(self, session, id):
+        band = session.band(id)
+        return serve_file(band.w9_fpath, name=band.w9_filename, content_type=band.w9_content_type)

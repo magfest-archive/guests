@@ -1,5 +1,7 @@
 import shutil
 
+from cherrypy.lib.static import serve_file
+
 from uber.common import *
 from panels import *
 from bands._version import __version__

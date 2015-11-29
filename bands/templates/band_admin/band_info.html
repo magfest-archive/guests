@@ -1,6 +1,163 @@
 {% extends "base-admin.html" %}
 {% block content %}
 
+<style type="text/css">
+    .col-sm-6 { font-family: Courier; }
+</style>
 
+<h2>Band Info for {{ band.group.name }}</h2>
+
+<form class="form-horizontal" role="form" method="post" action="band_info">
+    {% csrf_token %}
+    <input type="hidden" name="id" value="{{ band.id }}" />
+
+    {% if band.bio %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Bio:</label>
+            <div class="col-sm-6">
+                {{ band.bio|linebreaksbr }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.uploaded_bio_pic %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Bio Pic:</label>
+            <div class="col-sm-6">
+                <a href="{{ band.bio_pic_url }}">Click here to view the band's uploaded picture</a>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.completed_w9 %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Completed W9:</label>
+            <div class="col-sm-6">
+                <a href="{{ band.w9_url }}">Click here to view the band's uploaded W9</a>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.website %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Website:</label>
+            <div class="col-sm-6">
+                {{ band.website }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.facebook %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Facebook:</label>
+            <div class="col-sm-6">
+                {{ band.facebook }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.twitter %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Twitter:</label>
+            <div class="col-sm-6">
+                {{ band.twitter }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.other_social_media %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Other Social Media:</label>
+            <div class="col-sm-6">
+                {{ band.other_social_media }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.poc_phone %}
+        <div class="row">
+            <label class="col-sm-2 control-label">PoC Cellphone:</label>
+            <div class="col-sm-6">
+                {{ band.poc_phone }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.performer_count %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Performer Count:</label>
+            <div class="col-sm-6">
+                {{ band.performer_count }} ({{ band.estimated_performer_count }} is the number of Guest badges assigned)
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.bringing_vehicle %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Vehicle Information:</label>
+            <div class="col-sm-6">
+                {{ band.vehicle_information }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.arrival_time %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Arrival Time:</label>
+            <div class="col-sm-6">
+                {{ band.arrival_time }}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <label class="col-sm-2 control-label">Payment:</label>
+        <div class="col-sm-6">
+            <input type="number" class="form-control" name="payment" value="{{ band.payment }}" />
+            <p class="help-text">
+                The number of dollars we're paying the band.  If you leave this at zero, then no mention
+                of payment will be made in their band agreement, otherwise the amount will be listed and
+                the band will be told they will receive a check on-site after their performance.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="col-sm-2 control-label">Vehicles:</label>
+        <div class="col-sm-6">
+            <input type="number" class="form-control" name="vehicles" value="{{ band.vehicles }}" />
+            <p class="help-text">
+                The number of vehicles we're paying for parking (attached to the band's room).
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="col-sm-2 control-label">Load-In:</label>
+        <div class="col-sm-6">
+            <input type="number" class="form-control" name="estimated_loadin_minutes" value="{{ band.estimated_loadin_minutes }}" />
+            <p class="help-text">
+                The number of minutes we're telling the band they will have prior to performance for stage load-in and setup.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="col-sm-2 control-label">Performance Time:</label>
+        <div class="col-sm-6">
+            <input type="number" class="form-control" name="estimated_performance_minutes" value="{{ band.estimated_performance_minutes }}" />
+            <p class="help-text">
+                The number of minutes we're telling the band they will have to perform.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-2">
+            <button type="submit" class="btn btn-primary">Upload Band Info</button>
+        </div>
+    </div>
+</form>
+<br/> <br/>
 
 {% endblock %}
