@@ -1,0 +1,71 @@
+{% extends "bandbase.html" %}
+{% block body %}
+
+<script>
+    var showOrHidePanel = function () {
+        setVisible('.panel-info', $.field('wants_panel').prop('checked'));
+    };
+    $(function () {
+        showOrHidePanel();
+        $.field('wants_panel').on('click', showOrHidePanel);
+    });
+</script>
+
+<h2>Want a Panel?</h2>
+
+Many of our musical guests are also interested in offering an panel.  While we cannot guarantee that we'll have room in
+our schedule to accommodate all requests, we definitely want to hear your ideas.  Please fill out the 
+
+<br/> <br/>
+
+<form method="post" action="panel" class="form-horizontal" role="form">
+    <input type="hidden" name="id" value="{{ band.id }}" />
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Want a Panel?</label>
+        <div class="col-sm-6" style="padding-top:7px">
+            {% checkbox band.wants_panel %}
+            I am interested in presenting a panel.
+        </div>
+    </div>
+
+    <div class="form-group panel-info">
+        <label class="col-sm-2 control-label">Panel Name:</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="panel_name" value="{{ band.panel_name }}" />
+        </div>
+    </div>
+
+    <div class="form-group panel-info">
+        <label class="col-sm-2 control-label">Panel Length:</label>
+        <div class="col-sm-6">
+            <input type="text" class="form-control" name="panel_length" value="{{ band.panel_length }}" />
+            <p class="help-text">
+                An hour is typical, including time for Q&A.
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group panel-info">
+        <label class="col-sm-2 control-label">Panel Description:</label>
+        <div class="col-sm-6">
+            <textarea class="form-control" rows="3" name="panel_desc">{{ band.panel_desc }}</textarea>
+        </div>
+    </div>
+
+    <div class="form-group panel-info">
+        <label class="col-sm-2 control-label">Tech Needs:</label>
+        <div class="col-sm-6">
+            {% checkgroup band.panel_tech_needs %}
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-2">
+            <button class="btn btn-primary">Submit Panel Preferences</button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

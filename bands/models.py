@@ -40,6 +40,12 @@ class Band(MagModel):
     bio_pic_extension = Column(UnicodeText)
     bio_pic_content_type = Column(UnicodeText)
 
+    wants_panel = Column(Boolean, nullable=True, default=None)
+    panel_name = Column(UnicodeText)
+    panel_length = Column(UnicodeText)
+    panel_desc = Column(UnicodeText)
+    panel_tech_needs = Column(MultiChoice(c.TECH_NEED_OPTS))
+
     @property
     def email(self):
         return self.group.email
@@ -83,6 +89,10 @@ class Band(MagModel):
     @property
     def completed_w9(self):
         return os.path.exists(self.w9_fpath)
+
+    @property
+    def completed_panel(self):
+        return self.wants_panel is not None
 
     @property
     def completed_stage_agreement(self):

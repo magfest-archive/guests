@@ -17,6 +17,26 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 <table style="width:auto">
 
     <tr>
+        <td width="25"> <img src="../static/images/{% if band.completed_panel %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a href="panel?id={{ band.id }}">Want a Panel?</a></b></td>
+        <td><i>Deadline:</i> {{ c.PANEL_DEADLINE|datetime }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% if not band.completed_panel %}
+                Please use the above link to let us know whether or not you are interested in also running a panel.
+                We cannot accommodate all requests, but we definitely want to hear your ideas!
+            {% elif band.wants_panel %}
+                You have already submitted your panel suggestion, but you may edit it using the link above.
+            {% else %}
+                You have already let us know that you're not interested in running a panel.  If you change your mind
+                before the deadline, you can use the above link to share your panel idea.
+            {% endif %}
+            <br/></br>
+        </td>
+    </tr>
+
+    <tr>
         <td width="25"> <img src="../static/images/{% if band.completed_bio %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="bio?id={{ band.id }}">Completed Band Bio</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_BIO_DEADLINE|datetime }}</td>

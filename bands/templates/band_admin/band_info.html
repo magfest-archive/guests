@@ -5,11 +5,47 @@
     .col-sm-6 { font-family: Courier; }
 </style>
 
-<h2>Band Info for {{ band.group.name }}</h2>
+<h2>Band Info for <a href="../bands/index?id={{ band.id }}">{{ band.group.name }}</a></h2>
 
 <form class="form-horizontal" role="form" method="post" action="band_info">
     {% csrf_token %}
     <input type="hidden" name="id" value="{{ band.id }}" />
+
+    {% if band.panel_name %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Panel Name:</label>
+            <div class="col-sm-6">
+                {{ band.panel_name }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.panel_length %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Panel Length:</label>
+            <div class="col-sm-6">
+                {{ band.panel_length }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.panel_desc %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Panel Description:</label>
+            <div class="col-sm-6">
+                {{ band.panel_desc|linebreaksbr }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.panel_tech_needs %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Panel Tech Needs:</label>
+            <div class="col-sm-6">
+                {{ band.panel_tech_needs_labels|join:" / " }}
+            </div>
+        </div>
+    {% endif %}
 
     {% if band.bio %}
         <div class="row">

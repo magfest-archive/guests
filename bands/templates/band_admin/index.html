@@ -16,6 +16,7 @@
         <tr>
             <th>Group</th>
             <th>Band?</th>
+            <th>Panel</th>
             <th>Bio Provided</th>
             <th>Agreement Completed</th>
             <th>W9 Uploaded</th>
@@ -34,6 +35,7 @@
                     <button onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
                 {% endif %}
             </td>
+            <td>{{ group.band.completed_panel|yesno:"Y," }}</td>
             <td>{{ group.band.completed_bio|yesno:"Y," }}</td>
             <td>{{ group.band.completed_agreement|yesno:"Y," }}</td>
             <td>{{ group.band.completed_w9|yesno:"Y," }}</td>

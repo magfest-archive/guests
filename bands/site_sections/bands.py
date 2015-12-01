@@ -70,6 +70,26 @@ class Root:
             'message': message
         }
 
+    def panel(self, session, message='', **params):
+        band = session.band(params, bools=['wants_panel'], checkgroups=['panel_tech_needs'])
+        if cherrypy.request.method == 'POST':
+            if not band.wants_panel:
+                band.panel_name = band.panel_length = band.panel_desc = band.panel_tech_needs = ''
+            elif not band.panel_name:
+                message = 'Panel Name is a required field'
+            elif not band.panel_length:
+                message = 'Panel Length is a required field'
+            elif not band.panel_desc:
+                message = 'Panel Description is a required field'
+
+            if not message:
+                raise HTTPRedirect('index?id={}&message={}', band.id, 'Panel preferences updated')
+
+        return {
+            'band': band,
+            'message': message
+        }
+
     def view_bio_pic(self, session, id):
         band = session.band(id)
         return serve_file(band.bio_pic_fpath, name=band.bio_pic_filename, content_type=band.bio_pic_content_type)
