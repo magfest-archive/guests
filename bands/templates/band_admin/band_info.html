@@ -189,6 +189,16 @@
     </div>
 
     <div class="row">
+        <label class="col-sm-2 control-label">Event:</label>
+        <div class="col-sm-6">
+            <select name="event_id" class="form-control">
+                <option value="">Pick an Event</option>
+                {% options events band.event_id %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-sm-6 col-sm-offset-2">
             <button type="submit" class="btn btn-primary">Upload Band Info</button>
         </div>

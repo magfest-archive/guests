@@ -40,6 +40,10 @@ class Band(MagModel):
     bio_pic_extension = Column(UnicodeText)
     bio_pic_content_type = Column(UnicodeText)
 
+    stage_plot_filename = Column(UnicodeText)
+    stage_plot_extension = Column(UnicodeText)
+    stage_plot_content_type = Column(UnicodeText)
+
     wants_panel = Column(Boolean, nullable=True, default=None)
     panel_name = Column(UnicodeText)
     panel_length = Column(UnicodeText)

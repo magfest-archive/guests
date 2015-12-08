@@ -52,7 +52,7 @@ class Root:
             'message': message
         }
 
-    def w9(self, session, id, message='', w9=None):
+    def stage_plot(self, session, id, message='', plot=None):
         band = session.band(id)
         if cherrypy.request.method == 'POST':
             band.w9_filename = w9.filename
