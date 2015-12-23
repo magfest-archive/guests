@@ -146,6 +146,15 @@
         </div>
     {% endif %}
 
+    {% if band.uploaded_stage_plot %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Stage Plot:</label>
+            <div class="col-sm-6">
+                <a href="{{ band.stage_plot_url }}">Click here to view the band's stage plot</a>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row">
         <label class="col-sm-2 control-label">Payment:</label>
         <div class="col-sm-6">
@@ -185,6 +194,16 @@
             <p class="help-text">
                 The number of minutes we're telling the band they will have to perform.
             </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="col-sm-2 control-label">Event:</label>
+        <div class="col-sm-6">
+            <select name="event_id" class="form-control">
+                <option value="">Pick an Event</option>
+                {% options events band.event_id %}
+            </select>
         </div>
     </div>
 

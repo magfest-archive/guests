@@ -12,6 +12,9 @@ class Root:
     @ajax
     def mark_as_band(self, session, group_id):
         group = session.group(group_id)
+        if not group.leader:
+            return {'message': '{} does not have an assigned group leader'.format(group.name)}
+
         if not group.band:
             group.band = Band()
             session.commit()
@@ -21,14 +24,20 @@ class Root:
             'message': '{} has been marked as a band'.format(group.name)
         }
 
-    def band_info(self, session, message='', **params):
+    def band_info(self, session, message='', event_id=None, **params):
         band = session.band(params)
         if cherrypy.request.method == 'POST':
+            if event_id:
+                band.event_id = event_id
             raise HTTPRedirect('index?message={}{}', band.group.name, ' data uploaded')
 
         return {
             'band': band,
-            'message': message
+            'message': message,
+            'events': [
+                (event.id, event.name)
+                for event in session.query(Event).filter_by(location=c.CONCERTS).order_by(Event.start_time).all()
+            ]
         }
 
     @csv_file

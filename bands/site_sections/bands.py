@@ -37,7 +37,6 @@ class Root:
             if not message and bio_pic:
                 band.bio_pic_filename = bio_pic.filename
                 band.bio_pic_content_type = bio_pic.content_type.value
-                band.bio_pic_extension = bio_pic.filename.split('.')[-1].lower()
                 if band.bio_pic_extension not in c.ALLOWED_BIO_PIC_EXTENSIONS:
                     message = 'Bio pic must be one of ' + ', '.join(c.ALLOWED_BIO_PIC_EXTENSIONS)
                 else:
@@ -57,7 +56,6 @@ class Root:
         if cherrypy.request.method == 'POST':
             band.w9_filename = w9.filename
             band.w9_content_type = w9.content_type.value
-            band.w9_extension = w9.filename.split('.')[-1].lower()
             if band.w9_extension not in c.ALLOWED_W9_EXTENSIONS:
                 message = 'Uploaded file type must be one of ' + ', '.join(c.ALLOWED_W9_EXTENSIONS)
             else:
@@ -70,10 +68,28 @@ class Root:
             'message': message
         }
 
+    def stage_plot(self, session, id, message='', plot=None):
+        band = session.band(id)
+        if cherrypy.request.method == 'POST':
+            band.stage_plot_filename = plot.filename
+            band.stage_plot_content_type = plot.content_type.value
+            if band.stage_plot_extension not in c.ALLOWED_STAGE_PLOT_EXTENSIONS:
+                message = 'Uploaded file type must be one of ' + ', '.join(c.ALLOWED_STAGE_PLOT_EXTENSIONS)
+            else:
+                with open(band.stage_plot_fpath, 'wb') as f:
+                    shutil.copyfileobj(plot.file, f)
+                raise HTTPRedirect('index?id={}&message={}', band.id, 'Stage directions uploaded')
+
+        return {
+            'band': band,
+            'message': message
+        }
+
     def panel(self, session, message='', **params):
-        band = session.band(params, bools=['wants_panel'], checkgroups=['panel_tech_needs'])
+        band = session.band(params, checkgroups=['panel_tech_needs'])
         if cherrypy.request.method == 'POST':
             if not band.wants_panel:
+                band.wants_panel = 0
                 band.panel_name = band.panel_length = band.panel_desc = band.panel_tech_needs = ''
             elif not band.panel_name:
                 message = 'Panel Name is a required field'
@@ -97,3 +113,7 @@ class Root:
     def view_w9(self, session, id):
         band = session.band(id)
         return serve_file(band.w9_fpath, name=band.w9_filename, content_type=band.w9_content_type)
+
+    def view_stage_plot(self, session, id):
+        band = session.band(id)
+        return serve_file(band.stage_plot_fpath, name=band.stage_plot_filename, content_type=band.stage_plot_content_type)
