@@ -11,7 +11,7 @@
 
 <div><input type="checkbox" id="only-bands" /> Show only bands</div>
 
-<table class="datatable">
+<table class="datatable" data-page-length="-1">
     <thead>
         <tr>
             <th>Group</th>
@@ -40,14 +40,13 @@
             <td>{{ group.band.completed_agreement|yesno:"Y," }}</td>
             <td>{{ group.band.completed_w9|yesno:"Y," }}</td>
             <td>{{ group.band.all_badges_claimed|yesno:"Y," }}</td>
-            <td></td>
+            <td>{{ group.band.uploaded_stage_plot|yesno:"Y," }}</td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
 
 <script>
-    $.fn.dataTable.defaults.pageLength = 'All';
     var markAsBand = function (groupId) {
         var $band = $('#' + groupId).find('.band').text('Marking...');
         $.ajax({
@@ -58,9 +57,11 @@
                 csrf_token: csrf_token
             },
             success: function (response) {
-                $band.empty().append(
-                    $('<a>Band Info</a>').attr('href', 'band_info?id=' + response.id)
-                ).parents('tr').removeClass('nonband').addClass('band');
+                if (response.id) {
+                    $band.empty().append(
+                        $('<a>Band Info</a>').attr('href', 'band_info?id=' + response.id)
+                    ).parents('tr').removeClass('nonband').addClass('band');
+                }
                 toastr.info(response.message);
             }
         });

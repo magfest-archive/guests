@@ -113,14 +113,14 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     </tr>
 
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.stage_agreement_completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
-        <td><b>Final Showtimes and Stage Layouts</b></td>
+        <td width="25"> <img src="../static/images/{% if band.uploaded_stage_plot %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a href="stage_plot?id={{ band.id }}">Stage Layouts</a></b></td>
         <td><i>Deadline:</i> {{ c.STAGE_AGREEMENT_DEADLINE|datetime }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            This step is forthcoming; you'll receive an email providing you with your exact showtimes and stage layouts, etc.
-            At this time you will be asked for a final confirmation that all details are correct and acceptable.
+            We require that you upload an exact description of your desired stage layout.  Failure to do so may result
+            in you not receiving the setup you expect or want.
             <br/></br>
         </td>
     </tr>

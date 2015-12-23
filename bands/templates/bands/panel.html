@@ -25,7 +25,7 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
     <div class="form-group">
         <label class="col-sm-2 control-label">Want a Panel?</label>
         <div class="col-sm-6" style="padding-top:7px">
-            {% checkbox band.wants_panel %}
+            <input type="checkbox" name="wants_panel" value="1" {% if band.wants_panel %}checked{% endif %} />
             I am interested in presenting a panel.
         </div>
     </div>

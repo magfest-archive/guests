@@ -1,6 +1,10 @@
 from bands import *
 
 
+def extension(filename):
+    return filename.split('.')[-1].lower()
+
+
 @Session.model_mixin
 class Group:
     band = relationship('Band', backref='group', uselist=False)
@@ -33,18 +37,17 @@ class Band(MagModel):
     other_social_media = Column(UnicodeText)
 
     w9_filename = Column(UnicodeText)
-    w9_extension = Column(UnicodeText)
     w9_content_type = Column(UnicodeText)
 
     bio_pic_filename = Column(UnicodeText)
-    bio_pic_extension = Column(UnicodeText)
     bio_pic_content_type = Column(UnicodeText)
 
     stage_plot_filename = Column(UnicodeText)
-    stage_plot_extension = Column(UnicodeText)
     stage_plot_content_type = Column(UnicodeText)
 
-    wants_panel = Column(Boolean, nullable=True, default=None)
+    # This needs to be a nullable integer rather than a nullable boolean to prevent SQLAlchemy from setting a False value
+    # when it's instantiated and saved without this field being set.  An annoying but necessary workaround.
+    wants_panel = Column(Integer, nullable=True, default=None)
     panel_name = Column(UnicodeText)
     panel_length = Column(UnicodeText)
     panel_desc = Column(UnicodeText)
@@ -67,6 +70,10 @@ class Band(MagModel):
         return '../bands/view_bio_pic?id={}'.format(self.id)
 
     @property
+    def stage_plot_url(self):
+        return '../bands/view_stage_plot?id={}'.format(self.id)
+
+    @property
     def w9_fpath(self):
         return os.path.join(bands_config['root'], 'uploaded_files', 'w9_forms', self.id)
 
@@ -77,6 +84,26 @@ class Band(MagModel):
     @property
     def uploaded_bio_pic(self):
         return os.path.exists(self.bio_pic_fpath)
+
+    @property
+    def stage_plot_fpath(self):
+        return os.path.join(bands_config['root'], 'uploaded_files', 'stage_plots', self.id)
+
+    @property
+    def uploaded_stage_plot(self):
+        return os.path.exists(self.stage_plot_fpath)
+
+    @property
+    def w9_extension(self):
+        return extension(self.w9_filename)
+
+    @property
+    def bio_pic_extension(self):
+        return extension(self.bio_pic_filename)
+
+    @property
+    def stage_plot_extension(self):
+        return extension(self.stage_plot_filename)
 
     @property
     def all_badges_claimed(self):
