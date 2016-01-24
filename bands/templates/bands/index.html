@@ -19,7 +19,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     <tr>
         <td width="25"> <img src="../static/images/{% if band.completed_panel %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="panel?id={{ band.id }}">Want a Panel?</a></b></td>
-        <td><i>Deadline:</i> {{ c.PANEL_DEADLINE|datetime }}</td>
+        <td><i>Deadline:</i> {{ c.BAND_PANEL_DEADLINE|datetime }}</td>
     </tr>
     <tr>
         <td colspan="3">
@@ -73,18 +73,54 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
         </td>
     </tr>
 
+    {% if band.payment %}
+        <tr>
+            <td width="25"> <img src="../static/images/{% if band.completed_w9 %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+            <td><b><a href="w9?id={{ band.id }}">Completed W9</a></b></td>
+            <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime }}</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                {% if band.completed_w9 %}
+                    You have already uploaded your W9 form, but if you need to make changes you can upload a new one
+                    using the link above.
+                {% else %}
+                    Use the link above to upload a completed W9 form (a link will be provided to a blank form).
+                {% endif %}
+                <br/></br>
+            </td>
+        </tr>
+    {% endif %}
+
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.completed_w9 %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
-        <td><b><a href="w9?id={{ band.id }}">Completed W9</a></b></td>
-        <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime }}</td>
+        <td width="25"> <img src="../static/images/{% if band.merch %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a href="rock_island?id={{ band.id }}">Selling Merchandise</a></b></td>
+        <td><i>Deadline:</i> {{ c.BAND_MERCH_DEADLINE|datetime }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.completed_w9 %}
-                You have already uploaded your W9 form, but if you need to make changes you can upload a new one
-                using the link above.
+            {% if band.merch %}
+                You have already indicated your merchandise preferences, but you may update them using the link above.
             {% else %}
-                Use the link above to upload a completed W9 form (a link will be provided to a blank form).
+                We need you to tell us whether you have any merchandise to sell, and whether you intend to participate in
+                our "Rock Island" program where we sell your merchandise so that you do not need to staff your own table.
+            {% endif %}
+            <br/></br>
+        </td>
+    </tr>
+
+    <tr>
+        <td width="25"> <img src="../static/images/{% if band.charity %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td><b><a href="charity?id={{ band.id }}">Donating to our Charity Auction</a></b></td>
+        <td><i>Deadline:</i> {{ c.BAND_CHARITY_DEADLINE|datetime }}</td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            {% if band.charity %}
+                You have already indicated your charity preferences, but you may update them using the link above.
+            {% else %}
+                MAGFest runs a yearly charity auction, and we need you to tell us whether you can contribute any
+                signed merchandise.
             {% endif %}
             <br/></br>
         </td>

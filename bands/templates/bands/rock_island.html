@@ -1,0 +1,56 @@
+{% extends "bandbase.html" %}
+{% block body %}
+
+<h3>Selling Merch</h3>
+
+Space will be provided in our marketplace area for merchandise sales; either at a dedicated table or at our “Rock Island”
+sales area, where MAGFest staff will sell performer-provided merchandise throughout the festival.
+
+<br/> <br/>
+
+It is recommended, but not required, for performers to use our Rock Island service in this area, as merchandise can be sold
+more consistently, and for many more hours.  If you elect to decline the use of Rock Island and sell your merchandise directly,
+we require that your table be staffed for at least <b>8 hours per day</b>.
+
+<br/> <br/>
+
+On the night of the performance, table space will also be provided immediately outside the concert hall for merchandise
+sales and signings.
+
+<br/> <br/>
+
+<form method="post" action="rock_island">
+    {% csrf_token %}
+    <input type="hidden" name="id" value="{{ band.id }}" />
+    <select name="merch">
+        <option value="">Tell us how you'd like to sell your merch</option>
+        {% options c.BAND_MERCH_OPTS band.merch %}
+    </select>
+    <br/> <br/>
+    <div id="coverage" style="display:none">
+        <input type="checkbox" name="coverage" value="yes" />
+        I commit to staffing our table in the marketplace at least <b>8 hours per day</b>.
+        <br/> <br/>
+        <input type="checkbox" name="warning" value="yes" />
+        I acknowledge that failing to staff our table for <b>8 hours per day</b> will revoke the privilege of selling our merchandise from our own dedicated table in the future
+        <br/> <br/>
+    </div>
+    <input id="submit" type="submit" value="Save Merch Preference" />
+</form>
+
+<script>
+    var checkCoverage = function () {
+        var dedicated = $.val('merch') === {{ c.OWN_TABLE }};
+        var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');
+        setVisible('#coverage', dedicated);
+        $('#submit').prop('disabled', dedicated && !allChecked);
+    };
+    $(function () {
+        checkCoverage();
+        $.field('merch').on('change', checkCoverage);
+        $.field('warning').on('click', checkCoverage);
+        $.field('coverage').on('click', checkCoverage);
+    });
+</script>
+
+{% endblock %}
