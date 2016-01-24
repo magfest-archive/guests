@@ -2,12 +2,12 @@ from bands import *
 
 AutomatedEmail.extra_models[Band] = lambda session: session.query(Band).options(joinedload(Band.group)).all()
 
+
 class BandEmail(AutomatedEmail):
     def __init__(self, *args, **kwargs):
         if len(args) < 3 and 'filter' not in kwargs:
             kwargs['filter'] = lambda x: True
         AutomatedEmail.__init__(self, Band, *args, sender=c.BAND_EMAIL, **kwargs)
-
 
 BandEmail('{EVENT_NAME} Performer Checklist', 'band_notification.txt')
 
