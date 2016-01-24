@@ -1,8 +1,12 @@
 {% extends "base-admin.html" %}
+{% block title %}{{ band.group.name }}{% endblock %}
 {% block content %}
 
 <style type="text/css">
-    .col-sm-6 { font-family: Courier; }
+    .col-sm-6 {
+        font-family: Courier;
+        padding-top: 8px;
+    }
 </style>
 
 <h2>Band Info for <a href="../bands/index?id={{ band.id }}">{{ band.group.name }}</a></h2>
@@ -155,6 +159,33 @@
         </div>
     {% endif %}
 
+    {% if band.merch %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Merchandise:</label>
+            <div class="col-sm-6">
+                {{ band.merch_label }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.charity %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Charity:</label>
+            <div class="col-sm-6">
+                {{ band.charity_label }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if band.charity_donation %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Donation:</label>
+            <div class="col-sm-6">
+                {{ band.charity_donation }}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row">
         <label class="col-sm-2 control-label">Payment:</label>
         <div class="col-sm-6">
@@ -187,15 +218,17 @@
         </div>
     </div>
 
-    <div class="row">
-        <label class="col-sm-2 control-label">Performance Time:</label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" name="estimated_performance_minutes" value="{{ band.estimated_performance_minutes }}" />
-            <p class="help-text">
-                The number of minutes we're telling the band they will have to perform.
-            </p>
+    {% if not band.event_id %}
+        <div class="row">
+            <label class="col-sm-2 control-label">Performance Time:</label>
+            <div class="col-sm-6">
+                <input type="number" class="form-control" name="estimated_performance_minutes" value="{{ band.estimated_performance_minutes }}" />
+                <p class="help-text">
+                    The number of minutes we're telling the band they will have to perform.
+                </p>
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     <div class="row">
         <label class="col-sm-2 control-label">Event:</label>

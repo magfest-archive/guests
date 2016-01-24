@@ -53,6 +53,11 @@ class Band(MagModel):
     panel_desc = Column(UnicodeText)
     panel_tech_needs = Column(MultiChoice(c.TECH_NEED_OPTS))
 
+    merch = Column(Choice(c.BAND_MERCH_OPTS), nullable=True)
+
+    charity = Column(Choice(c.BAND_CHARITY_OPTS), nullable=True)
+    charity_donation = Column(UnicodeText)
+
     @property
     def email(self):
         return self.group.email
@@ -62,16 +67,20 @@ class Band(MagModel):
         return len([a for a in self.group.attendees if a.badge_type == c.GUEST_BADGE])
 
     @property
+    def performance_minutes(self):
+        return self.event.minutes if self.event_id else self.estimated_performance_minutes
+
+    @property
     def w9_url(self):
-        return '../bands/view_w9?id={}'.format(self.id)
+        return '{}/bands/view_w9?id={}'.format(c.URL_BASE, self.id) if self.completed_w9 else ''
 
     @property
     def bio_pic_url(self):
-        return '../bands/view_bio_pic?id={}'.format(self.id)
+        return '{}/bands/view_bio_pic?id={}'.format(c.URL_BASE, self.id) if self.uploaded_bio_pic else ''
 
     @property
     def stage_plot_url(self):
-        return '../bands/view_stage_plot?id={}'.format(self.id)
+        return '{}/bands/view_stage_plot?id={}'.format(c.URL_BASE, self.id) if self.uploaded_stage_plot else ''
 
     @property
     def w9_fpath(self):
@@ -124,7 +133,3 @@ class Band(MagModel):
     @property
     def completed_panel(self):
         return self.wants_panel is not None
-
-    @property
-    def completed_stage_agreement(self):
-        return False  # this will be implemented after getting some feedback from the music department about what is involved

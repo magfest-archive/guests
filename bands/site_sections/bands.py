@@ -106,6 +106,38 @@ class Root:
             'message': message
         }
 
+    def rock_island(self, session, message='', coverage=False, warning=False, **params):
+        band = session.band(params)
+        if cherrypy.request.method == 'POST':
+            if not band.merch:
+                message = 'You need to tell us whether and how you want to sell merchandise'
+            elif band.merch == c.OWN_TABLE and not all([coverage, warning]):
+                message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
+            else:
+                raise HTTPRedirect('index?id={}&message={}', band.id, 'Your merchandise preferences have been saved')
+
+        return {
+            'band': band,
+            'message': message
+        }
+
+    def charity(self, session, message='', **params):
+        band = session.band(params)
+        if cherrypy.request.method == 'POST':
+            if not band.charity:
+                message = 'You need to tell is whether you are donating anything'
+            elif band.charity == c.DONATING and not band.charity_donation:
+                message = 'You need to tell us what you intend to donate'
+            else:
+                if band.charity == c.NOT_DONATING:
+                    band.charity_donation = ''
+                raise HTTPRedirect('index?id={}&message={}', band.id, 'Your charity decisions have been saved')
+
+        return {
+            'band': band,
+            'message': message
+        }
+
     def view_bio_pic(self, session, id):
         band = session.band(id)
         return serve_file(band.bio_pic_fpath, name=band.bio_pic_filename, content_type=band.bio_pic_content_type)

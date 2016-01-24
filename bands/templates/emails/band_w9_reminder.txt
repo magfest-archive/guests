@@ -1,0 +1,7 @@
+{{ band.group.name }},
+
+For tax reasons, {{ c.EVENT_NAME }} requires a completed W9 from all of its performers.  You can download a blank form, fill it out, and upload the completed form at {{ c.URL_BASE }}/bands/w9?id={{ band.id }}
+
+Please upload your completed W9 no later than {{ c.BAND_W9_DEADLINE }}.
+
+{{ c.BAND_EMAIL_SIGNATURE }}

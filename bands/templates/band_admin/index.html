@@ -1,4 +1,5 @@
 {% extends "base-admin.html" %}
+{% block title %}Band Admin{% endblock %}
 {% block content %}
 
 <style type="text/css">
@@ -20,6 +21,8 @@
             <th>Bio Provided</th>
             <th>Agreement Completed</th>
             <th>W9 Uploaded</th>
+            <th>Merch</th>
+            <th>Charity</th>
             <th>Badges Claimed</th>
             <th>Stage Plans</th>
         </tr>
@@ -39,6 +42,8 @@
             <td>{{ group.band.completed_bio|yesno:"Y," }}</td>
             <td>{{ group.band.completed_agreement|yesno:"Y," }}</td>
             <td>{{ group.band.completed_w9|yesno:"Y," }}</td>
+            <td>{{ group.band.merch|yesno:"Y," }}</td>
+            <td>{{ group.band.charity|yesno:"Y," }}</td>
             <td>{{ group.band.all_badges_claimed|yesno:"Y," }}</td>
             <td>{{ group.band.uploaded_stage_plot|yesno:"Y," }}</td>
         </tr>
