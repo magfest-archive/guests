@@ -69,11 +69,15 @@
         </div>
     {% endif %}
 
-    {% if band.completed_w9 %}
+    {% if band.completed_w9 or not band.payment %}
         <div class="row">
             <label class="col-sm-2 control-label">Completed W9:</label>
             <div class="col-sm-6">
-                <a href="{{ band.w9_url }}">Click here to view the band's uploaded W9</a>
+                {% if band.completed_w9 %}
+                    <a href="{{ band.w9_url }}">Click here to view the band's uploaded W9</a>
+                {% else %}
+                    This band isn't being paid and thus doesn't need a W9.
+                {% endif %}
             </div>
         </div>
     {% endif %}
