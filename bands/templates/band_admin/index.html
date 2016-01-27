@@ -41,7 +41,7 @@
             <td>{{ group.band.completed_panel|yesno:"Y," }}</td>
             <td>{{ group.band.completed_bio|yesno:"Y," }}</td>
             <td>{{ group.band.completed_agreement|yesno:"Y," }}</td>
-            <td>{% if group.band.completed_w9 or not group.band.payment %}Y{% endif %}</td>
+            <td>{% if group.band %}{% if group.band.completed_w9 or not group.band.payment %}Y{% endif %}{% endif %}</td>
             <td>{{ group.band.merch|yesno:"Y," }}</td>
             <td>{{ group.band.charity|yesno:"Y," }}</td>
             <td>{{ group.band.all_badges_claimed|yesno:"Y," }}</td>
