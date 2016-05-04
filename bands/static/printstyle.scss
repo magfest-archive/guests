@@ -1,0 +1,9 @@
+@media print {
+
+	@page { margin: 3cm; }
+	body, #wrapper {
+		width: 100%;
+		margin: 0;
+	}
+
+}
