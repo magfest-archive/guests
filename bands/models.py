@@ -122,11 +122,11 @@ class BandStagePlot(MagModel):
 
     @property
     def url(self):
-        return '{}/bands/view_stage_plot?id={}'.format(c.URL_BASE, self.id) if self.uploaded_file else ''
+        return '{}/bands/view_stage_plot?id={}'.format(c.URL_BASE, self.band.id) if self.uploaded_file else ''
 
     @property
     def fpath(self):
-        return os.path.join(bands_config['root'], 'uploaded_files', 'stage_plots', self.band.id)
+        return os.path.join(bands_config['root'], 'uploaded_files', 'stage_plots', self.id)
 
     @property
     def uploaded_file(self):
