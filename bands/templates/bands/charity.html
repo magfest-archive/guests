@@ -19,12 +19,12 @@ Our auction starts on {{ c.AUCTION_START|datetime:"%A at %-H%p" }} and goes unti
     <input type="hidden" name="id" value="{{ band.id }}" />
     <select name="charity">
         <option value="">Let us know whether you can donate anything</option>
-        {% options c.BAND_CHARITY_OPTS band.charity %}
+        {% options c.BAND_CHARITY_OPTS band.charity.charity %}
     </select>
     <br/> <br/>
     <div id="donating" style="display:none">
          Please let us know what you've got.  Thanks for helping us help kids! <br/>
-         <textarea name="charity_donation" rows="3" cols="60">{{ band.charity_donation }}</textarea>
+         <textarea name="charity_donation" rows="3" cols="60">{{ band.charity.charity_donation }}</textarea>
          <br/> <br/>
     </div>
     <input id="submit" type="submit" value="Save Donation Preference" />

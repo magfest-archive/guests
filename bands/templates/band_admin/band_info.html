@@ -11,183 +11,184 @@
 
 <h2>Band Info for <a href="../bands/index?id={{ band.id }}">{{ band.group.name }}</a></h2>
 
+<br/> <br/>
 <form class="form-horizontal" role="form" method="post" action="band_info">
     {% csrf_token %}
     <input type="hidden" name="id" value="{{ band.id }}" />
 
-    {% if band.panel_name %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Panel Name:</label>
-            <div class="col-sm-6">
-                {{ band.panel_name }}
-            </div>
+    {% if band.panel.panel_name %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Panel Name:</label>
+        <div class="col-sm-6">
+            {{ band.panel.panel_name }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.panel_length %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Panel Length:</label>
-            <div class="col-sm-6">
-                {{ band.panel_length }}
-            </div>
+    {% if band.panel.panel_length %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Panel Length:</label>
+        <div class="col-sm-6">
+            {{ band.panel.panel_length }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.panel_desc %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Panel Description:</label>
-            <div class="col-sm-6">
-                {{ band.panel_desc|linebreaksbr }}
-            </div>
+    {% if band.panel.panel_desc %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Panel Description:</label>
+        <div class="col-sm-6">
+            {{ band.panel.panel_desc|linebreaksbr }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.panel_tech_needs %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Panel Tech Needs:</label>
-            <div class="col-sm-6">
-                {{ band.panel_tech_needs_labels|join:" / " }}
-            </div>
+    {% if band.panel.panel_tech_needs %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Panel Tech Needs:</label>
+        <div class="col-sm-6">
+            {{ band.panel.panel_tech_needs_labels|join:" / " }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.bio %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Bio:</label>
-            <div class="col-sm-6">
-                {{ band.bio|linebreaksbr }}
-            </div>
+    {% if band.bio.bio %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Bio:</label>
+        <div class="col-sm-6">
+            {{ band.bio.bio|linebreaksbr }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.uploaded_bio_pic %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Bio Pic:</label>
-            <div class="col-sm-6">
-                <a href="{{ band.bio_pic_url }}">Click here to view the band's uploaded picture</a>
-            </div>
+    {% if band.bio.uploaded_bio_pic %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Bio Pic:</label>
+        <div class="col-sm-6">
+            <a href="{{ band.bio.bio_pic_url }}">Click here to view the band's uploaded picture</a>
         </div>
+    </div>
     {% endif %}
 
-    {% if band.completed_w9 or not band.payment %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Completed W9:</label>
-            <div class="col-sm-6">
-                {% if band.completed_w9 %}
-                    <a href="{{ band.w9_url }}">Click here to view the band's uploaded W9</a>
-                {% else %}
-                    This band isn't being paid and thus doesn't need a W9.
-                {% endif %}
-            </div>
+    {% if band.taxes.completed_w9 or not band.payment %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Completed W9:</label>
+        <div class="col-sm-6">
+            {% if band.taxes.completed_w9 %}
+            <a href="{{ band.taxes.w9_url }}">Click here to view the band's uploaded W9</a>
+            {% else %}
+            This band isn't being paid and thus doesn't need a W9.
+            {% endif %}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.website %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Website:</label>
-            <div class="col-sm-6">
-                {{ band.website }}
-            </div>
+    {% if band.bio.website %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Website:</label>
+        <div class="col-sm-6">
+            {{ band.bio.website }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.facebook %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Facebook:</label>
-            <div class="col-sm-6">
-                {{ band.facebook }}
-            </div>
+    {% if band.bio.facebook %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Facebook:</label>
+        <div class="col-sm-6">
+            {{ band.bio.facebook }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.twitter %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Twitter:</label>
-            <div class="col-sm-6">
-                {{ band.twitter }}
-            </div>
+    {% if band.bio.twitter %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Twitter:</label>
+        <div class="col-sm-6">
+            {{ band.bio.twitter }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.other_social_media %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Other Social Media:</label>
-            <div class="col-sm-6">
-                {{ band.other_social_media }}
-            </div>
+    {% if band.bio.other_social_media %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Other Social Media:</label>
+        <div class="col-sm-6">
+            {{ band.bio.other_social_media }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.poc_phone %}
-        <div class="row">
-            <label class="col-sm-2 control-label">PoC Cellphone:</label>
-            <div class="col-sm-6">
-                {{ band.poc_phone }}
-            </div>
+    {% if band.info.poc_phone %}
+    <div class="row">
+        <label class="col-sm-2 control-label">PoC Cellphone:</label>
+        <div class="col-sm-6">
+            {{ band.info.poc_phone }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.performer_count %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Performer Count:</label>
-            <div class="col-sm-6">
-                {{ band.performer_count }} ({{ band.estimated_performer_count }} is the number of Guest badges assigned)
-            </div>
+    {% if band.info.performer_count %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Performer Count:</label>
+        <div class="col-sm-6">
+            {{ band.info.performer_count }} ({{ band.info.estimated_performer_count }} is the number of Guest badges assigned)
         </div>
+    </div>
     {% endif %}
 
-    {% if band.bringing_vehicle %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Vehicle Information:</label>
-            <div class="col-sm-6">
-                {{ band.vehicle_information }}
-            </div>
+    {% if band.info.bringing_vehicle %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Vehicle Information:</label>
+        <div class="col-sm-6">
+            {{ band.info.vehicle_information }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.arrival_time %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Arrival Time:</label>
-            <div class="col-sm-6">
-                {{ band.arrival_time }}
-            </div>
+    {% if band.info.arrival_time %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Arrival Time:</label>
+        <div class="col-sm-6">
+            {{ band.info.arrival_time }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.uploaded_stage_plot %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Stage Plot:</label>
-            <div class="col-sm-6">
-                <a href="{{ band.stage_plot_url }}">Click here to view the band's stage plot</a>
-            </div>
+    {% if band.stage_plot.uploaded_stage_plot %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Stage Plot:</label>
+        <div class="col-sm-6">
+            <a href="{{ band.stage_plot.stage_plot_url }}">Click here to view the band's stage plot</a>
         </div>
+    </div>
     {% endif %}
 
-    {% if band.merch %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Merchandise:</label>
-            <div class="col-sm-6">
-                {{ band.merch_label }}
-            </div>
+    {% if band.merch.merch %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Merchandise:</label>
+        <div class="col-sm-6">
+            {{ band.merch.merch_label }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.charity %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Charity:</label>
-            <div class="col-sm-6">
-                {{ band.charity_label }}
-            </div>
+    {% if band.charity.charity %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Charity:</label>
+        <div class="col-sm-6">
+            {{ band.charity.charity_label }}
         </div>
+    </div>
     {% endif %}
 
-    {% if band.charity_donation %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Donation:</label>
-            <div class="col-sm-6">
-                {{ band.charity_donation }}
-            </div>
+    {% if band.charity.charity_donation %}
+    <div class="row">
+        <label class="col-sm-2 control-label">Donation:</label>
+        <div class="col-sm-6">
+            {{ band.charity.charity_donation }}
         </div>
+    </div>
     {% endif %}
 
     <div class="row">
@@ -205,7 +206,7 @@
     <div class="row">
         <label class="col-sm-2 control-label">Vehicles:</label>
         <div class="col-sm-6">
-            <input type="number" class="form-control" name="vehicles" value="{{ band.vehicles }}" />
+            <input type="number" class="form-control" name="vehicles" value="{{ band.info.vehicles }}" />
             <p class="help-text">
                 The number of vehicles we're paying for parking (attached to the band's room).
             </p>
@@ -215,7 +216,7 @@
     <div class="row">
         <label class="col-sm-2 control-label">Load-In:</label>
         <div class="col-sm-6">
-            <input type="number" class="form-control" name="estimated_loadin_minutes" value="{{ band.estimated_loadin_minutes }}" />
+            <input type="number" class="form-control" name="estimated_loadin_minutes" value="{{ band.info.estimated_loadin_minutes }}" />
             <p class="help-text">
                 The number of minutes we're telling the band they will have prior to performance for stage load-in and setup.
             </p>
@@ -223,15 +224,15 @@
     </div>
 
     {% if not band.event_id %}
-        <div class="row">
-            <label class="col-sm-2 control-label">Performance Time:</label>
-            <div class="col-sm-6">
-                <input type="number" class="form-control" name="estimated_performance_minutes" value="{{ band.estimated_performance_minutes }}" />
-                <p class="help-text">
-                    The number of minutes we're telling the band they will have to perform.
-                </p>
-            </div>
+    <div class="row">
+        <label class="col-sm-2 control-label">Performance Time:</label>
+        <div class="col-sm-6">
+            <input type="number" class="form-control" name="estimated_performance_minutes" value="{{ band.info.estimated_performance_minutes }}" />
+            <p class="help-text">
+                The number of minutes we're telling the band they will have to perform.
+            </p>
         </div>
+    </div>
     {% endif %}
 
     <div class="row">
@@ -250,6 +251,5 @@
         </div>
     </div>
 </form>
-<br/> <br/>
 
 {% endblock %}

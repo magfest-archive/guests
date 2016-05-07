@@ -61,7 +61,7 @@ Additional complimentary badges may be issued upon request.
     <div class="form-group">
         <label class="col-sm-2 control-label">Performer Count:</label>
         <div class="col-sm-6">
-            <input class="form-control" type="number" name="performer_count" value="{{ band.info.performer_count|default:band.estimated_performer_count }}" />
+            <input class="form-control" type="number" name="performer_count" value="{{ band.info.performer_count|default:band.info.estimated_performer_count }}" />
             <p class="help-text">
                 To ensure that we have assigned the correct number of badges to your band, please confirm the number
                 of performers in your band.
@@ -93,7 +93,7 @@ Additional complimentary badges may be issued upon request.
     <div class="form-group">
         <label class="col-sm-2 control-label">Parking:</label>
         <div class="col-sm-6">
-            {% checkbox band.info.bringing_vehicle %} We will be parking at MAGFest.
+            {% checkbox band_info.bringing_vehicle %} We will be parking at MAGFest.
         </div>
     </div>
 

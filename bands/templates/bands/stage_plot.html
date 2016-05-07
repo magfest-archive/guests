@@ -10,6 +10,7 @@ containing a collection of files explaining what you need.
 
 <form method="post" action="stage_plot" enctype="multipart/form-data">
 <input type="hidden" name="id" value="{{ band.id }}" />
+    {% csrf_token %}
 <input type="file" name="plot" />
 <input type="submit" value="Upload Desired Stage Layouts" />
 </form>

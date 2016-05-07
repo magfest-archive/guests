@@ -29,6 +29,7 @@ class Root:
 
         return {
             'band': band,
+            'band_info': band_info,  # This is currently necessary to prevent custom tags from breaking
             'message': message
         }
 
@@ -80,16 +81,20 @@ class Root:
             'message': message
         }
 
-    def stage_plot(self, session, id, message='', plot=None):
+    def stage_plot(self, session, id, message='', plot=None, **params):
         band = session.band(id)
+        band_stage_plot = session.band_stage_plot(params, restricted=True)
         if cherrypy.request.method == 'POST':
-            band.stage_plot.stage_plot_filename = plot.filename
-            band.stage_plot.stage_plot_content_type = plot.content_type.value
-            if band.stage_plot.stage_plot_extension not in c.ALLOWED_STAGE_PLOT_EXTENSIONS:
+            band_stage_plot.stage_plot_filename = plot.filename
+            band_stage_plot.stage_plot_content_type = plot.content_type.value
+            if band_stage_plot.stage_plot_extension not in c.ALLOWED_STAGE_PLOT_EXTENSIONS:
                 message = 'Uploaded file type must be one of ' + ', '.join(c.ALLOWED_STAGE_PLOT_EXTENSIONS)
             else:
-                with open(band.stage_plot.stage_plot_fpath, 'wb') as f:
+                with open(band_stage_plot.stage_plot_fpath, 'wb') as f:
                     shutil.copyfileobj(plot.file, f)
+                band.stage_plot = band_stage_plot
+                session.add(band)
+                session.add(band_stage_plot)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Stage directions uploaded')
 
         return {
@@ -97,35 +102,44 @@ class Root:
             'message': message
         }
 
-    def panel(self, session, message='', **params):
-        band = session.band(params, checkgroups=['panel_tech_needs'])
+    def panel(self, session, id, message='', **params):
+        band = session.band(id)
+        band_panel = session.band_panel(params, checkgroups=['panel_tech_needs'])
         if cherrypy.request.method == 'POST':
-            if not band.panel.wants_panel:
-                band.panel.wants_panel = 0
-                band.panel.panel_name = band.panel.panel_length = band.panel.panel_desc = band.panel.panel_tech_needs = ''
-            elif not band.panel.panel_name:
+            if not band_panel.wants_panel:
+                band_panel.wants_panel = 0
+                band_panel.panel_name = band_panel.panel_length = band_panel.panel_desc = band_panel.panel_tech_needs = ''
+            elif not band_panel.panel_name:
                 message = 'Panel Name is a required field'
-            elif not band.panel.panel_length:
+            elif not band_panel.panel_length:
                 message = 'Panel Length is a required field'
-            elif not band.panel.panel_desc:
+            elif not band_panel.panel_desc:
                 message = 'Panel Description is a required field'
 
             if not message:
+                band.panel = band_panel
+                session.add(band)
+                session.add(band_panel)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Panel preferences updated')
 
         return {
             'band': band,
+            'band_panel': band_panel,  # This is currently necessary to prevent custom tags from breaking
             'message': message
         }
 
-    def rock_island(self, session, message='', coverage=False, warning=False, **params):
-        band.merch = session.band.merch(params)
+    def rock_island(self, session, id, message='', coverage=False, warning=False, **params):
+        band = session.band(id)
+        band_merch = session.band_merch(params)
         if cherrypy.request.method == 'POST':
-            if not band.merch.merch:
+            if not band_merch.merch:
                 message = 'You need to tell us whether and how you want to sell merchandise'
-            elif band.merch.merch == c.OWN_TABLE and not all([coverage, warning]):
+            elif band_merch.merch == c.OWN_TABLE and not all([coverage, warning]):
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
             else:
+                band.merch = band_merch
+                session.add(band)
+                session.add(band_merch)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your merchandise preferences have been saved')
 
         return {
@@ -133,16 +147,20 @@ class Root:
             'message': message
         }
 
-    def charity(self, session, message='', **params):
-        band.charity = session.charity.band(params)
+    def charity(self, session, id, message='', **params):
+        band = session.band(id)
+        band_charity = session.band_charity(params)
         if cherrypy.request.method == 'POST':
-            if not band.charity.charity:
+            if not band_charity.charity:
                 message = 'You need to tell is whether you are donating anything'
-            elif band.charity.charity == c.DONATING and not band.charity.charity_donation:
+            elif band_charity.charity == c.DONATING and not band_charity.charity_donation:
                 message = 'You need to tell us what you intend to donate'
             else:
-                if band.charity.charity == c.NOT_DONATING:
-                    band.charity.charity_donation = ''
+                if band_charity.charity == c.NOT_DONATING:
+                    band_charity.charity_donation = ''
+                band.charity = band_charity
+                session.add(band)
+                session.add(band_charity)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your charity decisions have been saved')
 
         return {

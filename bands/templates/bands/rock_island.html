@@ -24,7 +24,7 @@ sales and signings.
     <input type="hidden" name="id" value="{{ band.id }}" />
     <select name="merch">
         <option value="">Tell us how you'd like to sell your merch</option>
-        {% options c.BAND_MERCH_OPTS band.merch %}
+        {% options c.BAND_MERCH_OPTS band.merch.merch %}
     </select>
     <br/> <br/>
     <div id="coverage" style="display:none">

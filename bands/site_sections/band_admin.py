@@ -54,8 +54,8 @@ class Root:
         ])
         for band in session.query(Band).all():
             out.writerow([
-                band.group.name, band.email,
-                band.payment, band.vehicles, band.estimated_loadin_minutes, band.estimated_performance_minutes,
+                band.group.name, band.info.email,
+                band.payment, band.info.vehicles, band.info.estimated_loadin_minutes, band.info.estimated_performance_minutes,
                 band.info.poc_phone, band.info.performer_count, band.info.bringing_vehicle, band.info.vehicle_info, band.info.arrival_time,
                 band.bio.bio, band.bio.bio_website, band.bio.bio_facebook, band.bio.bio_twitter, band.bio.bio_other_social_media, band.bio.bio_pic_url,
                 band.panel.wants_panel, band.panel.panel_name, band.panel.panel_length, band.panel.panel_desc, ' / '.join(band.panel.panel_tech_needs_labels),

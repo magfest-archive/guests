@@ -18,23 +18,19 @@ class Event:
 class Band(MagModel):
     group_id = Column(UUID, ForeignKey('group.id'))
     event_id = Column(UUID, ForeignKey('event.id'), nullable=True)
-    info = relationship('BandInfo', backref='band', uselist=False)
-    bio = relationship('BandBio', backref='band', uselist=False)
-    taxes = relationship('BandTaxes', backref='band', uselist=False)
-    stage_plot = relationship('BandStagePlot', backref='band', uselist=False)
-    panel = relationship('BandPanel', backref='band', uselist=False)
-    merch = relationship('BandMerch', backref='band', uselist=False)
-    charity = relationship('BandCharity', backref='band', uselist=False)
+    info = relationship('BandInfo', backref=backref('band', load_on_pending=True), uselist=False)
+    bio = relationship('BandBio', backref=backref('band', load_on_pending=True), uselist=False)
+    taxes = relationship('BandTaxes', backref=backref('band', load_on_pending=True), uselist=False)
+    stage_plot = relationship('BandStagePlot', backref=backref('band', load_on_pending=True), uselist=False)
+    panel = relationship('BandPanel', backref=backref('band', load_on_pending=True), uselist=False)
+    merch = relationship('BandMerch', backref=backref('band', load_on_pending=True), uselist=False)
+    charity = relationship('BandCharity', backref=backref('band', load_on_pending=True), uselist=False)
 
     payment = Column(Integer, default=0, admin_only=True)
 
     @property
     def all_badges_claimed(self):
         return not any(a.is_unassigned for a in self.group.attendees)
-
-    @property
-    def estimated_performer_count(self):
-        return len([a for a in self.group.attendees if a.badge_type == c.GUEST_BADGE]) or 0
 
 
 class BandInfo(MagModel):
@@ -51,6 +47,10 @@ class BandInfo(MagModel):
     @property
     def email(self):
         return self.group.email
+
+    @property
+    def estimated_performer_count(self):
+        return len([a for a in self.band.group.attendees if a.badge_type == c.GUEST_BADGE]) or 0
 
     @property
     def performance_minutes(self):
