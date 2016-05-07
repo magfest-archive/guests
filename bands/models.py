@@ -27,10 +27,25 @@ class Band(MagModel):
     charity = relationship('BandCharity', backref=backref('band', load_on_pending=True), uselist=False)
 
     payment = Column(Integer, default=0, admin_only=True)
+    vehicles = Column(Integer, default=1, admin_only=True)
+    estimated_loadin_minutes = Column(Integer, default=60, admin_only=True)
+    estimated_performance_minutes = Column(Integer, default=60, admin_only=True)
 
     @property
     def all_badges_claimed(self):
         return not any(a.is_unassigned for a in self.group.attendees)
+
+    @property
+    def estimated_performer_count(self):
+        return len([a for a in self.group.attendees if a.badge_type == c.GUEST_BADGE]) or 0
+
+    @property
+    def performance_minutes(self):
+        return self.event.minutes if self.event_id else self.estimated_performance_minutes
+
+    @property
+    def email(self):
+        return self.group.email
 
 
 class BandInfo(MagModel):
@@ -40,21 +55,6 @@ class BandInfo(MagModel):
     bringing_vehicle = Column(Boolean, default=False)
     vehicle_info = Column(UnicodeText)
     arrival_time = Column(UnicodeText)
-    vehicles = Column(Integer, default=1, admin_only=True)
-    estimated_loadin_minutes = Column(Integer, default=60, admin_only=True)
-    estimated_performance_minutes = Column(Integer, default=60, admin_only=True)
-
-    @property
-    def email(self):
-        return self.group.email
-
-    @property
-    def estimated_performer_count(self):
-        return len([a for a in self.band.group.attendees if a.badge_type == c.GUEST_BADGE]) or 0
-
-    @property
-    def performance_minutes(self):
-        return self.event.minutes if self.event_id else self.estimated_performance_minutes
 
     @property
     def completed(self):
