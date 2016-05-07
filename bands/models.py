@@ -155,6 +155,7 @@ class BandPanel(MagModel):
     def completed(self):
         return self.wants_panel is not None
 
+
 class BandMerch(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'))
     merch = Column(Choice(c.BAND_MERCH_OPTS), nullable=True)
@@ -162,6 +163,7 @@ class BandMerch(MagModel):
     @property
     def completed(self):
         return self.merch is not None
+
 
 class BandCharity(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'))
