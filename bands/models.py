@@ -74,7 +74,7 @@ class BandBio(MagModel):
 
     @property
     def pic_url(self):
-        return '{}/bands/view_bio_pic?id={}'.format(c.URL_BASE, self.id) if self.uploaded_pic else ''
+        return '{}/bands/view_bio_pic?id={}'.format(c.URL_BASE, self.band.id) if self.uploaded_pic else ''
 
     @property
     def pic_fpath(self):
@@ -100,7 +100,7 @@ class BandTaxes(MagModel):
 
     @property
     def w9_url(self):
-        return '{}/bands/view_w9?id={}'.format(c.URL_BASE, self.id) if self.completed_w9 else ''
+        return '{}/bands/view_w9?id={}'.format(c.URL_BASE, self.band.id) if self.completed_w9 else ''
 
     @property
     def w9_fpath(self):
@@ -126,7 +126,7 @@ class BandStagePlot(MagModel):
 
     @property
     def fpath(self):
-        return os.path.join(bands_config['root'], 'uploaded_files', 'stage_plots', self.id)
+        return os.path.join(bands_config['root'], 'uploaded_files', 'stage_plots', self.band.id)
 
     @property
     def uploaded_file(self):
