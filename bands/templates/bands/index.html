@@ -17,13 +17,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 <table style="width:auto">
 
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.completed_panel %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25"> <img src="../static/images/{% if band.panel.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="panel?id={{ band.id }}">Want a Panel?</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_PANEL_DEADLINE|datetime }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if not band.completed_panel %}
+            {% if not band.panel.completed %}
                 Please use the above link to let us know whether or not you are interested in also running a panel.
                 We cannot accommodate all requests, but we definitely want to hear your ideas!
             {% elif band.wants_panel %}
@@ -37,7 +37,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     </tr>
 
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.completed_bio %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25"> <img src="../static/images/{% if band.bio.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="bio?id={{ band.id }}">Completed Band Bio</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_BIO_DEADLINE|datetime }}</td>
     </tr>
@@ -45,7 +45,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
         <td colspan="3">
             {% if band.bio.completed %}
                 You have already provided us with your bio information, but you can use the link above to update it.
-                {% if not band.uploaded_bio_pic %}
+                {% if not band.bio.uploaded_bio_pic %}
                     We encourage you to upload a bio pic for your band (which you have NOT yet done) so that we can
                     include it on our website.
                 {% endif %}
@@ -57,13 +57,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     </tr>
 
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.completed_agreement %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25"> <img src="../static/images/{% if band.info.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="agreement?id={{ band.id }}">Completed Band Agreement</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_AGREEMENT_DEADLINE|datetime }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.completed_agreement %}
+            {% if band.info.completed %}
                 You have already provided all the information required as part of your badge agreement.  You may edit your
                 information (e.g. if you've discovered that you'll be arriving on a different day or time) using the link above.
             {% else %}
@@ -75,13 +75,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if band.payment %}
         <tr>
-            <td width="25"> <img src="../static/images/{% if band.completed_w9 %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+            <td width="25"> <img src="../static/images/{% if band.taxes.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
             <td><b><a href="w9?id={{ band.id }}">Completed W9</a></b></td>
             <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime }}</td>
         </tr>
         <tr>
             <td colspan="3">
-                {% if band.completed_w9 %}
+                {% if band.taxes.completed %}
                     You have already uploaded your W9 form, but if you need to make changes you can upload a new one
                     using the link above.
                 {% else %}
@@ -93,13 +93,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     {% endif %}
 
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.merch %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25"> <img src="../static/images/{% if band.merch.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="rock_island?id={{ band.id }}">Selling Merchandise</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_MERCH_DEADLINE|datetime }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.merch %}
+            {% if band.merch.completed %}
                 You have already indicated your merchandise preferences, but you may update them using the link above.
             {% else %}
                 We need you to tell us whether you have any merchandise to sell, and whether you intend to participate in
@@ -110,13 +110,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     </tr>
 
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.charity %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25"> <img src="../static/images/{% if band.charity.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="charity?id={{ band.id }}">Donating to our Charity Auction</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_CHARITY_DEADLINE|datetime }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.charity %}
+            {% if band.charity.completed %}
                 You have already indicated your charity preferences, but you may update them using the link above.
             {% else %}
                 MAGFest runs a yearly charity auction, and we need you to tell us whether you can contribute any
@@ -149,7 +149,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     </tr>
 
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.uploaded_stage_plot %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25"> <img src="../static/images/{% if band.stage_plot.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
         <td><b><a href="stage_plot?id={{ band.id }}">Stage Layouts</a></b></td>
         <td><i>Deadline:</i> {{ c.STAGE_AGREEMENT_DEADLINE|datetime }}</td>
     </tr>

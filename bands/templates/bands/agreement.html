@@ -17,8 +17,8 @@ updated agreement is completed.
 
 <br/> <br/>
 
-Performer will be provided with <b>{{ band.performance_minutes }} minutes</b>, to include line checks and performance,
-with an additional <b>{{ band.estimated_loadin_minutes }} minutes</b> prior to performance for stage load-in and setup.
+Performer will be provided with <b>{{ band.info.performance_minutes }} minutes</b>, to include line checks and performance,
+with an additional <b>{{ band.info.estimated_loadin_minutes }} minutes</b> prior to performance for stage load-in and setup.
 
 <br/> <br/>
 
@@ -36,7 +36,7 @@ outside the concert hall for merchandise sales and signings.
 
 {% if band.payment %}
     <h3>Payment:</h3>
-    <b>${{ band.payment }}</b> by check on site after the show. 
+    <b>${{ band.payment }}</b> by check on site after the show.
 {% endif %}
 
 
@@ -45,7 +45,7 @@ One hotel room with 2 queen beds will be provided, with check in and out times p
 
 
 <h3>Parking:</h3>
-To be included with hotel room for <b>{{ band.vehicles }} vehicle{{ band.vehicles|pluralize }}</b>.
+To be included with hotel room for <b>{{ band.info.vehicles }} vehicle{{ band.info.vehicles|pluralize }}</b>.
 
 
 <h3>Badges:</h3>
@@ -61,7 +61,7 @@ Additional complimentary badges may be issued upon request.
     <div class="form-group">
         <label class="col-sm-2 control-label">Performer Count:</label>
         <div class="col-sm-6">
-            <input class="form-control" type="number" name="performer_count" value="{{ band.performer_count|default:band.estimated_performer_count }}" />
+            <input class="form-control" type="number" name="performer_count" value="{{ band.info.performer_count|default:band.estimated_performer_count }}" />
             <p class="help-text">
                 To ensure that we have assigned the correct number of badges to your band, please confirm the number
                 of performers in your band.
@@ -72,7 +72,7 @@ Additional complimentary badges may be issued upon request.
     <div class="form-group">
         <label class="col-sm-2 control-label">PoC Phone Number:</label>
         <div class="col-sm-6">
-            <input class="form-control" type="text" name="poc_phone" value="{{ band.poc_phone|default:band.group.leader.cellphone }}" />
+            <input class="form-control" type="text" name="poc_phone" value="{{ band.info.poc_phone|default:band.group.leader.cellphone }}" />
             <p class="help-text">
                 Please enter the cellphone number of your preferred Point of Contact for any issues we may need to
                 contact you about on-site.
@@ -83,7 +83,7 @@ Additional complimentary badges may be issued upon request.
     <div class="form-group">
         <label class="col-sm-2 control-label">Arrival Time:</label>
         <div class="col-sm-6">
-            <input class="form-control" type="text" name="arrival_time" value="{{ band.arrival_time }}" />
+            <input class="form-control" type="text" name="arrival_time" value="{{ band.info.arrival_time }}" />
             <p class="help-text">
                 Please be as specific as possible about the day and time you plan on arriving at {{ c.EVENT_NAME }}.
             </p>
@@ -93,14 +93,14 @@ Additional complimentary badges may be issued upon request.
     <div class="form-group">
         <label class="col-sm-2 control-label">Parking:</label>
         <div class="col-sm-6">
-            {% checkbox band.bringing_vehicle %} We will be parking at MAGFest.
+            {% checkbox band.info.bringing_vehicle %} We will be parking at MAGFest.
         </div>
     </div>
 
     <div id="vehicle-info" class="form-group" style="display:none">
         <label class="col-sm-2 control-label">Vehicle Information:</label>
         <div class="col-sm-6">
-            <input class="form-control" type="text" name="vehicle_info" value="{{ band.vehicle_info }}" />
+            <input class="form-control" type="text" name="vehicle_info" value="{{ band.info.vehicle_info }}" />
             <p class="help-text">
                 If you're parking on-site, then please tell us the vehicle info (car, truck, attached trailer, tour bus, monster truck), so we can ensure parking availability.
             </p>

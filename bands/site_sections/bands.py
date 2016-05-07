@@ -9,7 +9,8 @@ class Root:
             'band': session.band(id)
         }
 
-    def agreement(self, session, band_id, message='', **params):
+    def agreement(self, session, id, message='', **params):
+        band = session.band(id)
         band_info = session.band_info(params, restricted=True)
         if cherrypy.request.method == 'POST':
             if not band_info.performer_count:
@@ -18,41 +19,60 @@ class Root:
                 message = 'You must enter an on-site point-of-contact cellphone number'
             elif not band_info.arrival_time:
                 message = 'You must enter your expected arrival time'
-            elif band_info.bringing_vehicle and not band.info.vehicle_info:
+            elif band_info.bringing_vehicle and not band_info.vehicle_info:
                 message = 'You must provide your vehicle information'
             else:
-                raise HTTPRedirect('index?id={}&message={}', band_info.band_id, 'Your band information has been uploaded')
+                band.info = band_info
+                session.add(band)
+                session.add(band_info)
+                raise HTTPRedirect('index?id={}&message={}', band.id, 'Your band information has been uploaded')
 
         return {
-            'band': band_info,
+            'band': band,
             'message': message
         }
 
-    def bio(self, session, band_id, message='', bio_pic=None, **params):
+    def bio(self, session, id, message='', bio_pic=None, **params):
+        band = session.band(id)
         band_bio = session.band_bio(params, restricted=True)
-        band_bio.band_id = band_id
         if cherrypy.request.method == 'POST':
             if not band_bio.bio:
                 message = 'Please provide a brief bio for our website'
 
+            if not message and bio_pic.filename:
+                band_bio.bio_pic_filename = bio_pic.filename
+                band_bio.bio_pic_content_type = bio_pic.content_type.value
+                if band_bio.bio_pic_extension not in c.ALLOWED_BIO_PIC_EXTENSIONS:
+                    message = 'Bio pic must be one of ' + ', '.join(c.ALLOWED_BIO_PIC_EXTENSIONS)
+                else:
+                    with open(band_bio.bio_pic_fpath, 'wb') as f:
+                        shutil.copyfileobj(bio_pic.file, f)
+
             if not message:
-                raise HTTPRedirect('index?id={}&message={}', band_bio.band_id, 'Your bio information has been updated')
+                band.bio = band_bio
+                session.add(band)
+                session.add(band_bio)
+                raise HTTPRedirect('index?id={}&message={}', band.id, 'Your bio information has been updated')
 
         return {
-            'band': band_bio,
+            'band': band,
             'message': message
         }
 
-    def w9(self, session, id, message='', w9=None):
+    def w9(self, session, id, message='', w9=None, **params):
         band = session.band(id)
+        band_taxes = session.band_taxes(params, restricted=True)
         if cherrypy.request.method == 'POST':
-            band.taxes.w9_filename = w9.filename
-            band.taxes.w9_content_type = w9.content_type.value
-            if band.taxes.w9_extension not in c.ALLOWED_W9_EXTENSIONS:
+            band_taxes.w9_filename = w9.filename
+            band_taxes.w9_content_type = w9.content_type.value
+            if band_taxes.w9_extension not in c.ALLOWED_W9_EXTENSIONS:
                 message = 'Uploaded file type must be one of ' + ', '.join(c.ALLOWED_W9_EXTENSIONS)
             else:
-                with open(band.taxes.w9_fpath, 'wb') as f:
+                with open(band_taxes.w9_fpath, 'wb') as f:
                     shutil.copyfileobj(w9.file, f)
+                band.taxes = band_taxes
+                session.add(band)
+                session.add(band_taxes)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'W9 uploaded')
 
         return {

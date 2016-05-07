@@ -10,6 +10,7 @@ a filled out copy of this form below:
 
 <form method="post" action="w9" enctype="multipart/form-data">
 <input type="hidden" name="id" value="{{ band.id }}" />
+    {% csrf_token %}
 <input type="file" name="w9" />
 <input type="submit" value="Upload Completed Form" />
 </form>
