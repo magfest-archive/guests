@@ -33,14 +33,14 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
     <div class="form-group panel-info">
         <label class="col-sm-2 control-label">Panel Name:</label>
         <div class="col-sm-6">
-            <input type="text" class="form-control" name="panel_name" value="{{ band.panel.panel_name }}" />
+            <input type="text" class="form-control" name="name" value="{{ band.panel.name }}" />
         </div>
     </div>
 
     <div class="form-group panel-info">
         <label class="col-sm-2 control-label">Panel Length:</label>
         <div class="col-sm-6">
-            <input type="text" class="form-control" name="panel_length" value="{{ band.panel.panel_length }}" />
+            <input type="text" class="form-control" name="length" value="{{ band.panel.length }}" />
             <p class="help-text">
                 An hour is typical, including time for Q&A.
             </p>
@@ -50,14 +50,14 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
     <div class="form-group panel-info">
         <label class="col-sm-2 control-label">Panel Description:</label>
         <div class="col-sm-6">
-            <textarea class="form-control" rows="3" name="panel_desc">{{ band.panel.panel_desc }}</textarea>
+            <textarea class="form-control" rows="3" name="desc">{{ band.panel.desc }}</textarea>
         </div>
     </div>
 
     <div class="form-group panel-info">
         <label class="col-sm-2 control-label">Tech Needs:</label>
         <div class="col-sm-6">
-            {% checkgroup band_panel.panel_tech_needs %}
+            {% checkgroup band_panel.tech_needs %}
         </div>
     </div>
 

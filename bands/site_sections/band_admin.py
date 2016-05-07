@@ -57,9 +57,9 @@ class Root:
                 band.group.name, band.info.email,
                 band.payment, band.info.vehicles, band.info.estimated_loadin_minutes, band.info.estimated_performance_minutes,
                 band.info.poc_phone, band.info.performer_count, band.info.bringing_vehicle, band.info.vehicle_info, band.info.arrival_time,
-                band.bio.bio, band.bio.bio_website, band.bio.bio_facebook, band.bio.bio_twitter, band.bio.bio_other_social_media, band.bio.bio_pic_url,
-                band.panel.wants_panel, band.panel.panel_name, band.panel.panel_length, band.panel.panel_desc, ' / '.join(band.panel.panel_tech_needs_labels),
-                band.taxes.w9_url, band.stage_plot.stage_plot_url,
+                band.bio.desc, band.bio.website, band.bio.facebook, band.bio.twitter, band.bio.other_social_media, band.bio.pic_url,
+                band.panel.wants_panel, band.panel.name, band.panel.length, band.panel.desc, ' / '.join(band.panel.panel_tech_needs_labels),
+                band.taxes.w9_url, band.stage_plot.url,
                 band.merch.merch_label if band.merch else '',
-                band.charity.charity_label if band.charity else '', band.charity.charity_donation
+                band.charity.charity_label if band.charity else '', band.charity.desc
             ])

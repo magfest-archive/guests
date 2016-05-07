@@ -22,9 +22,9 @@ sales and signings.
 <form method="post" action="rock_island">
     {% csrf_token %}
     <input type="hidden" name="id" value="{{ band.id }}" />
-    <select name="merch">
+    <select name="selling_merch">
         <option value="">Tell us how you'd like to sell your merch</option>
-        {% options c.BAND_MERCH_OPTS band.merch.merch %}
+        {% options c.BAND_MERCH_OPTS band.merch.selling_merch %}
     </select>
     <br/> <br/>
     <div id="coverage" style="display:none">
@@ -40,14 +40,14 @@ sales and signings.
 
 <script>
     var checkCoverage = function () {
-        var dedicated = $.val('merch') === {{ c.OWN_TABLE }};
+        var dedicated = $.val('selling_merch') === {{ c.OWN_TABLE }};
         var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');
         setVisible('#coverage', dedicated);
         $('#submit').prop('disabled', dedicated && !allChecked);
     };
     $(function () {
         checkCoverage();
-        $.field('merch').on('change', checkCoverage);
+        $.field('selling_merch').on('change', checkCoverage);
         $.field('warning').on('click', checkCoverage);
         $.field('coverage').on('click', checkCoverage);
     });

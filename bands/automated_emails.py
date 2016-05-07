@@ -24,10 +24,10 @@ BandEmail('{EVENT_NAME} W9 reminder', 'band_w9_reminder.txt',
           lambda b: b.payment and not b.taxes.completed and days_before(3, c.BAND_W9_DEADLINE))
 
 BandEmail('Last chance to sign up for selling merchandise at {EVENT_NAME}', 'band_merch_reminder.txt',
-          lambda b: not b.merch.merch and days_before(3, c.BAND_MERCH_DEADLINE))
+          lambda b: not b.merch.completed and days_before(3, c.BAND_MERCH_DEADLINE))
 
 BandEmail('{EVENT_NAME} charity auction reminder', 'band_charity_reminder.txt',
-          lambda b: not b.charity.charity and days_before(3, c.BAND_CHARITY_DEADLINE))
+          lambda b: not b.charity.completed and days_before(3, c.BAND_CHARITY_DEADLINE))
 
 BandEmail('{EVENT_NAME} stage plot reminder', 'band_stage_plot_reminder.txt',
-          lambda b: not b.stage_plot.uploaded_stage_plot and days_before(3, c.STAGE_AGREEMENT_DEADLINE))
+          lambda b: not b.stage_plot.uploaded_file and days_before(3, c.STAGE_AGREEMENT_DEADLINE))

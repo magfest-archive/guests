@@ -16,34 +16,34 @@
     {% csrf_token %}
     <input type="hidden" name="id" value="{{ band.id }}" />
 
-    {% if band.panel.panel_name %}
+    {% if band.panel.name %}
     <div class="row">
         <label class="col-sm-2 control-label">Panel Name:</label>
         <div class="col-sm-6">
-            {{ band.panel.panel_name }}
+            {{ band.panel.name }}
         </div>
     </div>
     {% endif %}
 
-    {% if band.panel.panel_length %}
+    {% if band.panel.length %}
     <div class="row">
         <label class="col-sm-2 control-label">Panel Length:</label>
         <div class="col-sm-6">
-            {{ band.panel.panel_length }}
+            {{ band.panel.length }}
         </div>
     </div>
     {% endif %}
 
-    {% if band.panel.panel_desc %}
+    {% if band.panel.desc %}
     <div class="row">
         <label class="col-sm-2 control-label">Panel Description:</label>
         <div class="col-sm-6">
-            {{ band.panel.panel_desc|linebreaksbr }}
+            {{ band.panel.desc|linebreaksbr }}
         </div>
     </div>
     {% endif %}
 
-    {% if band.panel.panel_tech_needs %}
+    {% if band.panel.tech_needs %}
     <div class="row">
         <label class="col-sm-2 control-label">Panel Tech Needs:</label>
         <div class="col-sm-6">
@@ -52,20 +52,20 @@
     </div>
     {% endif %}
 
-    {% if band.bio.bio %}
+    {% if band.bio.desc %}
     <div class="row">
         <label class="col-sm-2 control-label">Bio:</label>
         <div class="col-sm-6">
-            {{ band.bio.bio|linebreaksbr }}
+            {{ band.bio.desc|linebreaksbr }}
         </div>
     </div>
     {% endif %}
 
-    {% if band.bio.uploaded_bio_pic %}
+    {% if band.bio.uploaded_pic %}
     <div class="row">
         <label class="col-sm-2 control-label">Bio Pic:</label>
         <div class="col-sm-6">
-            <a href="{{ band.bio.bio_pic_url }}">Click here to view the band's uploaded picture</a>
+            <a href="{{ band.bio.pic_url }}">Click here to view the band's uploaded picture</a>
         </div>
     </div>
     {% endif %}
@@ -155,16 +155,16 @@
     </div>
     {% endif %}
 
-    {% if band.stage_plot.uploaded_stage_plot %}
+    {% if band.stage_plot.uploaded_file %}
     <div class="row">
         <label class="col-sm-2 control-label">Stage Plot:</label>
         <div class="col-sm-6">
-            <a href="{{ band.stage_plot.stage_plot_url }}">Click here to view the band's stage plot</a>
+            <a href="{{ band.stage_plot.url }}">Click here to view the band's stage plot</a>
         </div>
     </div>
     {% endif %}
 
-    {% if band.merch.merch %}
+    {% if band.merch.selling_merch %}
     <div class="row">
         <label class="col-sm-2 control-label">Merchandise:</label>
         <div class="col-sm-6">
@@ -173,7 +173,7 @@
     </div>
     {% endif %}
 
-    {% if band.charity.charity %}
+    {% if band.charity.donating %}
     <div class="row">
         <label class="col-sm-2 control-label">Charity:</label>
         <div class="col-sm-6">
@@ -182,11 +182,11 @@
     </div>
     {% endif %}
 
-    {% if band.charity.charity_donation %}
+    {% if band.charity.desc %}
     <div class="row">
         <label class="col-sm-2 control-label">Donation:</label>
         <div class="col-sm-6">
-            {{ band.charity.charity_donation }}
+            {{ band.charity.desc }}
         </div>
     </div>
     {% endif %}

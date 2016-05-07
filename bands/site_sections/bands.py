@@ -37,16 +37,16 @@ class Root:
         band = session.band(id)
         band_bio = session.band_bio(params, restricted=True)
         if cherrypy.request.method == 'POST':
-            if not band_bio.bio:
+            if not band_bio.desc:
                 message = 'Please provide a brief bio for our website'
 
             if not message and bio_pic.filename:
-                band_bio.bio_pic_filename = bio_pic.filename
-                band_bio.bio_pic_content_type = bio_pic.content_type.value
-                if band_bio.bio_pic_extension not in c.ALLOWED_BIO_PIC_EXTENSIONS:
+                band_bio.pic_filename = bio_pic.filename
+                band_bio.pic_content_type = bio_pic.content_type.value
+                if band_bio.pic_extension not in c.ALLOWED_BIO_PIC_EXTENSIONS:
                     message = 'Bio pic must be one of ' + ', '.join(c.ALLOWED_BIO_PIC_EXTENSIONS)
                 else:
-                    with open(band_bio.bio_pic_fpath, 'wb') as f:
+                    with open(band_bio.pic_fpath, 'wb') as f:
                         shutil.copyfileobj(bio_pic.file, f)
 
             if not message:
@@ -85,12 +85,12 @@ class Root:
         band = session.band(id)
         band_stage_plot = session.band_stage_plot(params, restricted=True)
         if cherrypy.request.method == 'POST':
-            band_stage_plot.stage_plot_filename = plot.filename
-            band_stage_plot.stage_plot_content_type = plot.content_type.value
+            band_stage_plot.filename = plot.filename
+            band_stage_plot.content_type = plot.content_type.value
             if band_stage_plot.stage_plot_extension not in c.ALLOWED_STAGE_PLOT_EXTENSIONS:
                 message = 'Uploaded file type must be one of ' + ', '.join(c.ALLOWED_STAGE_PLOT_EXTENSIONS)
             else:
-                with open(band_stage_plot.stage_plot_fpath, 'wb') as f:
+                with open(band_stage_plot.fpath, 'wb') as f:
                     shutil.copyfileobj(plot.file, f)
                 band.stage_plot = band_stage_plot
                 session.add(band)
@@ -104,16 +104,16 @@ class Root:
 
     def panel(self, session, id, message='', **params):
         band = session.band(id)
-        band_panel = session.band_panel(params, checkgroups=['panel_tech_needs'])
+        band_panel = session.band_panel(params, checkgroups=['tech_needs'])
         if cherrypy.request.method == 'POST':
             if not band_panel.wants_panel:
                 band_panel.wants_panel = 0
-                band_panel.panel_name = band_panel.panel_length = band_panel.panel_desc = band_panel.panel_tech_needs = ''
-            elif not band_panel.panel_name:
+                band_panel.name = band_panel.length = band_panel.desc = band_panel.tech_needs = ''
+            elif not band_panel.name:
                 message = 'Panel Name is a required field'
-            elif not band_panel.panel_length:
+            elif not band_panel.length:
                 message = 'Panel Length is a required field'
-            elif not band_panel.panel_desc:
+            elif not band_panel.desc:
                 message = 'Panel Description is a required field'
 
             if not message:
@@ -132,9 +132,9 @@ class Root:
         band = session.band(id)
         band_merch = session.band_merch(params)
         if cherrypy.request.method == 'POST':
-            if not band_merch.merch:
+            if not band_merch.selling_merch:
                 message = 'You need to tell us whether and how you want to sell merchandise'
-            elif band_merch.merch == c.OWN_TABLE and not all([coverage, warning]):
+            elif band_merch.selling_merch == c.OWN_TABLE and not all([coverage, warning]):
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
             else:
                 band.merch = band_merch
@@ -151,13 +151,13 @@ class Root:
         band = session.band(id)
         band_charity = session.band_charity(params)
         if cherrypy.request.method == 'POST':
-            if not band_charity.charity:
+            if not band_charity.donating:
                 message = 'You need to tell is whether you are donating anything'
-            elif band_charity.charity == c.DONATING and not band_charity.charity_donation:
+            elif band_charity.donating == c.DONATING and not band_charity.desc:
                 message = 'You need to tell us what you intend to donate'
             else:
-                if band_charity.charity == c.NOT_DONATING:
-                    band_charity.charity_donation = ''
+                if band_charity.donating == c.NOT_DONATING:
+                    band_charity.desc = ''
                 band.charity = band_charity
                 session.add(band)
                 session.add(band_charity)
@@ -170,7 +170,7 @@ class Root:
 
     def view_bio_pic(self, session, id):
         band = session.band(id)
-        return serve_file(band.bio.bio_pic_fpath, name=band.bio.bio_pic_filename, content_type=band.bio.bio_pic_content_type)
+        return serve_file(band.bio.pic_fpath, name=band.bio.pic_filename, content_type=band.bio.pic_content_type)
 
     def view_w9(self, session, id):
         band = session.band(id)
@@ -178,4 +178,4 @@ class Root:
 
     def view_stage_plot(self, session, id):
         band = session.band(id)
-        return serve_file(band.stage_plot.stage_plot_fpath, name=band.stage_plot.stage_plot_filename, content_type=band.stage_plot.stage_plot_content_type)
+        return serve_file(band.stage_plot.fpath, name=band.stage_plot.filename, content_type=band.stage_plot.content_type)

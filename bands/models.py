@@ -63,34 +63,34 @@ class BandInfo(MagModel):
 
 class BandBio(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'))
-    bio = Column(UnicodeText)
+    desc = Column(UnicodeText)
     website = Column(UnicodeText)
     facebook = Column(UnicodeText)
     twitter = Column(UnicodeText)
     other_social_media = Column(UnicodeText)
 
-    bio_pic_filename = Column(UnicodeText)
-    bio_pic_content_type = Column(UnicodeText)
+    pic_filename = Column(UnicodeText)
+    pic_content_type = Column(UnicodeText)
 
     @property
-    def bio_pic_url(self):
-        return '{}/bands/view_bio_pic?id={}'.format(c.URL_BASE, self.id) if self.uploaded_bio_pic else ''
+    def pic_url(self):
+        return '{}/bands/view_bio_pic?id={}'.format(c.URL_BASE, self.id) if self.uploaded_pic else ''
 
     @property
-    def bio_pic_fpath(self):
+    def pic_fpath(self):
         return os.path.join(bands_config['root'], 'uploaded_files', 'bio_pics', self.id)
 
     @property
-    def uploaded_bio_pic(self):
-        return os.path.exists(self.bio_pic_fpath)
+    def uploaded_pic(self):
+        return os.path.exists(self.pic_fpath)
 
     @property
-    def bio_pic_extension(self):
-        return extension(self.bio_pic_filename)
+    def pic_extension(self):
+        return extension(self.pic_filename)
 
     @property
     def completed(self):
-        return self.bio
+        return self.desc
 
 
 class BandTaxes(MagModel):
@@ -117,28 +117,28 @@ class BandTaxes(MagModel):
 
 class BandStagePlot(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'))
-    stage_plot_filename = Column(UnicodeText)
-    stage_plot_content_type = Column(UnicodeText)
+    filename = Column(UnicodeText)
+    content_type = Column(UnicodeText)
 
     @property
-    def stage_plot_url(self):
-        return '{}/bands/view_stage_plot?id={}'.format(c.URL_BASE, self.id) if self.uploaded_stage_plot else ''
+    def url(self):
+        return '{}/bands/view_stage_plot?id={}'.format(c.URL_BASE, self.id) if self.uploaded_file else ''
 
     @property
-    def stage_plot_fpath(self):
+    def fpath(self):
         return os.path.join(bands_config['root'], 'uploaded_files', 'stage_plots', self.id)
 
     @property
-    def uploaded_stage_plot(self):
-        return os.path.exists(self.stage_plot_fpath)
+    def uploaded_file(self):
+        return os.path.exists(self.fpath)
 
     @property
     def stage_plot_extension(self):
-        return extension(self.stage_plot_filename)
+        return extension(self.filename)
 
     @property
     def completed(self):
-        return self.uploaded_stage_plot
+        return self.uploaded_file
 
 
 class BandPanel(MagModel):
@@ -146,10 +146,10 @@ class BandPanel(MagModel):
     # This needs to be a nullable integer rather than a nullable boolean to prevent SQLAlchemy from setting a False value
     # when it's instantiated and saved without this field being set.  An annoying but necessary workaround.
     wants_panel = Column(Integer, nullable=True, default=None)
-    panel_name = Column(UnicodeText)
-    panel_length = Column(UnicodeText)
-    panel_desc = Column(UnicodeText)
-    panel_tech_needs = Column(MultiChoice(c.TECH_NEED_OPTS))
+    name = Column(UnicodeText)
+    length = Column(UnicodeText)
+    desc = Column(UnicodeText)
+    tech_needs = Column(MultiChoice(c.TECH_NEED_OPTS))
 
     @property
     def completed(self):
@@ -158,18 +158,18 @@ class BandPanel(MagModel):
 
 class BandMerch(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'))
-    merch = Column(Choice(c.BAND_MERCH_OPTS), nullable=True)
+    selling_merch = Column(Choice(c.BAND_MERCH_OPTS), nullable=True)
 
     @property
     def completed(self):
-        return self.merch is not None
+        return self.selling_merch is not None
 
 
 class BandCharity(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'))
-    charity = Column(Choice(c.BAND_CHARITY_OPTS), nullable=True)
-    charity_donation = Column(UnicodeText)
+    donating = Column(Choice(c.BAND_CHARITY_OPTS), nullable=True)
+    desc = Column(UnicodeText)
 
     @property
     def completed(self):
-        return self.charity is not None
+        return self.donating is not None
