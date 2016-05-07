@@ -12,22 +12,22 @@ class BandEmail(AutomatedEmail):
 BandEmail('{EVENT_NAME} Performer Checklist', 'band_notification.txt')
 
 BandEmail('Last chance to apply for a {EVENT_NAME} Panel', 'band_panel_reminder.txt',
-          lambda b: not b.completed_panel and days_before(3, c.BAND_PANEL_DEADLINE))
+          lambda b: not b.panel.completed and days_before(3, c.BAND_PANEL_DEADLINE))
 
 BandEmail('Last Chance to accept your offer to perform at {EVENT_NAME}', 'band_agreement_reminder.txt',
-          lambda b: not b.completed_agreement and days_before(3, c.BAND_AGREEMENT_DEADLINE))
+          lambda b: not b.info.completed and days_before(3, c.BAND_AGREEMENT_DEADLINE))
 
 BandEmail('Last chance to include your bio info on the {EVENT_NAME} website', 'band_bio_reminder.txt',
-          lambda b: not b.completed_bio and days_before(3, c.BAND_BIO_DEADLINE))
+          lambda b: not b.bio.completed and days_before(3, c.BAND_BIO_DEADLINE))
 
 BandEmail('{EVENT_NAME} W9 reminder', 'band_w9_reminder.txt',
-          lambda b: b.payment and not b.completed_w9 and days_before(3, c.BAND_W9_DEADLINE))
+          lambda b: b.payment and not b.taxes.completed and days_before(3, c.BAND_W9_DEADLINE))
 
 BandEmail('Last chance to sign up for selling merchandise at {EVENT_NAME}', 'band_merch_reminder.txt',
-          lambda b: not b.merch and days_before(3, c.BAND_MERCH_DEADLINE))
+          lambda b: not b.merch.merch and days_before(3, c.BAND_MERCH_DEADLINE))
 
 BandEmail('{EVENT_NAME} charity auction reminder', 'band_charity_reminder.txt',
-          lambda b: not b.charity and days_before(3, c.BAND_CHARITY_DEADLINE))
+          lambda b: not b.charity.charity and days_before(3, c.BAND_CHARITY_DEADLINE))
 
 BandEmail('{EVENT_NAME} stage plot reminder', 'band_stage_plot_reminder.txt',
-          lambda b: not b.uploaded_stage_plot and days_before(3, c.STAGE_AGREEMENT_DEADLINE))
+          lambda b: not b.stage_plot.uploaded_stage_plot and days_before(3, c.STAGE_AGREEMENT_DEADLINE))
