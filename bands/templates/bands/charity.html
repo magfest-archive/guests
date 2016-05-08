@@ -16,7 +16,8 @@ Our auction starts on {{ c.AUCTION_START|datetime:"%A at %-H%p" }} and goes unti
 
 <form method="post" action="charity">
     {% csrf_token %}
-    <input type="hidden" name="id" value="{{ band.id }}" />
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band.charity.id|default:None }}" />
     <select name="donating">
         <option value="">Let us know whether you can donate anything</option>
         {% options c.BAND_CHARITY_OPTS band.charity.donating %}

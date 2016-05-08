@@ -49,7 +49,7 @@ class Band(MagModel):
 
 
 class BandInfo(MagModel):
-    band_id = Column(UUID, ForeignKey('band.id'))
+    band_id = Column(UUID, ForeignKey('band.id'), unique=True)
     poc_phone = Column(UnicodeText)
     performer_count = Column(Integer, default=0)
     bringing_vehicle = Column(Boolean, default=False)
@@ -62,7 +62,7 @@ class BandInfo(MagModel):
 
 
 class BandBio(MagModel):
-    band_id = Column(UUID, ForeignKey('band.id'))
+    band_id = Column(UUID, ForeignKey('band.id'), unique=True)
     desc = Column(UnicodeText)
     website = Column(UnicodeText)
     facebook = Column(UnicodeText)
@@ -94,7 +94,7 @@ class BandBio(MagModel):
 
 
 class BandTaxes(MagModel):
-    band_id = Column(UUID, ForeignKey('band.id'))
+    band_id = Column(UUID, ForeignKey('band.id'), unique=True)
     w9_filename = Column(UnicodeText)
     w9_content_type = Column(UnicodeText)
 
@@ -116,7 +116,7 @@ class BandTaxes(MagModel):
 
 
 class BandStagePlot(MagModel):
-    band_id = Column(UUID, ForeignKey('band.id'))
+    band_id = Column(UUID, ForeignKey('band.id'), unique=True)
     filename = Column(UnicodeText)
     content_type = Column(UnicodeText)
 
@@ -142,7 +142,7 @@ class BandStagePlot(MagModel):
 
 
 class BandPanel(MagModel):
-    band_id = Column(UUID, ForeignKey('band.id'))
+    band_id = Column(UUID, ForeignKey('band.id'), unique=True)
     # This needs to be a nullable integer rather than a nullable boolean to prevent SQLAlchemy from setting a False value
     # when it's instantiated and saved without this field being set.  An annoying but necessary workaround.
     wants_panel = Column(Integer, nullable=True, default=None)
@@ -153,23 +153,23 @@ class BandPanel(MagModel):
 
     @property
     def completed(self):
-        return self.wants_panel is not None
+        return self.wants_panel
 
 
 class BandMerch(MagModel):
-    band_id = Column(UUID, ForeignKey('band.id'))
+    band_id = Column(UUID, ForeignKey('band.id'), unique=True)
     selling_merch = Column(Choice(c.BAND_MERCH_OPTS), nullable=True)
 
     @property
     def completed(self):
-        return self.selling_merch is not None
+        return self.selling_merch
 
 
 class BandCharity(MagModel):
-    band_id = Column(UUID, ForeignKey('band.id'))
+    band_id = Column(UUID, ForeignKey('band.id'), unique=True)
     donating = Column(Choice(c.BAND_CHARITY_OPTS), nullable=True)
     desc = Column(UnicodeText)
 
     @property
     def completed(self):
-        return self.donating is not None
+        return self.donating

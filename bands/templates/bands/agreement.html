@@ -55,7 +55,8 @@ Additional complimentary badges may be issued upon request.
 
 <h3>Your Information:</h3>
 <form method="post" action="agreement" class="form-horizontal" role="form">
-    <input type="hidden" name="id" value="{{ band.id }}" />
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band.info.id|default:None }}" />
     {% csrf_token %}
 
     <div class="form-group">

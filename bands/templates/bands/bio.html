@@ -9,7 +9,8 @@ information, we'll include that as well.
 <br/> <br/>
 
 <form method="post" action="bio" class="form-horizontal" role="form" enctype="multipart/form-data">
-    <input type="hidden" name="id" value="{{ band.id }}" />
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band.bio.id|default:None }}" />
     {% csrf_token %}
 
     <div class="form-group">

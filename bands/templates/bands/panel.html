@@ -19,7 +19,8 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
 <br/> <br/>
 
 <form method="post" action="panel" class="form-horizontal" role="form">
-    <input type="hidden" name="id" value="{{ band.id }}" />
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band.panel.id|default:None }}" />
     {% csrf_token %}
 
     <div class="form-group">

@@ -9,8 +9,8 @@ class Root:
             'band': session.band(id)
         }
 
-    def agreement(self, session, id, message='', **params):
-        band = session.band(id)
+    def agreement(self, session, band_id, id=None, message='', **params):
+        band = session.band(band_id)
         band_info = session.band_info(params, restricted=True)
         if cherrypy.request.method == 'POST':
             if not band_info.performer_count:
@@ -33,8 +33,8 @@ class Root:
             'message': message
         }
 
-    def bio(self, session, id, message='', bio_pic=None, **params):
-        band = session.band(id)
+    def bio(self, session, band_id, message='', bio_pic=None, **params):
+        band = session.band(band_id)
         band_bio = session.band_bio(params, restricted=True)
         if cherrypy.request.method == 'POST':
             if not band_bio.desc:
@@ -60,8 +60,8 @@ class Root:
             'message': message
         }
 
-    def w9(self, session, id, message='', w9=None, **params):
-        band = session.band(id)
+    def w9(self, session, band_id, message='', w9=None, **params):
+        band = session.band(band_id)
         band_taxes = session.band_taxes(params, restricted=True)
         if cherrypy.request.method == 'POST':
             band_taxes.w9_filename = w9.filename
@@ -81,8 +81,8 @@ class Root:
             'message': message
         }
 
-    def stage_plot(self, session, id, message='', plot=None, **params):
-        band = session.band(id)
+    def stage_plot(self, session, band_id, message='', plot=None, **params):
+        band = session.band(band_id)
         band_stage_plot = session.band_stage_plot(params, restricted=True)
         if cherrypy.request.method == 'POST':
             band_stage_plot.filename = plot.filename
@@ -102,12 +102,11 @@ class Root:
             'message': message
         }
 
-    def panel(self, session, id, message='', **params):
-        band = session.band(id)
+    def panel(self, session, band_id, message='', **params):
+        band = session.band(band_id)
         band_panel = session.band_panel(params, checkgroups=['tech_needs'])
         if cherrypy.request.method == 'POST':
             if not band_panel.wants_panel:
-                band_panel.wants_panel = 0
                 band_panel.name = band_panel.length = band_panel.desc = band_panel.tech_needs = ''
             elif not band_panel.name:
                 message = 'Panel Name is a required field'
@@ -128,8 +127,8 @@ class Root:
             'message': message
         }
 
-    def rock_island(self, session, id, message='', coverage=False, warning=False, **params):
-        band = session.band(id)
+    def rock_island(self, session, band_id, message='', coverage=False, warning=False, **params):
+        band = session.band(band_id)
         band_merch = session.band_merch(params)
         if cherrypy.request.method == 'POST':
             if not band_merch.selling_merch:
@@ -147,8 +146,8 @@ class Root:
             'message': message
         }
 
-    def charity(self, session, id, message='', **params):
-        band = session.band(id)
+    def charity(self, session, band_id, message='', **params):
+        band = session.band(band_id)
         band_charity = session.band_charity(params)
         if cherrypy.request.method == 'POST':
             if not band_charity.donating:

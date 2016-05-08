@@ -9,10 +9,11 @@ a filled out copy of this form below:
 <br/> <br/>
 
 <form method="post" action="w9" enctype="multipart/form-data">
-<input type="hidden" name="id" value="{{ band.id }}" />
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band.taxes.id|default:None }}" />
     {% csrf_token %}
-<input type="file" name="w9" />
-<input type="submit" value="Upload Completed Form" />
+    <input type="file" name="w9" />
+    <input type="submit" value="Upload Completed Form" />
 </form>
 
 {% endblock %}
