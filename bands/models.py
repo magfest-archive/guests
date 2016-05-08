@@ -143,9 +143,7 @@ class BandStagePlot(MagModel):
 
 class BandPanel(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'), unique=True)
-    # This needs to be a nullable integer rather than a nullable boolean to prevent SQLAlchemy from setting a False value
-    # when it's instantiated and saved without this field being set.  An annoying but necessary workaround.
-    wants_panel = Column(Integer, nullable=True, default=None)
+    wants_panel = Column(Choice(c.BAND_PANEL_OPTS), nullable=True)
     name = Column(UnicodeText)
     length = Column(UnicodeText)
     desc = Column(UnicodeText)

@@ -3,7 +3,7 @@
 
 <script>
     var showOrHidePanel = function () {
-        setVisible('.panel-info', $.field('wants_panel').prop('checked'));
+        setVisible('.panel-info', $.val('wants_panel') === {{ c.PANEL }});
     };
     $(function () {
         showOrHidePanel();
@@ -26,8 +26,10 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
     <div class="form-group">
         <label class="col-sm-2 control-label">Want a Panel?</label>
         <div class="col-sm-6" style="padding-top:7px">
-            <input type="checkbox" name="wants_panel" value="1" {% if band.panel.wants_panel %}checked{% endif %} />
-            I am interested in presenting a panel.
+            <select name="wants_panel">
+                <option value="">Do you want a panel?</option>
+                {% options c.BAND_PANEL_OPTS band.panel.wants_panel %}
+            </select>
         </div>
     </div>
 

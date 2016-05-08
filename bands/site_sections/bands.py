@@ -107,6 +107,8 @@ class Root:
         band_panel = session.band_panel(params, checkgroups=['tech_needs'])
         if cherrypy.request.method == 'POST':
             if not band_panel.wants_panel:
+                message = 'You need to tell us whether you want to present a panel'
+            elif band_panel.wants_panel == c.NO_PANEL:
                 band_panel.name = band_panel.length = band_panel.desc = band_panel.tech_needs = ''
             elif not band_panel.name:
                 message = 'Panel Name is a required field'
