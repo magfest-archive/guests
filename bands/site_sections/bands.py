@@ -23,13 +23,12 @@ class Root:
                 message = 'You must provide your vehicle information'
             else:
                 band.info = band_info
-                session.add(band)
-                session.add(band_info)
+                session.merge(band_info)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your band information has been uploaded')
 
         return {
             'band': band,
-            'band_info': band_info,  # This is currently necessary to prevent custom tags from breaking
+            'band_info': band.info or band_info,
             'message': message
         }
 
@@ -51,12 +50,12 @@ class Root:
 
             if not message:
                 band.bio = band_bio
-                session.add(band)
-                session.add(band_bio)
+                session.merge(band_bio)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your bio information has been updated')
 
         return {
             'band': band,
+            'band_bio': band.bio or band_bio,
             'message': message
         }
 
@@ -72,12 +71,12 @@ class Root:
                 with open(band_taxes.w9_fpath, 'wb') as f:
                     shutil.copyfileobj(w9.file, f)
                 band.taxes = band_taxes
-                session.add(band)
-                session.add(band_taxes)
+                session.merge(band_taxes)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'W9 uploaded')
 
         return {
             'band': band,
+            'band_taxes': band.taxes or band_taxes,
             'message': message
         }
 
@@ -93,12 +92,12 @@ class Root:
                 with open(band_stage_plot.fpath, 'wb') as f:
                     shutil.copyfileobj(plot.file, f)
                 band.stage_plot = band_stage_plot
-                session.add(band)
-                session.add(band_stage_plot)
+                session.merge(band_stage_plot)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Stage directions uploaded')
 
         return {
             'band': band,
+            'band_stage_plot': band.stage_plot or band_stage_plot,
             'message': message
         }
 
@@ -119,13 +118,12 @@ class Root:
 
             if not message:
                 band.panel = band_panel
-                session.add(band)
-                session.add(band_panel)
+                session.merge(band_panel)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Panel preferences updated')
 
         return {
             'band': band,
-            'band_panel': band_panel,  # This is currently necessary to prevent custom tags from breaking
+            'band_panel': band.panel or band_panel,
             'message': message
         }
 
@@ -139,12 +137,12 @@ class Root:
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
             else:
                 band.merch = band_merch
-                session.add(band)
-                session.add(band_merch)
+                session.merge(band_merch)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your merchandise preferences have been saved')
 
         return {
             'band': band,
+            'band_merch': band.merch or band_merch,
             'message': message
         }
 
@@ -160,12 +158,12 @@ class Root:
                 if band_charity.donating == c.NOT_DONATING:
                     band_charity.desc = ''
                 band.charity = band_charity
-                session.add(band)
-                session.add(band_charity)
+                session.merge(band_charity)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your charity decisions have been saved')
 
         return {
             'band': band,
+            'band_charity': band.charity or band_charity,
             'message': message
         }
 

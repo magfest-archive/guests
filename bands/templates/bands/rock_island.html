@@ -22,10 +22,10 @@ sales and signings.
 <form method="post" action="rock_island">
     {% csrf_token %}
     <input type="hidden" name="band_id" value="{{ band.id }}" />
-    <input type="hidden" name="id" value="{{ band.merch.id|default:None }}" />
+    <input type="hidden" name="id" value="{{ band_merch.db_id }}" />
     <select name="selling_merch">
         <option value="">Tell us how you'd like to sell your merch</option>
-        {% options c.BAND_MERCH_OPTS band.merch.selling_merch %}
+        {% options c.BAND_MERCH_OPTS band_merch.selling_merch %}
     </select>
     <br/> <br/>
     <div id="coverage" style="display:none">

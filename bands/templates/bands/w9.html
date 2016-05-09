@@ -10,7 +10,7 @@ a filled out copy of this form below:
 
 <form method="post" action="w9" enctype="multipart/form-data">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
-    <input type="hidden" name="id" value="{{ band.taxes.id|default:None }}" />
+    <input type="hidden" name="id" value="{{ band_taxes.db_id }}" />
     {% csrf_token %}
     <input type="file" name="w9" />
     <input type="submit" value="Upload Completed Form" />

@@ -10,41 +10,41 @@ information, we'll include that as well.
 
 <form method="post" action="bio" class="form-horizontal" role="form" enctype="multipart/form-data">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
-    <input type="hidden" name="id" value="{{ band.bio.id|default:None }}" />
+    <input type="hidden" name="id" value="{{ band_bio.db_id }}" />
     {% csrf_token %}
 
     <div class="form-group">
         <label class="col-sm-2 control-label">Short Bio:</label>
         <div class="col-sm-6">
-            <textarea class="form-control" name="desc">{{ band.bio.desc }}</textarea>
+            <textarea class="form-control" name="desc">{{ band_bio.desc }}</textarea>
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label optional-field">Website:</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="website" value="{{ band.bio.website }}" />
+            <input type=text" class="form-control" name="website" value="{{ band_bio.website }}" />
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label optional-field">Facebook:</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="facebook" value="{{ band.bio.facebook }}" />
+            <input type=text" class="form-control" name="facebook" value="{{ band_bio.facebook }}" />
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label optional-field">Twitter:</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="twitter" value="{{ band.bio.twitter }}" />
+            <input type=text" class="form-control" name="twitter" value="{{ band_bio.twitter }}" />
         </div>
     </div>
 
     <div class="form-group">
         <label class="col-sm-2 control-label optional-field">Other Social Media:</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="other_social_media" value="{{ band.bio.other_social_media }}" />
+            <input type=text" class="form-control" name="other_social_media" value="{{ band_bio.other_social_media }}" />
         </div>
     </div>
 
