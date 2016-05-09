@@ -47,6 +47,18 @@ class Band(MagModel):
     def email(self):
         return self.group.email
 
+    def completed(self, model):
+        """
+        This is a safe way to check if a step has been completed for a particular band. It checks for a custom
+        'completed' property for the step; if that doesn't exist, it will attempt to return an ID of the step.
+
+        :param model: This should match one of the relationship columns in the Band class, e.g., 'bio' or 'stage_plot'
+        :return: Returns either the 'completed' property of the model, the model's ID for that band, or None.
+        """
+
+        subclass = getattr(self, model)
+        return getattr(subclass, 'completed', getattr(subclass, 'id')) if subclass else None
+
 
 class BandInfo(MagModel):
     band_id = Column(UUID, ForeignKey('band.id'), unique=True)
