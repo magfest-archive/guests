@@ -16,15 +16,16 @@ Our auction starts on {{ c.AUCTION_START|datetime:"%A at %-H%p" }} and goes unti
 
 <form method="post" action="charity">
     {% csrf_token %}
-    <input type="hidden" name="id" value="{{ band.id }}" />
-    <select name="charity">
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band_charity.db_id }}" />
+    <select name="donating">
         <option value="">Let us know whether you can donate anything</option>
-        {% options c.BAND_CHARITY_OPTS band.charity %}
+        {% options c.BAND_CHARITY_OPTS band_charity.donating %}
     </select>
     <br/> <br/>
-    <div id="donating" style="display:none">
+    <div id="donating_yes" style="display:none">
          Please let us know what you've got.  Thanks for helping us help kids! <br/>
-         <textarea name="charity_donation" rows="3" cols="60">{{ band.charity_donation }}</textarea>
+         <textarea name="desc" rows="3" cols="60">{{ band_charity.desc }}</textarea>
          <br/> <br/>
     </div>
     <input id="submit" type="submit" value="Save Donation Preference" />
@@ -32,11 +33,11 @@ Our auction starts on {{ c.AUCTION_START|datetime:"%A at %-H%p" }} and goes unti
 
 <script>
     var showOrHideDonation = function () {
-        setVisible('#donating', $.val('charity') === {{ c.DONATING }});
+        setVisible('#donating_yes', $.val('donating') === {{ c.DONATING }});
     };
     $(function () {
         showOrHideDonation();
-        $.field('charity').on('change', showOrHideDonation);
+        $.field('donating').on('change', showOrHideDonation);
     });
 </script>
 
