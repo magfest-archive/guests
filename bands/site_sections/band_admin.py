@@ -32,7 +32,6 @@ class Root:
             raise HTTPRedirect('index?message={}{}', band.group.name, ' data uploaded')
 
         events = session.query(Event).filter_by(location=c.CONCERTS).order_by(Event.start_time).all()
-
         return {
             'band': band,
             'message': message,
