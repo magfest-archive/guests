@@ -23,7 +23,7 @@ class Root:
                 message = 'You must provide your vehicle information'
             else:
                 band.info = band_info
-                session.merge(band_info)
+                session.add(band_info)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your band information has been uploaded')
 
         return {
@@ -50,7 +50,7 @@ class Root:
 
             if not message:
                 band.bio = band_bio
-                session.merge(band_bio)
+                session.add(band_bio)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your bio information has been updated')
 
         return {
@@ -71,7 +71,7 @@ class Root:
                 with open(band_taxes.w9_fpath, 'wb') as f:
                     shutil.copyfileobj(w9.file, f)
                 band.taxes = band_taxes
-                session.merge(band_taxes)
+                session.add(band_taxes)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'W9 uploaded')
 
         return {
@@ -92,7 +92,7 @@ class Root:
                 with open(band_stage_plot.fpath, 'wb') as f:
                     shutil.copyfileobj(plot.file, f)
                 band.stage_plot = band_stage_plot
-                session.merge(band_stage_plot)
+                session.add(band_stage_plot)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Stage directions uploaded')
 
         return {
@@ -118,7 +118,7 @@ class Root:
 
             if not message:
                 band.panel = band_panel
-                session.merge(band_panel)
+                session.add(band_panel)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Panel preferences updated')
 
         return {
@@ -137,7 +137,7 @@ class Root:
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
             else:
                 band.merch = band_merch
-                session.merge(band_merch)
+                session.add(band_merch)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your merchandise preferences have been saved')
 
         return {
@@ -158,7 +158,7 @@ class Root:
                 if band_charity.donating == c.NOT_DONATING:
                     band_charity.desc = ''
                 band.charity = band_charity
-                session.merge(band_charity)
+                session.add(band_charity)
                 raise HTTPRedirect('index?id={}&message={}', band.id, 'Your charity decisions have been saved')
 
         return {
