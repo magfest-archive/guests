@@ -56,10 +56,10 @@ class Root:
             out.writerow([
                 band.group.name, band.email,
                 band.payment, band.vehicles, band.estimated_loadin_minutes, band.estimated_performance_minutes,
-                band.poc_phone, band.performer_count, band.bringing_vehicle, band.vehicle_info, band.arrival_time,
-                band.bio, band.website, band.facebook, band.twitter, band.other_social_media, band.bio_pic_url,
-                band.wants_panel, band.panel_name, band.panel_length, band.panel_desc, ' / '.join(band.panel_tech_needs_labels),
-                band.w9_url, band.stage_plot_url,
-                band.merch_label if band.merch else '',
-                band.charity_label if band.charity else '', band.charity_donation
+                getattr(band.info, 'poc_phone', ''), getattr(band.info, 'performer_count', ''), getattr(band.info, 'bringing_vehicle', ''), getattr(band.info, 'vehicle_info', ''), getattr(band.info, 'arrival_time', ''),
+                getattr(band.bio, 'desc', ''), getattr(band.bio, 'website', ''), getattr(band.bio, 'facebook', ''), getattr(band.bio, 'twitter', ''), getattr(band.bio, 'other_social_media', ''), getattr(band.bio, 'pic_url', ''),
+                getattr(band.panel, 'wants_panel', ''), getattr(band.panel, 'name', ''), getattr(band.panel, 'length', ''), getattr(band.panel, 'desc', ''), ' / '.join(getattr(band.panel, 'panel_tech_needs_labels', '')),
+                getattr(band.taxes, 'w9_url', ''), getattr(band.stage_plot, 'url', ''),
+                getattr(band.merch, 'selling_merch_label', ''),
+                getattr(band.charity, 'donating_label', ''), getattr(band.charity, 'desc', '')
             ])
