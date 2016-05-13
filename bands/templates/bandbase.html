@@ -1,27 +1,27 @@
 {% extends "preregistration/preregbase.html" %}
-{% block title %}Band Information{% endblock %}
+
+{% block title %}
+    Band Information
+{% endblock title %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="../static/theme/stockstyle.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+
+{% endblock additional_styles %}
+
+{% block header %}
+    <header role="banner">
+        <h1>
+            <img src="../static/theme/magstock.png" alt="MAGStock">
+        </h1>
+    </header>
+{% endblock header %}
+
 {% block content %}
 
-<style type="text/css">
-    .panel.panel-default {
-        padding-bottom: 15px;
-    }
-    table { max-width: 100%; }
-    table td, table th { padding: 5px; }
-    table td ul { margin: 0px; }
-    .return-link {
-        display: block;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-    .game-display {
-        font-family: Courier;
-        padding-top: 7px;
-    }
-</style>
-<div class="masthead"></div>
-<div class="panel panel-default" style="padding-left:15px">
-    {% block body %}{% endblock %}
-</div>
+<div class="panel panel-default">
+    {% block body %}{% endblock body %}
+</div><!-- /panel -->
 
-{% endblock %}
+{% endblock content %}
