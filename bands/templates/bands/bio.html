@@ -3,62 +3,72 @@
 
 <h3>Bio Info for {{ band.group.name }}</h3>
 
-Please provide a short bio for our website.  Everything else is optional, but if you provide a picture and any social media
-information, we'll include that as well.
+<p>
+    Please provide a short bio for our website.  Everything else is optional, but if you provide a picture and any social media
+    information, we'll include that as well.
+</p>
 
-<br/> <br/>
 
 <form method="post" action="bio" class="form-horizontal" role="form" enctype="multipart/form-data">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_bio.db_id }}" />
     {% csrf_token %}
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Short Bio:</label>
-        <div class="col-sm-6">
-            <textarea class="form-control" name="desc">{{ band_bio.desc }}</textarea>
-        </div>
-    </div>
+    <ul>
+    <li class="input-field">
+        <label for="desc" class="control-label">
+            Short Bio
+        </label>
+        <textarea id="desc" name="desc">{{ band_bio.desc }}</textarea>
+    </li>
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Website:</label>
-        <div class="col-sm-6">
-            <input type=text" class="form-control" name="website" value="{{ band_bio.website }}" />
-        </div>
-    </div>
+    <li class="input-field">
+        <label for="website" class="control-label optional-field">
+            Website
+        </label>
+        <input type="text" class="form-control" id="website" name="website" value="{{ band_bio.website }}" />
+    </li>
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Facebook:</label>
-        <div class="col-sm-6">
-            <input type=text" class="form-control" name="facebook" value="{{ band_bio.facebook }}" />
-        </div>
-    </div>
+    <li class="input-field">
+        <label for="facebook" class="control-label optional-field">
+            Facebook
+        </label>
+        <input type="text" class="form-control" id="facebook" name="facebook" value="{{ band_bio.facebook }}" />
+    </li>
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Twitter:</label>
-        <div class="col-sm-6">
-            <input type=text" class="form-control" name="twitter" value="{{ band_bio.twitter }}" />
-        </div>
-    </div>
+    <li class="input-field">
+        <label for="twitter" class="control-label optional-field">
+            Twitter
+        </label>
+        <input type="text" class="form-control" id="twitter" name="twitter" value="{{ band_bio.twitter }}" />
+    </li>
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Other Social Media:</label>
-        <div class="col-sm-6">
-            <input type=text" class="form-control" name="other_social_media" value="{{ band_bio.other_social_media }}" />
-        </div>
-    </div>
+    <li class="input-field">
+        <label for="other_social_media" class="control-label optional-field">
+            Other Social Media
+        </label>
+        <input type="text" class="form-control" id="other_social_media" name="other_social_media" value="{{ band_bio.other_social_media }}" />
+    </li>
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Picture:</label>
-        <div class="col-sm-6">
+</ul>
+
+    <div class="file-field input-field">
+        <div class="btn blue darken-1 optional-field">
+            <span>
+                Picture
+            </span>
             <input type="file" name="bio_pic" />
         </div>
+        <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+
     </div>
 
-    <div class="form-group">
-        <div class="col-sm-6 col-sm-offset-2">
-            <button type="submit" class="btn btn-primary">Upload Bio Info</button>
-        </div>
+    <div class="input-field">
+        <button type="submit" class="btn blue darken-1">
+            Upload Bio Info
+        </button>
     </div>
 </form>
 

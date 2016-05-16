@@ -3,17 +3,29 @@
 
 <h2>Completed W9 for {{ band.group.name }}</h2>
 
-You can find a blank W9 form <a target="_blank" href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">here</a>.  Please upload
-a filled out copy of this form below:
-
-<br/> <br/>
+<p>
+    You can find a blank W9 form <a target="_blank" href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">here</a>.
+        <br>
+    Please upload a filled out copy of this form below:
+</p>
 
 <form method="post" action="w9" enctype="multipart/form-data">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_taxes.db_id }}" />
     {% csrf_token %}
-    <input type="file" name="w9" />
-    <input type="submit" value="Upload Completed Form" />
+
+    <div class="file-field input-field">
+      <div class="btn blue darken-1">
+        <span>W-9</span>
+        <input type="file" name="w9" />
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+    <div class="input-field">
+        <input type="submit" class="btn blue darken-1" value="Upload Completed Form" />
+    </div>
 </form>
 
 {% endblock %}

@@ -1,19 +1,31 @@
 {% extends "bandbase.html" %}
 {% block body %}
 
-<h2>Stage Layout for {{ band.group.name }}</h2>
+<h2>
+    Stage Layout for {{ band.group.name }}
+</h2>
 
-Please upload your desired stage layouts.  This can be in the form of written directions, an image, PDF, or a zipfile
-containing a collection of files explaining what you need.
-
-<br/> <br/>
+<p>
+    Please upload your desired stage layouts.  This can be in the form of written directions, an image, PDF, or a zipfile
+    containing a collection of files explaining what you need.
+</p>
 
 <form method="post" action="stage_plot" enctype="multipart/form-data">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_stage_plot.db_id }}" />
     {% csrf_token %}
-    <input type="file" name="plot" />
-    <input type="submit" value="Upload Desired Stage Layouts" />
+    <div class="file-field input-field">
+      <div class="btn blue darken-1">
+        <span>Upload File</span>
+        <input type="file" name="plot" />
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
+      </div>
+    </div>
+    <div class="input-field">
+        <input type="submit" class="btn blue darken-1" value="Upload Desired Stage Layouts" />
+    </div>
 </form>
 
 {% endblock %}
