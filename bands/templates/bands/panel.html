@@ -28,52 +28,66 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
     <input type="hidden" name="id" value="{{ band_panel.db_id }}" />
     {% csrf_token %}
 
-    <div class="form-group">
-        <label class="col-sm-4 control-label">Want a Panel?</label>
-        <div class="col-sm-4" style="padding-top:7px">
-            <select name="wants_panel">
-                <option value="">Do you want a panel?</option>
-                {% options c.BAND_PANEL_OPTS band_panel.wants_panel %}
-            </select>
-        </div>
-    </div>
+<div class="input-field">
+    <select name="wants_panel" disabled selected>
+        <option value="">
+            Do you want a panel?
+        </option>
+        {% options c.BAND_PANEL_OPTS band_panel.wants_panel %}
+    </select>
+    <label>
+        Want a Panel?
+    </label>
+</div>
 
-    <div class="form-group panel-info">
-        <label class="col-sm-4 control-label">Panel Name:</label>
+<ul>
+    <li class="input-field panel-info">
+        <label class="col-sm-4 control-label">
+            Panel Name
+        </label>
         <div class="col-sm-4">
             <input type="text" class="form-control" name="name" value="{{ band_panel.name }}" />
         </div>
-    </div>
+    </li>
 
-    <div class="form-group panel-info">
-        <label class="col-sm-4 control-label">Panel Length:</label>
+    <li class="input-field panel-info">
+        <label class="col-sm-4 control-label">
+            Panel Length
+        </label>
         <div class="col-sm-4">
             <input type="text" class="form-control" name="length" value="{{ band_panel.length }}" />
             <p class="help-text">
                 An hour is typical, including time for Q&A.
             </p>
         </div>
-    </div>
+    </li>
 
-    <div class="form-group panel-info">
-        <label class="col-sm-4 control-label">Panel Description:</label>
+    <li class="input-field panel-info">
+        <label class="col-sm-4 control-label">
+            Panel Description
+        </label>
         <div class="col-sm-4">
             <textarea class="form-control" rows="3" name="desc">{{ band_panel.desc }}</textarea>
         </div>
-    </div>
+    </li>
 
-    <div class="form-group panel-info">
-        <label class="col-sm-4 control-label">Tech Needs:</label>
+    <li class="input-field panel-info">
+        <label class="col-sm-4 control-label">
+            Tech Needs
+        </label>
         <div class="col-sm-4">
             {% checkgroup band_panel.tech_needs %}
         </div>
-    </div>
+    </li>
 
-    <div class="form-group">
+    <li class="form-group">
         <div class="col-sm-4 col-sm-offset-4">
-            <button class="btn btn-primary">Submit Panel Preferences</button>
+            <button class="btn btn-primary">
+                Submit Panel Preferences
+            </button>
         </div>
-    </div>
+    </li>
+</ul>
 </form>
 
 {% endblock %}
