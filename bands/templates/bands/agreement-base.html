@@ -51,44 +51,60 @@
 
 {% block band_text_payment %}
 {% if band.payment %}
-<h3>
-    Payment
-</h3>
+    <h3>
+        Payment
+    </h3>
     <p>
         <strong>${{ band.payment }}</strong> by check on site after the show.
     </p>
-{% endif %}
+    {% endif %}
 {% endblock %}
 
-{% block band_text_hotel %}
-<h3>
-    Hotel
-</h3>
+{% block band_text_accommodations %}
+    <h3>
+        Accommodations
+    </h3>
     <p>
-        One hotel room with 2 queen beds will be provided, with check in and out times provided as part of our final agreement.
+        {% block band_text_accommodations_inner %}
+        One hotel room with 2 queen beds will be provided,
+        with check in and out times provided as part of our final agreement.
+        {% endblock %}
     </p>
 {% endblock %}
 
 {% block band_text_parking %}
-<h3>
-    Parking
-</h3>
+    <h3>
+        Parking
+    </h3>
     <p>
+        {% block band_text_parking_inner %}
         To be included with hotel room for <b>{{ band.vehicles }} vehicle{{ band.vehicles|pluralize }}</b>.
+        {% endblock %}
     </p>
 {% endblock %}
 
-{% block band_text_badges %}
-<h3>
-    Badges
-</h3>
+{% block band_text_admission %}
+    <h3>
+        Admission
+    </h3>
     <p>
+        {% block band_text_admission_inner %}
         Each performer will receive one badge, and one additional complementary badge for a guest.
         Additional complimentary badges may be issued upon request.
+        {% endblock %}
     </p>
 {% endblock %}
 
-{% block TODO_other_junk %}
+{% block band_text_agreement_confirm %}
+    <h3>
+        Agreement
+    </h3>
+    <p>
+        By submitting your band's information<span class="printhide"> below</span>, you agree to the above terms.
+    </p>
+{% endblock %}
+
+{% block band_information_form %}
 <h3>
     Your Information
 </h3>
@@ -105,8 +121,8 @@
         </label>
         <input id="performer_count" class="form-control" type="tel" name="performer_count" value="{{ band_info.performer_count|default:band.estimated_performer_count }}" />
             <span class="help-text">
-                To ensure that we have assigned the correct number of badges to your band, please confirm the number
-                of performers in your band.
+                To ensure that we have assigned the correct number of registrations for your band,
+                please confirm the number of performers in your band.
             </span>
     </li>
     <li class="input-field">
@@ -130,7 +146,7 @@
     </li>
     <li class="input-field">
         {% checkbox band_info.bringing_vehicle %}
-        <label for="bringing_vehicle" class="makematch">We will be parking at MAGFest</label>
+        <label for="bringing_vehicle" class="makematch">We will be parking at {{ c.EVENT_NAME }}</label>
     </li>
 ​
     <li id="vehicle-info" class="input-field" style="display:none">
@@ -138,12 +154,13 @@
             Vehicle Information</label>
         <input class="form-control" id="vehicle-info" type="text" name="vehicle_info" value="{{ band_info.vehicle_info }}" />
             <span class="help-text">
-                If you're parking on-site, then please tell us the vehicle info (car, truck, attached trailer, tour bus, monster truck), so we can ensure parking availability.
+                If you're parking on-site, then please tell us the vehicle info (car, truck, attached trailer,
+                tour bus, monster truck), so we can ensure parking availability.
             </span>
     </li>
     <li class="input-field">
         <button type="submit" class="btn waves-effect waves-light blue darken-1">
-            Upload Band Info
+            Save Band Info
         </button>
     </li>
 
@@ -159,6 +176,6 @@
         $.field('bringing_vehicle').on('click', showOrHideVehicleInfo);
     });
 </script>
-{% endblock TODO_other_junk %}
+{% endblock band_information_form %}
 
 {% endblock body %}
