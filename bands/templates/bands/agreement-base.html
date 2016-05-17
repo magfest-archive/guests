@@ -1,0 +1,164 @@
+{% extends "bandbase.html" %}
+
+{% block body %}
+{% block band_text_venue %}
+    <h2>
+    Band agreement for <strong>{{ band.group.name }}</strong> to perform at {{ c.EVENT_NAME_AND_YEAR }}!
+    </h2>
+    <p>
+        {{ c.EVENT_NAME_AND_YEAR }} will be held at <strong>{{ c.EVENT_VENUE }}: {{ c.EVENT_VENUE_ADDRESS }},</strong>
+        from <strong>{{ c.EPOCH|datetime:"%B %d" }} - {{ c.ESCHATON|datetime:"%d, %Y" }}.</strong>
+            <br>
+        Performers are encouraged to attend the full event and interact with staff, fellow performers, and attendees
+        in a relaxed environment.
+            <br>
+        If performers will not be attending the full event, we ask that they inform us in advance so we may better
+        allocate sleeping arrangements.
+    </p>
+{% endblock %}
+
+{% block band_text_performance %}
+    <h3>
+        Performance
+    </h3>
+    <p>
+        Performance time and date for {{ band.group.name }} to be determined, and will be provided prior to the event
+        as an update to this document.
+            <br>
+        Performer will be provided with <strong>{{ band.estimated_loadin_minutes }} minutes</strong>,
+        of set up and line-check, followed by <strong>{{ band.performance_minutes }} minutes</strong> for performance.
+            <br>
+        {% block band_text_timer %}
+        These time-frames will be enforced, via an on-stage timer, to ensure that performances occur in a timely fashion.
+        {% endblock band_text_timer %}
+    </p>
+{% endblock %}
+
+{% block band_text_merch %}
+    <h3>
+        Merch
+    </h3>
+    <p>
+        {% block band_text_merch_inner %}
+        Space will be provided in our marketplace area for merchandise sales; either at a dedicated table or at our
+        <b>Rock Island</b> sales area, where {{ c.EVENT_NAME }} staff will sell performer-provided merchandise throughout the festival.
+        It is recommended, but not required, for performers to use our Rock Island service in this area, as merchandise can be sold
+        more consistently, and for many more hours.  On the night of the performance, table space will also be provided immediately
+        outside the concert hall for merchandise sales and signings.
+        {% endblock band_text_merch_inner %}
+    </p>
+{% endblock %}
+
+{% block band_text_payment %}
+{% if band.payment %}
+<h3>
+    Payment
+</h3>
+    <p>
+        <strong>${{ band.payment }}</strong> by check on site after the show.
+    </p>
+{% endif %}
+{% endblock %}
+
+{% block band_text_hotel %}
+<h3>
+    Hotel
+</h3>
+    <p>
+        One hotel room with 2 queen beds will be provided, with check in and out times provided as part of our final agreement.
+    </p>
+{% endblock %}
+
+{% block band_text_parking %}
+<h3>
+    Parking
+</h3>
+    <p>
+        To be included with hotel room for <b>{{ band.vehicles }} vehicle{{ band.vehicles|pluralize }}</b>.
+    </p>
+{% endblock %}
+
+{% block band_text_badges %}
+<h3>
+    Badges
+</h3>
+    <p>
+        Each performer will receive one badge, and one additional complementary badge for a guest.
+        Additional complimentary badges may be issued upon request.
+    </p>
+{% endblock %}
+
+{% block TODO_other_junk %}
+<h3>
+    Your Information
+</h3>
+<form method="post" action="agreement" class="form-horizontal" role="form">
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band_info.db_id }}" />
+    {% csrf_token %}
+
+<ul>
+
+    <li class="input-field">
+        <label for="performer_count">
+            Performer Count
+        </label>
+        <input id="performer_count" class="form-control" type="tel" name="performer_count" value="{{ band_info.performer_count|default:band.estimated_performer_count }}" />
+            <span class="help-text">
+                To ensure that we have assigned the correct number of badges to your band, please confirm the number
+                of performers in your band.
+            </span>
+    </li>
+    <li class="input-field">
+        <label for="poc_phone">
+            PoC Phone Number
+        </label>
+        <input id="poc_phone" class="form-control" type="tel" name="poc_phone" value="{{ band_info.poc_phone|default:band.group.leader.cellphone }}" />
+            <span class="help-text">
+                Please enter the cellphone number of your preferred Point of Contact for any issues we may need to
+                contact you about on-site.
+            </span>
+    </li>
+    <li class="input-field">
+        <label for="arrival_time">
+            Arrival Time
+        </label>
+        <input id="arrival_time" class="form-control" type="text" name="arrival_time" value="{{ band_info.arrival_time }}" />
+            <span class="help-text">
+                Please be as specific as possible about the day and time you plan on arriving at {{ c.EVENT_NAME }}.
+            </span>
+    </li>
+    <li class="input-field">
+        {% checkbox band_info.bringing_vehicle %}
+        <label for="bringing_vehicle" class="makematch">We will be parking at MAGFest</label>
+    </li>
+​
+    <li id="vehicle-info" class="input-field" style="display:none">
+        <label for="vehicle-info">
+            Vehicle Information</label>
+        <input class="form-control" id="vehicle-info" type="text" name="vehicle_info" value="{{ band_info.vehicle_info }}" />
+            <span class="help-text">
+                If you're parking on-site, then please tell us the vehicle info (car, truck, attached trailer, tour bus, monster truck), so we can ensure parking availability.
+            </span>
+    </li>
+    <li class="input-field">
+        <button type="submit" class="btn waves-effect waves-light blue darken-1">
+            Upload Band Info
+        </button>
+    </li>
+
+</ul>
+</form>
+
+<script>
+    var showOrHideVehicleInfo = function () {
+        setVisible('#vehicle-info', $.field('bringing_vehicle').prop('checked'));
+    };
+    $(function () {
+        showOrHideVehicleInfo();
+        $.field('bringing_vehicle').on('click', showOrHideVehicleInfo);
+    });
+</script>
+{% endblock TODO_other_junk %}
+
+{% endblock body %}
