@@ -31,13 +31,11 @@ class Root:
                 band.event_id = event_id
             raise HTTPRedirect('index?message={}{}', band.group.name, ' data uploaded')
 
+        events = session.query(Event).filter_by(location=c.CONCERTS).order_by(Event.start_time).all()
         return {
             'band': band,
             'message': message,
-            'events': [
-                (event.id, event.name)
-                for event in session.query(Event).filter_by(location=c.CONCERTS).order_by(Event.start_time).all()
-            ]
+            'events': [(event.id, event.name) for event in events]
         }
 
     @csv_file
