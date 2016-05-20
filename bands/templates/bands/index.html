@@ -101,7 +101,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
     {% if c.BAND_MERCH_DEADLINE %}
     <tr>
         <td width="25"> <img src="../static/images/{% if band.merch.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
-        <td><b><a href="rock_island?band_id={{ band.id }}">Selling Merchandise</a></b></td>
+        <td><b><a href="merch?band_id={{ band.id }}">Selling Merchandise</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_MERCH_DEADLINE|datetime }}</td>
     </tr>
     <tr>
