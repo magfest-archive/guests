@@ -28,8 +28,8 @@ class Band(MagModel):
 
     payment = Column(Integer, default=0, admin_only=True)
     vehicles = Column(Integer, default=1, admin_only=True)
-    estimated_loadin_minutes = Column(Integer, default=60, admin_only=True)
-    estimated_performance_minutes = Column(Integer, default=60, admin_only=True)
+    estimated_loadin_minutes = Column(Integer, default=20, admin_only=True)
+    estimated_performance_minutes = Column(Integer, default=40, admin_only=True)
 
     @property
     def all_badges_claimed(self):
