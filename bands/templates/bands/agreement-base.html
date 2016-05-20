@@ -1,0 +1,186 @@
+{% extends "bandbase.html" %}
+
+{% block body %}
+{% block band_text_venue %}
+    <h2>
+    Band agreement for <strong>{{ band.group.name }}</strong> to perform at {{ c.EVENT_NAME_AND_YEAR }}!
+    </h2>
+    <p>
+        {{ c.EVENT_NAME_AND_YEAR }} will be held at <strong>{{ c.EVENT_VENUE }}: {{ c.EVENT_VENUE_ADDRESS }},</strong>
+        from <strong>{{ c.EPOCH|datetime:"%B %d" }} - {{ c.ESCHATON|datetime:"%d, %Y" }}.</strong>
+            <br>
+        Performers are encouraged to attend the full event and interact with staff, fellow performers, and attendees
+        in a relaxed environment.
+            <br>
+        If performers will not be attending the full event, we ask that they inform us in advance so we may better
+        allocate sleeping arrangements.
+    </p>
+{% endblock %}
+
+{% block band_text_performance %}
+    <h3>
+        Performance
+    </h3>
+    <p>
+        Performance time and date for {{ band.group.name }} to be determined, and will be provided prior to the event
+        as an update to this document.
+            <br>
+        Performer will be provided with <strong>{{ band.estimated_loadin_minutes }} minutes</strong>,
+        of set up and line-check, followed by <strong>{{ band.performance_minutes }} minutes</strong> for performance.
+            <br>
+        {% block band_text_timer %}
+        These time-frames will be enforced, via an on-stage timer, to ensure that performances occur in a timely fashion.
+        {% endblock band_text_timer %}
+    </p>
+{% endblock %}
+
+{% block band_text_merch %}
+    <h3>
+        Merch
+    </h3>
+    <p>
+        {% block band_text_merch_inner %}
+        Space will be provided in our marketplace area for merchandise sales; either at a dedicated table or at our
+        <b>Rock Island</b> sales area, where {{ c.EVENT_NAME }} staff will sell performer-provided merchandise throughout the festival.
+        It is recommended, but not required, for performers to use our Rock Island service in this area, as merchandise can be sold
+        more consistently, and for many more hours.  On the night of the performance, table space will also be provided immediately
+        outside the concert hall for merchandise sales and signings.
+        {% endblock band_text_merch_inner %}
+    </p>
+{% endblock %}
+
+{% block band_text_payment %}
+{% if band.payment %}
+    <h3>
+        Payment
+    </h3>
+    <p>
+        <strong>${{ band.payment }}</strong> by check on site after the show.
+    </p>
+    {% endif %}
+{% endblock %}
+
+{% block band_text_accommodations %}
+    <h3>
+        Accommodations
+    </h3>
+    <p>
+        {% block band_text_accommodations_inner %}
+        One hotel room with 2 queen beds will be provided,
+        with check in and out times provided as part of our final agreement.
+        {% endblock %}
+    </p>
+{% endblock %}
+
+{% block band_text_parking %}
+    <h3>
+        Parking
+    </h3>
+    <p>
+        {% block band_text_parking_inner %}
+        To be included with hotel room for <b>{{ band.vehicles }} vehicle{{ band.vehicles|pluralize }}</b>.
+        {% endblock %}
+    </p>
+{% endblock %}
+
+{% block band_text_admission %}
+    <h3>
+        Admission
+    </h3>
+    <p>
+        {% block band_text_admission_inner %}
+        Each performer will receive one badge, and one additional complementary badge for a guest.
+        Additional complimentary badges may be issued upon request.
+        {% endblock %}
+    </p>
+{% endblock %}
+
+{% block band_text_agreement_confirm %}
+    <h3>
+        Agreement
+    </h3>
+    <p>
+        By submitting your band's information<span class="printhide"> below</span>, you agree to the above terms.
+    </p>
+{% endblock %}
+
+{% block band_information_form %}
+<h3>
+    Your Information:
+</h3>
+<form method="post" action="agreement" class="form-horizontal" role="form">
+    <input type="hidden" name="band_id" value="{{ band.id }}" />
+    <input type="hidden" name="id" value="{{ band_info.db_id }}" />
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Performer Count:</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="number" name="performer_count" value="{{ band_info.performer_count|default:band.estimated_performer_count }}" />
+            <p class="help-text">
+                To ensure that we have assigned the correct number of badges to your band, please confirm the number
+                of performers in your band.
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">PoC Phone Number:</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="text" name="poc_phone" value="{{ band_info.poc_phone|default:band.group.leader.cellphone }}" />
+            <p class="help-text">
+                Please enter the cellphone number of your preferred Point of Contact for any issues we may need to
+                contact you about on-site.
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Arrival Time:</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="text" name="arrival_time" value="{{ band_info.arrival_time }}" />
+            <p class="help-text">
+                Please be as specific as possible about the day and time you plan on arriving at {{ c.EVENT_NAME }}.
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Parking:</label>
+        <div class="col-sm-6">
+            {% checkbox band_info.bringing_vehicle %} We will be parking at MAGFest.
+        </div>
+    </div>
+
+    <div id="vehicle-info" class="form-group" style="display:none">
+        <label class="col-sm-2 control-label">Vehicle Information:</label>
+        <div class="col-sm-6">
+            <input class="form-control" type="text" name="vehicle_info" value="{{ band_info.vehicle_info }}" />
+            <p class="help-text">
+                If you're parking on-site, then please tell us the vehicle info (car, truck, attached trailer, tour bus, monster truck), so we can ensure parking availability.
+            </p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-2">
+            <button type="submit" class="btn btn-primary">
+                Save Band Info
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    var showOrHideVehicleInfo = function () {
+        setVisible('#vehicle-info', $.field('bringing_vehicle').prop('checked'));
+    };
+    $(function () {
+        showOrHideVehicleInfo();
+        $.field('bringing_vehicle').on('click', showOrHideVehicleInfo);
+    });
+</script>
+
+{% endblock band_information_form %}
+
+{% endblock body %}
