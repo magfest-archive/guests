@@ -127,7 +127,7 @@ class Root:
             'message': message
         }
 
-    def rock_island(self, session, band_id, message='', coverage=False, warning=False, **params):
+    def merch(self, session, band_id, message='', coverage=False, warning=False, **params):
         band = session.band(band_id)
         band_merch = session.band_merch(params)
         if cherrypy.request.method == 'POST':

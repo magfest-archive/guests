@@ -19,7 +19,7 @@ sales and signings.
 
 <br/> <br/>
 
-<form method="post" action="rock_island">
+<form method="post" action="merch">
     {% csrf_token %}
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_merch.db_id }}" />
