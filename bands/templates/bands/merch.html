@@ -3,19 +3,30 @@
 
 <h3>Selling Merch</h3>
 
-Space will be provided in our marketplace area for merchandise sales; either at a dedicated table or at our “Rock Island”
-sales area, where MAGFest staff will sell performer-provided merchandise throughout the festival.
+<p>
+    Space will be provided in our marketplace area for merchandise sales{% if not c.ROCK_ISLAND %}.{% else %};
+    either at a dedicated table or at our “Rock Island” sales area, where {{ c.EVENT_NAME }} staff will sell performer-provided
+    merchandise throughout the festival.{% endif %}
+</p>
 
-<br/> <br/>
+{% if c.ROCK_ISLAND %}
+<p>
+    It is recommended, but not required, for performers to use our Rock Island service in this area, as merchandise can
+    be sold more consistently, and for many more hours.
+</p>
+{% endif %}
 
-It is recommended, but not required, for performers to use our Rock Island service in this area, as merchandise can be sold
-more consistently, and for many more hours.  If you elect to decline the use of Rock Island and sell your merchandise directly,
-we require that your table be staffed for at least <b>8 hours per day</b>.
+{% if c.REQUIRE_DEDICATED_BAND_TABLE_PRESENCE %}
+<p>
+    If you elect to{% if c.ROCK_ISLAND %} decline the use of Rock Island and{% endif %} sell your merchandise directly,
+    we require that your table be staffed for at least <b>8 hours per day</b>.
+</p>
+{% endif %}
 
-<br/> <br/>
-
-On the night of the performance, table space will also be provided immediately outside the concert hall for merchandise
-sales and signings.
+<p>
+    On the night of the performance, table space will also be provided immediately outside the concert area for
+    merchandise sales and signings.
+</p>
 
 <br/> <br/>
 
@@ -28,6 +39,7 @@ sales and signings.
         {% options c.BAND_MERCH_OPTS band_merch.selling_merch %}
     </select>
     <br/> <br/>
+    {% if c.REQUIRE_DEDICATED_BAND_TABLE_PRESENCE %}
     <div id="coverage" style="display:none">
         <input type="checkbox" name="coverage" value="yes" />
         I commit to staffing our table in the marketplace at least <b>8 hours per day</b>.
@@ -36,15 +48,19 @@ sales and signings.
         I acknowledge that failing to staff our table for <b>8 hours per day</b> will revoke the privilege of selling our merchandise from our own dedicated table in the future
         <br/> <br/>
     </div>
+    {% endif %}
     <input id="submit" type="submit" value="Save Merch Preference" />
 </form>
 
 <script>
     var checkCoverage = function () {
         var dedicated = $.val('selling_merch') === {{ c.OWN_TABLE }};
-        var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');
         setVisible('#coverage', dedicated);
+
+        {% if c.REQUIRE_DEDICATED_BAND_TABLE_PRESENCE %}
+        var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');
         $('#submit').prop('disabled', dedicated && !allChecked);
+        {% endif %}
     };
     $(function () {
         checkCoverage();

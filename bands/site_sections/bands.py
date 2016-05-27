@@ -133,7 +133,7 @@ class Root:
         if cherrypy.request.method == 'POST':
             if not band_merch.selling_merch:
                 message = 'You need to tell us whether and how you want to sell merchandise'
-            elif band_merch.selling_merch == c.OWN_TABLE and not all([coverage, warning]):
+            elif c.REQUIRE_DEDICATED_BAND_TABLE_PRESENCE and band_merch.selling_merch == c.OWN_TABLE and not all([coverage, warning]):
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
             else:
                 band.merch = band_merch
