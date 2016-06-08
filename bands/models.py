@@ -9,6 +9,7 @@ def extension(filename):
 class Group:
     band = relationship('Band', backref='group', uselist=False)
 
+
 @Session.model_mixin
 class Attendee:
     @property
