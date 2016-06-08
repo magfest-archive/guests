@@ -9,6 +9,12 @@ def extension(filename):
 class Group:
     band = relationship('Band', backref='group', uselist=False)
 
+@Session.model_mixin
+class Attendee:
+    @property
+    def auto_food_extra(self):
+        return self.group and self.group.band is not None
+
 
 @Session.model_mixin
 class Event:
