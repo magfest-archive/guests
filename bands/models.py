@@ -41,7 +41,7 @@ class Band(MagModel):
 
     @property
     def performance_minutes(self):
-        return self.event.minutes if self.event_id else self.estimated_performance_minutes
+        return self.estimated_performance_minutes
 
     @property
     def email(self):
