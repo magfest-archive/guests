@@ -13,8 +13,11 @@ class Group:
 @Session.model_mixin
 class Attendee:
     @property
-    def auto_food_extra(self):
-        return self.group and self.group.band is not None
+    def associated_band(self):
+        """
+        :return: The Band this attendee is part of (either as a performer or a +1 comp), or None if not
+        """
+        return self.group and self.group.band
 
 
 @Session.model_mixin
