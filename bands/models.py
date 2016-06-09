@@ -11,6 +11,16 @@ class Group:
 
 
 @Session.model_mixin
+class Attendee:
+    @property
+    def band(self):
+        """
+        :return: The Band this attendee is part of (either as a performer or a +1 comp), or None if not
+        """
+        return self.group and self.group.band
+
+
+@Session.model_mixin
 class Event:
     band = relationship('Band', backref='event')
 
