@@ -22,8 +22,14 @@
         Performance
     </h3>
     <p>
+        {% if not band.event or not band.event.start_time %}
         Performance time and date for {{ band.group.name }} to be determined, and will be provided prior to the event
         as an update to this document.
+        {% else %}
+        Performance time and date for {{ band.group.name }} will be
+        <strong>{{ band.event.start_time|datetime:"%A, %B %d at %I:%M %p (%Z)" }}</strong>.
+        Please arrive at the stage, with all band members ready to play and performance equipment present, at least 1 hour before this time.
+        {% endif %}
             <br><br>
         Performer will be provided with <strong>{{ band.estimated_loadin_minutes }} minutes</strong>
         for setup and line-check, followed by <strong>{{ band.performance_minutes }} minutes</strong> for performance.
