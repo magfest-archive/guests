@@ -11,6 +11,16 @@ class Group:
 
 
 @Session.model_mixin
+class Attendee:
+    @property
+    def band(self):
+        """
+        :return: The Band this attendee is part of (either as a performer or a +1 comp), or None if not
+        """
+        return self.group and self.group.band
+
+
+@Session.model_mixin
 class Event:
     band = relationship('Band', backref='event')
 
@@ -28,8 +38,8 @@ class Band(MagModel):
 
     payment = Column(Integer, default=0, admin_only=True)
     vehicles = Column(Integer, default=1, admin_only=True)
-    estimated_loadin_minutes = Column(Integer, default=60, admin_only=True)
-    estimated_performance_minutes = Column(Integer, default=60, admin_only=True)
+    estimated_loadin_minutes = Column(Integer, default=c.DEFAULT_LOADIN_MINUTES, admin_only=True)
+    estimated_performance_minutes = Column(Integer, default=c.DEFAULT_PERFORMANCE_MINUTES, admin_only=True)
 
     @property
     def all_badges_claimed(self):
@@ -41,7 +51,7 @@ class Band(MagModel):
 
     @property
     def performance_minutes(self):
-        return self.event.minutes if self.event_id else self.estimated_performance_minutes
+        return self.estimated_performance_minutes
 
     @property
     def email(self):
