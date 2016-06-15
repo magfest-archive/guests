@@ -122,7 +122,7 @@ class BandTaxes(MagModel):
 
     @property
     def w9_url(self):
-        return '{}/bands/view_w9?id={}'.format(c.URL_BASE, self.band.id) if self.completed_w9 else ''
+        return '../bands/view_w9?id={}'.format(self.band.id) if self.w9_filename else ''
 
     @property
     def w9_fpath(self):
