@@ -29,7 +29,7 @@
     </thead>
     <tbody>
     {% for group in groups %}
-        <tr id="{{ group.id }}" class="{{ group.band|yesno:"band,nonband" }}">
+        <tr id="{{ group.id }}" class="{{ group.band|yesno("band,nonband") }}">
             <td><a href="../groups/form?id={{ group.id }}">{{ group.name }}</a></td>
             <td class="band">
                 {% if group.band %}
@@ -38,14 +38,14 @@
                     <button onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
                 {% endif %}
             </td>
-            <td>{{ group.band.panel.completed|yesno:"Y," }}</td>
-            <td>{{ group.band.bio.completed|yesno:"Y," }}</td>
-            <td>{{ group.band.info.completed|yesno:"Y," }}</td>
+            <td>{{ group.band.panel.completed|yesno("Y,") }}</td>
+            <td>{{ group.band.bio.completed|yesno("Y,") }}</td>
+            <td>{{ group.band.info.completed|yesno("Y,") }}</td>
             <td>{% if group.band %}{% if group.band.taxes.completed or not group.band.payment %}Y{% endif %}{% endif %}</td>
-            <td>{{ group.band.merch.completed|yesno:"Y," }}</td>
-            <td>{{ group.band.charity.completed|yesno:"Y," }}</td>
-            <td>{{ group.band.all_badges_claimed|yesno:"Y," }}</td>
-            <td>{{ group.band.stage_plot.completed|yesno:"Y," }}</td>
+            <td>{{ group.band.merch.completed|yesno("Y,") }}</td>
+            <td>{{ group.band.charity.completed|yesno("Y,") }}</td>
+            <td>{{ group.band.all_badges_claimed|yesno("Y,") }}</td>
+            <td>{{ group.band.stage_plot.completed|yesno("Y,") }}</td>
         </tr>
     {% endfor %}
     </tbody>
