@@ -28,7 +28,7 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
         <div class="col-sm-6" style="padding-top:7px">
             <select name="wants_panel">
                 <option value="">Do you want a panel?</option>
-                {% options c.BAND_PANEL_OPTS band_panel.wants_panel %}
+                {{ options(c.BAND_PANEL_OPTS,band_panel.wants_panel) }}
             </select>
         </div>
     </div>
