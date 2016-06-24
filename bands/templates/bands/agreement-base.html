@@ -6,7 +6,7 @@
     Band agreement for <strong>{{ band.group.name }}</strong> to perform at {{ c.EVENT_NAME_AND_YEAR }}!
     </h2>
     <p>
-        {{ c.EVENT_NAME_AND_YEAR }} will be held on <strong>{{ c.EPOCH|datetime:"%B %d" }} - {{ c.ESCHATON|datetime:"%d, %Y" }}.</strong><br>
+        {{ c.EVENT_NAME_AND_YEAR }} will be held on <strong>{{ c.EPOCH|datetime("%B %d") }} - {{ c.ESCHATON|datetime("%d, %Y") }}.</strong><br>
         Venue Address: <strong>{{ c.EVENT_VENUE }}: {{ c.EVENT_VENUE_ADDRESS }}</strong>
             <br><br>
         Performers are encouraged to attend the full event and interact with staff, fellow performers, and attendees
@@ -27,7 +27,7 @@
         as an update to this document.
         {% else %}
         Performance time and date for {{ band.group.name }} will be
-        <strong>{{ band.event.start_time|datetime:"%A, %B %d at %I:%M %p (%Z)" }}</strong>.
+        <strong>{{ band.event.start_time|datetime("%A, %B %d at %I:%M %p (%Z)") }}</strong>.
         Please arrive at the stage, with all band members ready to play and performance equipment present, at least 1 hour before this time.
         {% endif %}
             <br><br>
