@@ -13,7 +13,7 @@
 
 <br/> <br/>
 <form class="form-horizontal" role="form" method="post" action="band_info">
-    {% csrf_token %}
+    {{ csrf_token() }}
     <input type="hidden" name="id" value="{{ band.id }}" />
 
     {% if band.panel.name %}

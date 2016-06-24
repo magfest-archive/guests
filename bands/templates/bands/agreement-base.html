@@ -117,7 +117,7 @@
 <form method="post" action="agreement" class="form-horizontal" role="form">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_info.db_id }}" />
-    {% csrf_token %}
+    {{ csrf_token() }}
 
     <div class="form-group">
         <label class="col-sm-2 control-label">Performer Count:</label>

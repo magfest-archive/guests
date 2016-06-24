@@ -21,7 +21,7 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
 <form method="post" action="panel" class="form-horizontal" role="form">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_panel.db_id }}" />
-    {% csrf_token %}
+    {{ csrf_token() }}
 
     <div class="form-group">
         <label class="col-sm-2 control-label">Want a Panel?</label>

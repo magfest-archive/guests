@@ -11,7 +11,7 @@ information, we'll include that as well.
 <form method="post" action="bio" class="form-horizontal" role="form" enctype="multipart/form-data">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_bio.db_id }}" />
-    {% csrf_token %}
+    {{ csrf_token() }}
 
     <div class="form-group">
         <label class="col-sm-2 control-label">Short Bio:</label>
