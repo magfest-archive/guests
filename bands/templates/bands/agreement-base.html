@@ -154,7 +154,7 @@
     <div class="form-group">
         <label class="col-sm-2 control-label">Parking:</label>
         <div class="col-sm-6">
-            {% checkbox band_info.bringing_vehicle %} We will be parking at {{ c.EVENT_NAME }}.
+            {{ macros.checkbox(band_info, 'bringing_vehicle') }} We will be parking at {{ c.EVENT_NAME }}.
         </div>
     </div>
 

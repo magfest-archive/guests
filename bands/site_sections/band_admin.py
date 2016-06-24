@@ -51,13 +51,19 @@ class Root:
             'Charity Answer', 'Charity Donation'
         ])
         for band in session.query(Band).all():
+            bio_url = getattr(band.bio, 'pic_url', '')
+            taxes_url = getattr(band.taxes, 'w9_url', '')
+            stageplot_url = getattr(band.stage_plot, 'url', '')
+            absolute_pic_url = build_uber_absolute_url(bio_url) if bio_url else ''
+            absolute_taxes_url = build_uber_absolute_url(taxes_url) if taxes_url else ''
+            absolute_stageplot_url = build_uber_absolute_url(stageplot_url) if stageplot_url else ''
             out.writerow([
                 band.group.name, band.email,
                 band.payment, band.vehicles, band.estimated_loadin_minutes, band.estimated_performance_minutes,
                 getattr(band.info, 'poc_phone', ''), getattr(band.info, 'performer_count', ''), getattr(band.info, 'bringing_vehicle', ''), getattr(band.info, 'vehicle_info', ''), getattr(band.info, 'arrival_time', ''),
-                getattr(band.bio, 'desc', ''), getattr(band.bio, 'website', ''), getattr(band.bio, 'facebook', ''), getattr(band.bio, 'twitter', ''), getattr(band.bio, 'other_social_media', ''), getattr(band.bio, 'pic_url', ''),
+                getattr(band.bio, 'desc', ''), getattr(band.bio, 'website', ''), getattr(band.bio, 'facebook', ''), getattr(band.bio, 'twitter', ''), getattr(band.bio, 'other_social_media', ''), absolute_pic_url,
                 getattr(band.panel, 'wants_panel', ''), getattr(band.panel, 'name', ''), getattr(band.panel, 'length', ''), getattr(band.panel, 'desc', ''), ' / '.join(getattr(band.panel, 'panel_tech_needs_labels', '')),
-                getattr(band.taxes, 'w9_url', ''), getattr(band.stage_plot, 'url', ''),
+                absolute_taxes_url, absolute_stageplot_url,
                 getattr(band.merch, 'selling_merch_label', ''),
                 getattr(band.charity, 'donating_label', ''), getattr(band.charity, 'desc', '')
             ])

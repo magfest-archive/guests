@@ -238,7 +238,7 @@
         <div class="col-sm-6">
             <select name="event_id" class="form-control">
                 <option value="">Pick an Event</option>
-                {% options events band.event_id %}
+                {{ options(events,band.event_id) }}
             </select>
             <p class="help-text">
                 If not set, the band agreement will say "date and time information coming soon"<br/>

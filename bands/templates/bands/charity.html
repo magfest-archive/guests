@@ -20,7 +20,7 @@ Our auction starts on {{ c.AUCTION_START|datetime:"%A at %-H%p" }} and goes unti
     <input type="hidden" name="id" value="{{ band_charity.db_id }}" />
     <select name="donating">
         <option value="">Let us know whether you can donate anything</option>
-        {% options c.BAND_CHARITY_OPTS band_charity.donating %}
+        {{ options(c.BAND_CHARITY_OPTS,band_charity.donating) }}
     </select>
     <br/> <br/>
     <div id="donating_yes" style="display:none">
