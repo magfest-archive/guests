@@ -18,7 +18,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_PANEL_DEADLINE %}
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.panel.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25">{{ macros.checklist_image(band.panel.completed) }}</td>
         <td><b><a href="panel?band_id={{ band.id }}">Want a Panel?</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_PANEL_DEADLINE|datetime }}</td>
     </tr>
@@ -40,7 +40,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_BIO_DEADLINE %}
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.bio.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25">{{ macros.checklist_image(band.bio.completed) }}</td>
         <td><b><a href="bio?band_id={{ band.id }}">Completed Band Bio</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_BIO_DEADLINE|datetime }}</td>
     </tr>
@@ -62,7 +62,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_AGREEMENT_DEADLINE %}
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.info.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25">{{ macros.checklist_image(band.info.completed) }}</td>
         <td><b><a href="agreement?band_id={{ band.id }}">Completed Band Agreement</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_AGREEMENT_DEADLINE|datetime }}</td>
     </tr>
@@ -81,7 +81,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if band.payment and c.BAND_W9_DEADLINE %}
         <tr>
-            <td width="25"> <img src="../static/images/{% if band.taxes.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+            <td width="25">{{ macros.checklist_image(band.taxes.completed) }}</td>
             <td><b><a href="w9?band_id={{ band.id }}">Completed W9</a></b></td>
             <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime }}</td>
         </tr>
@@ -100,7 +100,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_MERCH_DEADLINE %}
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.merch.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25">{{ macros.checklist_image(band.merch.completed) }}</td>
         <td><b><a href="merch?band_id={{ band.id }}">Selling Merchandise</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_MERCH_DEADLINE|datetime }}</td>
     </tr>
@@ -119,7 +119,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_CHARITY_DEADLINE %}
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.charity.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25">{{ macros.checklist_image(band.charity.completed) }}</td>
         <td><b><a href="charity?band_id={{ band.id }}">Donating to our Charity Auction</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_CHARITY_DEADLINE|datetime }}</td>
     </tr>
@@ -138,7 +138,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_BADGE_DEADLINE %}
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.all_badges_claimed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25">{{ macros.checklist_image(band.all_badges_claimed) }}</td>
         <td><b><a target="_blank" href="../preregistration/group_members?id={{ band.group.id }}">Assign Your Unclaimed Badges</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_BADGE_DEADLINE|datetime }}</td>
     </tr>
@@ -162,7 +162,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.STAGE_AGREEMENT_DEADLINE %}
     <tr>
-        <td width="25"> <img src="../static/images/{% if band.stage_plot.completed %}checkbox_checked.png{% else %}checkbox_unchecked.png{% endif %}" /> </td>
+        <td width="25">{{ macros.checklist_image(band.stage_plot.completed) }}</td>
         <td><b><a href="stage_plot?band_id={{ band.id }}">Stage Layouts</a></b></td>
         <td><i>Deadline:</i> {{ c.STAGE_AGREEMENT_DEADLINE|datetime }}</td>
     </tr>
