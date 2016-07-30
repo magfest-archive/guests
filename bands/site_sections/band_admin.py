@@ -24,6 +24,21 @@ class Root:
             'message': '{} has been marked as a band'.format(group.name)
         }
 
+    @ajax
+    def remove_as_band(self, session, group_id):
+        group = session.group(group_id)
+        if not group.leader:
+            return {'message': '{} does not have an assigned group leader'.format(group.name)}
+
+        if group.band:
+            group.band = None
+            session.commit()
+
+        return {
+            'id': group.id,
+            'message': '{} has been removed as a band'.format(group.name)
+        }
+
     def band_info(self, session, message='', event_id=None, **params):
         band = session.band(params)
         if cherrypy.request.method == 'POST':
