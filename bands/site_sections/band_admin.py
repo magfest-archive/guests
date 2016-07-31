@@ -27,8 +27,6 @@ class Root:
     @ajax
     def remove_as_band(self, session, group_id):
         group = session.group(group_id)
-        if not group.leader:
-            return {'message': '{} does not have an assigned group leader'.format(group.name)}
 
         if group.band:
             group.band = None
