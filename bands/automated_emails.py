@@ -14,22 +14,22 @@ class BandEmail(AutomatedEmail):
 BandEmail('{EVENT_NAME} Performer Checklist', 'band_notification.txt')
 
 BandEmail('Last chance to apply for a {EVENT_NAME} Panel', 'band_panel_reminder.txt',
-          lambda b: not b.completed('panel'), date_filters=days_before(3, c.BAND_PANEL_DEADLINE))
+          lambda b: not b.completed('panel'), when=days_before(3, c.BAND_PANEL_DEADLINE))
 
 BandEmail('Last Chance to accept your offer to perform at {EVENT_NAME}', 'band_agreement_reminder.txt',
-          lambda b: not b.completed('info'), date_filters=days_before(3, c.BAND_AGREEMENT_DEADLINE))
+          lambda b: not b.completed('info'), when=days_before(3, c.BAND_AGREEMENT_DEADLINE))
 
 BandEmail('Last chance to include your bio info on the {EVENT_NAME} website', 'band_bio_reminder.txt',
-          lambda b: not b.completed('bio'), date_filters=days_before(3, c.BAND_BIO_DEADLINE))
+          lambda b: not b.completed('bio'), when=days_before(3, c.BAND_BIO_DEADLINE))
 
 BandEmail('{EVENT_NAME} W9 reminder', 'band_w9_reminder.txt',
-          lambda b: b.payment and not b.completed('taxes'), date_filters=days_before(3, c.BAND_W9_DEADLINE))
+          lambda b: b.payment and not b.completed('taxes'), when=days_before(3, c.BAND_W9_DEADLINE))
 
 BandEmail('Last chance to sign up for selling merchandise at {EVENT_NAME}', 'band_merch_reminder.txt',
-          lambda b: not b.completed('merch'), date_filters=days_before(3, c.BAND_MERCH_DEADLINE))
+          lambda b: not b.completed('merch'), when=days_before(3, c.BAND_MERCH_DEADLINE))
 
 BandEmail('{EVENT_NAME} charity auction reminder', 'band_charity_reminder.txt',
-          lambda b: not b.completed('charity'), date_filters=days_before(3, c.BAND_CHARITY_DEADLINE))
+          lambda b: not b.completed('charity'), when=days_before(3, c.BAND_CHARITY_DEADLINE))
 
 BandEmail('{EVENT_NAME} stage plot reminder', 'band_stage_plot_reminder.txt',
-          lambda b: not b.completed('stage_plot'), date_filters=days_before(3, c.STAGE_AGREEMENT_DEADLINE))
+          lambda b: not b.completed('stage_plot'), when=days_before(3, c.STAGE_AGREEMENT_DEADLINE))
