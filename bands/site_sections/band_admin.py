@@ -24,6 +24,19 @@ class Root:
             'message': '{} has been marked as a band'.format(group.name)
         }
 
+    @ajax
+    def remove_as_band(self, session, group_id):
+        group = session.group(group_id)
+
+        if group.band:
+            group.band = None
+            session.commit()
+
+        return {
+            'id': group.id,
+            'message': '{} has been removed as a band'.format(group.name)
+        }
+
     def band_info(self, session, message='', event_id=None, **params):
         band = session.band(params)
         if cherrypy.request.method == 'POST':
@@ -51,13 +64,16 @@ class Root:
             'Charity Answer', 'Charity Donation'
         ])
         for band in session.query(Band).all():
+            absolute_pic_url = convert_to_absolute_url(getattr(band.bio, 'pic_url', ''))
+            absolute_w9_url = convert_to_absolute_url(getattr(band.taxes, 'w9_url', ''))
+            absolute_stageplot_url = convert_to_absolute_url(getattr(band.stage_plot, 'url', ''))
             out.writerow([
                 band.group.name, band.email,
                 band.payment, band.vehicles, band.estimated_loadin_minutes, band.estimated_performance_minutes,
                 getattr(band.info, 'poc_phone', ''), getattr(band.info, 'performer_count', ''), getattr(band.info, 'bringing_vehicle', ''), getattr(band.info, 'vehicle_info', ''), getattr(band.info, 'arrival_time', ''),
-                getattr(band.bio, 'desc', ''), getattr(band.bio, 'website', ''), getattr(band.bio, 'facebook', ''), getattr(band.bio, 'twitter', ''), getattr(band.bio, 'other_social_media', ''), getattr(band.bio, 'pic_url', ''),
+                getattr(band.bio, 'desc', ''), getattr(band.bio, 'website', ''), getattr(band.bio, 'facebook', ''), getattr(band.bio, 'twitter', ''), getattr(band.bio, 'other_social_media', ''), absolute_pic_url,
                 getattr(band.panel, 'wants_panel', ''), getattr(band.panel, 'name', ''), getattr(band.panel, 'length', ''), getattr(band.panel, 'desc', ''), ' / '.join(getattr(band.panel, 'panel_tech_needs_labels', '')),
-                getattr(band.taxes, 'w9_url', ''), getattr(band.stage_plot, 'url', ''),
+                absolute_w9_url, absolute_stageplot_url,
                 getattr(band.merch, 'selling_merch_label', ''),
                 getattr(band.charity, 'donating_label', ''), getattr(band.charity, 'desc', '')
             ])

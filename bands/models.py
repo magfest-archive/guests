@@ -96,7 +96,7 @@ class BandBio(MagModel):
 
     @property
     def pic_url(self):
-        return '{}/bands/view_bio_pic?id={}'.format(c.URL_BASE, self.band.id) if self.uploaded_pic else ''
+        return '../bands/view_bio_pic?id={}'.format(self.band.id) if self.uploaded_pic else ''
 
     @property
     def pic_fpath(self):
@@ -144,7 +144,7 @@ class BandStagePlot(MagModel):
 
     @property
     def url(self):
-        return '{}/bands/view_stage_plot?id={}'.format(c.URL_BASE, self.band.id) if self.uploaded_file else ''
+        return '../bands/view_stage_plot?id={}'.format(self.band.id) if self.uploaded_file else ''
 
     @property
     def fpath(self):
