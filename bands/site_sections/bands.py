@@ -9,7 +9,7 @@ class Root:
             'band': session.band(id)
         }
 
-    def agreement(self, session, band_id, id=None, message='', **params):
+    def agreement(self, session, band_id, message='', **params):
         band = session.band(band_id)
         band_info = session.band_info(params, restricted=True)
         if cherrypy.request.method == 'POST':
