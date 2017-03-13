@@ -70,18 +70,18 @@
     </div>
     {% endif %}
 
-    {% if band.taxes.completed_w9 or not band.payment %}
     <div class="row">
-        <label class="col-sm-2 control-label">Completed W9:</label>
+        <label class="col-sm-2 control-label">W9:</label>
         <div class="col-sm-6">
-            {% if band.taxes.completed_w9 %}
-            <a href="{{ band.taxes.w9_url }}">Click here to view the band's uploaded W9</a>
+            {% if not band.payment %}
+            This band isn't being paid and thus doesn't need a W9 tax form.
+            {% elif band.taxes.completed %}
+            <a href="{{ band.taxes.w9_url }}">Click here to view the band's uploaded W9 tax form</a>
             {% else %}
-            This band isn't being paid and thus doesn't need a W9.
+            This band is supposed to be paid, but has not uploaded a W9 tax form yet.
             {% endif %}
         </div>
     </div>
-    {% endif %}
 
     {% if band.bio.website %}
     <div class="row">
@@ -240,6 +240,10 @@
                 <option value="">Pick an Event</option>
                 {% options events band.event_id %}
             </select>
+            <p class="help-text">
+                If not set, the band agreement will say "date and time information coming soon"<br/>
+                If this is set, the band agreement will reflect the start time of the event on the schedule.
+            </p>
         </div>
     </div>
 
