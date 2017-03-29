@@ -6,7 +6,7 @@
     Band agreement for <strong>{{ band.group.name }}</strong> to perform at {{ c.EVENT_NAME_AND_YEAR }}!
     </h2>
     <p>
-        {{ c.EVENT_NAME_AND_YEAR }} will be held on <strong>{{ c.EPOCH|datetime:"%B %d" }} - {{ c.ESCHATON|datetime:"%d, %Y" }}.</strong><br>
+        {{ c.EVENT_NAME_AND_YEAR }} will be held on <strong>{{ c.EPOCH|datetime_local("%B %d") }} - {{ c.ESCHATON|datetime_local("%d, %Y") }}.</strong><br>
         Venue Address: <strong>{{ c.EVENT_VENUE }}: {{ c.EVENT_VENUE_ADDRESS }}</strong>
             <br><br>
         Performers are encouraged to attend the full event and interact with staff, fellow performers, and attendees
@@ -27,7 +27,7 @@
         as an update to this document.
         {% else %}
         Performance time and date for {{ band.group.name }} will be
-        <strong>{{ band.event.start_time|datetime:"%A, %B %d at %I:%M %p (%Z)" }}</strong>.
+        <strong>{{ band.event.start_time|datetime_local("%A, %B %d at %I:%M %p (%Z)") }}</strong>.
         Please arrive at the stage, with all band members ready to play and performance equipment present, at least 1 hour before this time.
         {% endif %}
             <br><br>
@@ -117,12 +117,12 @@
 <form method="post" action="agreement" class="form-horizontal" role="form">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_info.db_id }}" />
-    {% csrf_token %}
+    {{ csrf_token() }}
 
     <div class="form-group">
         <label class="col-sm-2 control-label">Performer Count:</label>
         <div class="col-sm-6">
-            <input class="form-control" type="number" name="performer_count" value="{{ band_info.performer_count|default:band.estimated_performer_count }}" />
+            <input class="form-control" type="number" name="performer_count" value="{{ band_info.performer_count|default(band.estimated_performer_count) }}" />
             <p class="help-text">
                 To ensure that we have assigned the correct number of badges to your band, please confirm the number
                 of performers in your band.
@@ -133,7 +133,7 @@
     <div class="form-group">
         <label class="col-sm-2 control-label">PoC Phone Number:</label>
         <div class="col-sm-6">
-            <input class="form-control" type="text" name="poc_phone" value="{{ band_info.poc_phone|default:band.group.leader.cellphone }}" />
+            <input class="form-control" type="text" name="poc_phone" value="{{ band_info.poc_phone|default(band.group.leader.cellphone) }}" />
             <p class="help-text">
                 Please enter the cellphone number of your preferred Point of Contact for any issues we may need to
                 contact you about on-site.
@@ -154,7 +154,7 @@
     <div class="form-group">
         <label class="col-sm-2 control-label">Parking:</label>
         <div class="col-sm-6">
-            {% checkbox band_info.bringing_vehicle %} We will be parking at {{ c.EVENT_NAME }}.
+            {{ macros.checkbox(band_info, 'bringing_vehicle') }} We will be parking at {{ c.EVENT_NAME }}.
         </div>
     </div>
 

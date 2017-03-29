@@ -13,7 +13,7 @@
 
 <br/> <br/>
 <form class="form-horizontal" role="form" method="post" action="band_info">
-    {% csrf_token %}
+    {{ csrf_token() }}
     <input type="hidden" name="id" value="{{ band.id }}" />
 
     {% if band.panel.name %}
@@ -47,7 +47,7 @@
     <div class="row">
         <label class="col-sm-2 control-label">Panel Tech Needs:</label>
         <div class="col-sm-6">
-            {{ band.panel.panel_tech_needs_labels|join:" / " }}
+            {{ band.panel.panel_tech_needs_labels|join(" / ") }}
         </div>
     </div>
     {% endif %}
@@ -238,7 +238,7 @@
         <div class="col-sm-6">
             <select name="event_id" class="form-control">
                 <option value="">Pick an Event</option>
-                {% options events band.event_id %}
+                {{ options(events,band.event_id) }}
             </select>
             <p class="help-text">
                 If not set, the band agreement will say "date and time information coming soon"<br/>

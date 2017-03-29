@@ -10,17 +10,17 @@ anything to donate, please tell us what it is!
 
 <br/> <br/>
 
-Our auction starts on {{ c.AUCTION_START|datetime:"%A at %-H%p" }} and goes until everything is sold (usually around 3 hours).
+Our auction starts on {{ c.AUCTION_START|datetime_local("%A at %-H%p") }} and goes until everything is sold (usually around 3 hours).
 
 <br/> <br/>
 
 <form method="post" action="charity">
-    {% csrf_token %}
+    {{ csrf_token() }}
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_charity.db_id }}" />
     <select name="donating">
         <option value="">Let us know whether you can donate anything</option>
-        {% options c.BAND_CHARITY_OPTS band_charity.donating %}
+        {{ options(c.BAND_CHARITY_OPTS,band_charity.donating) }}
     </select>
     <br/> <br/>
     <div id="donating_yes" style="display:none">

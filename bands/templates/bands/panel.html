@@ -14,21 +14,21 @@
 <h2>Want a Panel?</h2>
 
 Many of our musical guests are also interested in offering an panel.  While we cannot guarantee that we'll have room in
-our schedule to accommodate all requests, we definitely want to hear your ideas.  Please fill out the 
+our schedule to accommodate all requests, we definitely want to hear your ideas.  Please fill out the
 
 <br/> <br/>
 
 <form method="post" action="panel" class="form-horizontal" role="form">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_panel.db_id }}" />
-    {% csrf_token %}
+    {{ csrf_token() }}
 
     <div class="form-group">
         <label class="col-sm-2 control-label">Want a Panel?</label>
         <div class="col-sm-6" style="padding-top:7px">
             <select name="wants_panel">
                 <option value="">Do you want a panel?</option>
-                {% options c.BAND_PANEL_OPTS band_panel.wants_panel %}
+                {{ options(c.BAND_PANEL_OPTS,band_panel.wants_panel) }}
             </select>
         </div>
     </div>
@@ -60,7 +60,7 @@ our schedule to accommodate all requests, we definitely want to hear your ideas.
     <div class="form-group panel-info">
         <label class="col-sm-2 control-label">Tech Needs:</label>
         <div class="col-sm-6">
-            {% checkgroup band_panel.tech_needs %}
+            {{ macros.checkgroup(band_panel, 'tech_needs') }}
         </div>
     </div>
 
