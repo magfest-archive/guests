@@ -1,0 +1,72 @@
+{% extends "base.html" %}{% set admin_area=True %}
+{% block title %}Group Form{% endblock %}
+{% block content %}
+    <div class="panel panel-default">
+<div class="panel-body">
+
+<h2> Group Info </h2>
+
+<div style="text-align:center">
+    <a href="index">Return to group list</a>
+</div>
+<form method="post" action="add_band" class="form-horizontal">
+{{ csrf_token() }}
+<input type="hidden" name="id" value="{{ group.db_id }}" />
+    <div class="form-group">
+    <label class="col-sm-2 control-label">Name of Group</label>
+    <div class="col-sm-6">
+        <input class="focus" type="text" name="name" value="{{ group.name }}" />
+    </div>
+</div>
+
+    <div class="form-group">
+    <label class="col-sm-2 control-label">Badges</label>
+    <div class="col-sm-6">
+        <select name="badges">
+            {{ int_options(1, c.MAX_GROUP_SIZE, group.badges) }}
+        </select>
+        {% if not group.is_new %}
+            [{{ group.badges_purchased }} badge(s) purchased]
+        {% endif %}
+    </div>
+</div>
+
+{% include "groupextra.html" %}
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">Admin Notes</label>
+    <div class="col-sm-6">
+        <textarea name="admin_notes" rows="3" style="width:66%">{{ group.admin_notes }}</textarea>
+    </div>
+</div>
+
+    <h2>Leader Info</h2>
+<div class="form-group">
+    <label class="col-sm-2 control-label">First Name</label>
+    <div class="col-sm-6">
+        <input class="focus" type="text" name="first_name" value="{{ first_name }}" />
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">Last Name</label>
+    <div class="col-sm-6">
+        <input class="focus" type="text" name="last_name" value="{{ last_name }}" />
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">Email</label>
+    <div class="col-sm-6">
+        <input class="focus" type="text" name="email" value="{{ email }}" />
+    </div>
+</div>
+
+
+<div class="form-group">
+    <div class="col-sm-6 col-sm-offset-2">
+        <button type="submit" class="btn btn-primary" value="Upload">Save</button>
+    </div>
+</div>
+</form>
+{% endblock %}

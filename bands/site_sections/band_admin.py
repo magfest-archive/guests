@@ -9,6 +9,34 @@ class Root:
             'groups': session.query(Group).order_by('name').all()
         }
 
+    def add_band(self, session, message='', **params):
+        group = session.group(params, checkgroups=Group.all_checkgroups, bools=Group.all_bools,)
+        if params.get('name') and params.get('first_name') and params.get('last_name') and params.get('email'):
+            group.auto_recalc = False
+            session.add(group)
+            message = session.assign_badges(group, params['badges'], new_ribbon_type=c.BAND, paid=c.NEED_NOT_PAY)
+            if not message:
+                session.commit()
+                leader = group.leader = group.attendees[0]
+                leader.first_name, leader.last_name, leader.email = params.get('first_name'), params.get('last_name'), params.get('email')
+                leader.placeholder = True
+                message = check(leader)
+                if not message:
+                    group.band = Band()
+                    session.commit()
+                    raise HTTPRedirect("index?message={}{}", group.name, " has been uploaded")
+                else:
+                    session.delete(group)
+            else:
+                session.delete(group)
+        return{
+            'message': message,
+            'group': group,
+            'first_name': params.get('first_name') if 'first_name' in params else '',
+            'last_name': params.get('last_name') if 'last_name' in params else '',
+            'email': params.get('email') if 'email' in params else ''
+        }
+
     @ajax
     def mark_as_band(self, session, group_id):
         group = session.group(group_id)
