@@ -2,17 +2,21 @@
 {% block title %}Band Admin{% endblock %}
 {% block content %}
 
-<style type="text/css">
-    .datatable td, .datatable th {
-        padding: 5px 20px 5px 20px;
-    }
+<style>
+h1 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.dataTables_length .dataTables_addon {
+  margin-left: 25px;
+}
 </style>
 
-<h2>Bands and Other Groups</h2>
-<div><a href="add_band"><input type="button" value="Add A Band"/></a></div>
-<div><input type="checkbox" id="only-bands" /> Show only bands</div>
+<h1>Bands and Other Groups <a class="btn btn-primary" href="add_band">Add a Band</a></h1>
 
-<table class="datatable" data-page-length="-1">
+<div class="table-responsive">
+  <table class="datatable table table-striped" data-page-length="-1">
     <thead>
         <tr>
             <th>Group</th>
@@ -33,9 +37,11 @@
             <td><a href="../groups/form?id={{ group.id }}">{{ group.name }}</a></td>
             <td class="band">
                 {% if group.band %}
-                   <button onClick="removeAsBand('{{ group.id }}')">Remove as a Band</button><br><a href="band_info?id={{ group.band.id }}">Band Info</a>
+                    <button class="btn btn-sm btn-warning" onClick="removeAsBand('{{ group.id }}')">Unmark as a Band</button>
+                    <br>
+                    <a href="band_info?id={{ group.band.id }}">Band Info</a>
                 {% else %}
-                    <button onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
+                    <button class="btn btn-sm btn-primary" onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
                 {% endif %}
             </td>
             <td>{% if group.band.panel %}{{ group.band.panel.completed|yesno("Y,") }}{% endif %}</td>
@@ -49,13 +55,15 @@
         </tr>
     {% endfor %}
     </tbody>
-</table>
+  </table>
+</div>
 
-<p><a href="everything">Click to export all band data as a CSV file</a></p>
+<p><a href="everything">Export all band data as a CSV file</a></p>
 
 <script>
     var markAsBand = function (groupId) {
-        var $band = $('#' + groupId).find('.band').text('Marking...');
+        var $band = $('#' + groupId).find('.band'),
+            $button = $band.find('.btn').prop('disabled', true).text('Marking...');
         $.ajax({
             method: 'POST',
             url: 'mark_as_band',
@@ -66,7 +74,9 @@
             success: function (response) {
                 if (response.id) {
                     $band.empty().append(
-                        $('<a>Band Info</a>').attr('href', 'band_info?id=' + response.id)
+                        '<button class="btn btn-sm btn-warning" onClick="removeAsBand(\'' + groupId + '\')">Unmark as a Band</button>' +
+                        '<br>' +
+                        '<a href="band_info?id=' + response.id + '">Band Info</a>'
                     ).parents('tr').removeClass('nonband').addClass('band');
                 }
                 toastr.info(response.message);
@@ -74,7 +84,8 @@
         });
     };
     var removeAsBand = function (groupId) {
-        var $band = $('#' + groupId).find('.band').text('Removing...');
+        var $band = $('#' + groupId).find('.band'),
+            $button = $band.find('.btn').prop('disabled', true).text('Unmarking...');
         $.ajax({
             method: 'POST',
             url: 'remove_as_band',
@@ -85,16 +96,23 @@
             success: function (response) {
                 if (response.id) {
                     $band.empty().append(
-                        $('<button>Mark as a Band</button>').attr('onClick', 'markAsBand(\'' + response.id + '\')')
+                        '<button class="btn btn-sm btn-primary" onClick="markAsBand(\'' + response.id + '\')">Mark as a Band</button>'
                     ).parents('tr').removeClass('band').addClass('nonband');
                 }
                 toastr.info(response.message);
             }
         });
     };
-    $(function () {
-        var $onlyBands = $('#only-bands').on('click', function () {
-            setVisible('.nonband', !$onlyBands.prop('checked'))
+    $(document).ready(function() {
+        $(window).load(function() {
+            $('.dataTables_length').append(
+                '<label class="dataTables_addon">' +
+                '<input type="checkbox" id="only-bands" /> Show only bands' +
+                '</label>');
+
+            var $onlyBands = $('#only-bands').on('click', function () {
+                setVisible('.nonband', !$onlyBands.prop('checked'))
+            });
         });
     });
 </script>

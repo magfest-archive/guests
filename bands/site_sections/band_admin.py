@@ -3,6 +3,15 @@ from bands import *
 
 @all_renderable(c.BANDS)
 class Root:
+
+    def _required_message(self, params, fields):
+        missing = [s for s in fields if not params.get(s, '').strip()]
+        if missing:
+            return '{} {} required'.format(
+                comma_and([s.replace('_', ' ').title() for s in missing]),
+                'is' if len(missing) == 1 else 'are')
+        return ''
+
     def index(self, session, message=''):
         return {
             'message': message,
@@ -10,11 +19,14 @@ class Root:
         }
 
     def add_band(self, session, message='', **params):
-        group = session.group(params, checkgroups=Group.all_checkgroups, bools=Group.all_bools,)
-        if params.get('name') and params.get('first_name') and params.get('last_name') and params.get('email'):
-            group.auto_recalc = False
-            session.add(group)
-            message = session.assign_badges(group, params['badges'], new_ribbon_type=c.BAND, paid=c.NEED_NOT_PAY)
+        group = session.group(params, checkgroups=Group.all_checkgroups, bools=Group.all_bools)
+        if cherrypy.request.method == 'POST':
+            message = self._required_message(
+                params, ['name', 'first_name', 'last_name', 'email'])
+            if not message:
+                group.auto_recalc = False
+                session.add(group)
+                message = session.assign_badges(group, params['badges'], new_ribbon_type=c.BAND, paid=c.NEED_NOT_PAY)
             if not message:
                 session.commit()
                 leader = group.leader = group.attendees[0]
@@ -24,17 +36,16 @@ class Root:
                 if not message:
                     group.band = Band()
                     session.commit()
-                    raise HTTPRedirect("index?message={}{}", group.name, " has been uploaded")
+                    raise HTTPRedirect('index?message={} has been uploaded', group.name)
                 else:
                     session.delete(group)
-            else:
-                session.delete(group)
-        return{
+
+        return {
             'message': message,
             'group': group,
-            'first_name': params.get('first_name') if 'first_name' in params else '',
-            'last_name': params.get('last_name') if 'last_name' in params else '',
-            'email': params.get('email') if 'email' in params else ''
+            'first_name': params.get('first_name', ''),
+            'last_name': params.get('last_name', ''),
+            'email': params.get('email', '')
         }
 
     @ajax
