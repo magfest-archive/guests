@@ -98,9 +98,10 @@ class TestAddBand(object):
             assert group.leader.last_name == 'Bert'
             assert group.leader.email == 'al@example.com'
             assert group.leader.placeholder == True
+            assert group.leader.paid == c.PAID_BY_GROUP
             assert group.band
             assert group.badges == 4
             for attendee in group.attendees:
-                assert attendee.paid == c.NEED_NOT_PAY
+                assert attendee.paid == c.PAID_BY_GROUP
                 assert attendee.badge_type == c.ATTENDEE_BADGE
                 assert attendee.ribbon == c.BAND
