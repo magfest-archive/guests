@@ -18,13 +18,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_PANEL_DEADLINE %}
     <tr>
-        <td width="25">{{ macros.checklist_image(band.panel.completed) }}</td>
+        <td width="25">{{ macros.checklist_image(band.panel.status) }}</td>
         <td><b><a href="panel?band_id={{ band.id }}">Want a Panel?</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_PANEL_DEADLINE|datetime_local }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if not band.panel.completed %}
+            {% if not band.panel.status %}
                 Please use the above link to let us know whether or not you are interested in also running a panel.
                 We cannot accommodate all requests, but we definitely want to hear your ideas!
             {% elif band.panel.wants_panel %}
@@ -40,13 +40,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_BIO_DEADLINE %}
     <tr>
-        <td width="25">{{ macros.checklist_image(band.bio.completed) }}</td>
+        <td width="25">{{ macros.checklist_image(band.bio.status) }}</td>
         <td><b><a href="bio?band_id={{ band.id }}">Completed Band Bio</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_BIO_DEADLINE|datetime_local }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.bio.completed %}
+            {% if band.bio.status %}
                 You have already provided us with your bio information, but you can use the link above to update it.
                 {% if not band.bio.uploaded_pic %}
                     We encourage you to upload a bio pic for your band (which you have NOT yet done) so that we can
@@ -62,13 +62,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_AGREEMENT_DEADLINE %}
     <tr>
-        <td width="25">{{ macros.checklist_image(band.info.completed) }}</td>
+        <td width="25">{{ macros.checklist_image(band.info.status) }}</td>
         <td><b><a href="agreement?band_id={{ band.id }}">Completed Band Agreement</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_AGREEMENT_DEADLINE|datetime_local }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.info.completed %}
+            {% if band.info.status %}
                 You have already provided all the information required as part of your band agreement.  You may edit your
                 information (e.g. if you've discovered that you'll be arriving on a different day or time) using the link above.
             {% else %}
@@ -81,13 +81,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if band.payment and c.BAND_W9_DEADLINE %}
         <tr>
-            <td width="25">{{ macros.checklist_image(band.taxes.completed) }}</td>
+            <td width="25">{{ macros.checklist_image(band.taxes.status) }}</td>
             <td><b><a href="w9?band_id={{ band.id }}">Completed W9</a></b></td>
             <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime_local }}</td>
         </tr>
         <tr>
             <td colspan="3">
-                {% if band.taxes.completed %}
+                {% if band.taxes.status %}
                     You have already uploaded your W9 form, but if you need to make changes you can upload a new one
                     using the link above.
                 {% else %}
@@ -100,13 +100,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_MERCH_DEADLINE %}
     <tr>
-        <td width="25">{{ macros.checklist_image(band.merch.completed) }}</td>
+        <td width="25">{{ macros.checklist_image(band.merch.status) }}</td>
         <td><b><a href="merch?band_id={{ band.id }}">Selling Merchandise</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_MERCH_DEADLINE|datetime_local }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.merch.completed %}
+            {% if band.merch.status %}
                 You have already indicated your merchandise preferences, but you may update them using the link above.
             {% else %}
                 We need you to tell us whether you have any merchandise to sell{% if c.ROCK_ISLAND %}, and whether you intend to participate in
@@ -119,13 +119,13 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.BAND_CHARITY_DEADLINE %}
     <tr>
-        <td width="25">{{ macros.checklist_image(band.charity.completed) }}</td>
+        <td width="25">{{ macros.checklist_image(band.charity.status) }}</td>
         <td><b><a href="charity?band_id={{ band.id }}">Donating to our Charity Auction</a></b></td>
         <td><i>Deadline:</i> {{ c.BAND_CHARITY_DEADLINE|datetime_local }}</td>
     </tr>
     <tr>
         <td colspan="3">
-            {% if band.charity.completed %}
+            {% if band.charity.status %}
                 You have already indicated your charity preferences, but you may update them using the link above.
             {% else %}
                 {{ c.EVENT_NAME }} runs a yearly charity auction, and we need you to tell us whether you can contribute any
@@ -162,7 +162,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 
     {% if c.STAGE_AGREEMENT_DEADLINE %}
     <tr>
-        <td width="25">{{ macros.checklist_image(band.stage_plot.completed) }}</td>
+        <td width="25">{{ macros.checklist_image(band.stage_plot.status) }}</td>
         <td><b><a href="stage_plot?band_id={{ band.id }}">Stage Layouts</a></b></td>
         <td><i>Deadline:</i> {{ c.STAGE_AGREEMENT_DEADLINE|datetime_local }}</td>
     </tr>

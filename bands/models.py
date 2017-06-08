@@ -57,17 +57,19 @@ class Band(MagModel):
     def email(self):
         return self.group.email
 
-    def completed(self, model):
+    def status(self, model):
         """
-        This is a safe way to check if a step has been completed for a particular band. It checks for a custom
-        'completed' property for the step; if that doesn't exist, it will attempt to return an ID of the step.
+        This is a safe way to check if a step has been completed and what its status is for a particular band.
+        It checks for a custom 'status' property for the step; if that doesn't exist, it will attempt to return
+        "Completed" if an ID of the step exists.
 
         :param model: This should match one of the relationship columns in the Band class, e.g., 'bio' or 'stage_plot'
-        :return: Returns either the 'completed' property of the model, the model's ID for that band, or None.
+        :return: Returns either the 'status' property of the model, "Completed," or None.
         """
 
         subclass = getattr(self, model)
-        return getattr(subclass, 'completed', getattr(subclass, 'id')) if subclass else None
+        if getattr(subclass, 'id'):
+            return getattr(subclass, 'status', "Completed")
 
 
 class BandInfo(MagModel):
@@ -79,8 +81,8 @@ class BandInfo(MagModel):
     arrival_time = Column(UnicodeText)
 
     @property
-    def completed(self):
-        return self.poc_phone
+    def status(self):
+        return "Yes" if self.poc_phone else ""
 
 
 class BandBio(MagModel):
@@ -111,8 +113,8 @@ class BandBio(MagModel):
         return extension(self.pic_filename)
 
     @property
-    def completed(self):
-        return self.desc
+    def status(self):
+        return "Yes" if self.desc else ""
 
 
 class BandTaxes(MagModel):
@@ -133,8 +135,8 @@ class BandTaxes(MagModel):
         return extension(self.w9_filename)
 
     @property
-    def completed(self):
-        return self.w9_filename
+    def status(self):
+        return 'Yes <a href="{}">(view file)</a>'.format(self.w9_url) if self.w9_filename else ''
 
 
 class BandStagePlot(MagModel):
@@ -159,8 +161,8 @@ class BandStagePlot(MagModel):
         return extension(self.filename)
 
     @property
-    def completed(self):
-        return self.uploaded_file
+    def status(self):
+        return "Yes <a href='{}'>(view file)</a>".format(self.url) if self.uploaded_file else ''
 
 
 class BandPanel(MagModel):
@@ -172,8 +174,8 @@ class BandPanel(MagModel):
     tech_needs = Column(MultiChoice(c.TECH_NEED_OPTS))
 
     @property
-    def completed(self):
-        return self.wants_panel
+    def status(self):
+        return self.wants_panel_label
 
 
 class BandMerch(MagModel):
@@ -181,8 +183,8 @@ class BandMerch(MagModel):
     selling_merch = Column(Choice(c.BAND_MERCH_OPTS), nullable=True)
 
     @property
-    def completed(self):
-        return self.selling_merch
+    def status(self):
+        return self.selling_merch_label
 
 
 class BandCharity(MagModel):
@@ -191,5 +193,5 @@ class BandCharity(MagModel):
     desc = Column(UnicodeText)
 
     @property
-    def completed(self):
-        return self.donating
+    def status(self):
+        return self.donating_label

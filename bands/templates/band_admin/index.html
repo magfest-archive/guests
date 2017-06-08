@@ -21,14 +21,14 @@ h1 {
         <tr>
             <th>Group</th>
             <th>Band?</th>
-            <th>Panel</th>
-            <th>Bio Provided</th>
-            <th>Agreement Completed</th>
-            <th>W9 Uploaded</th>
-            <th>Merch</th>
-            <th>Charity</th>
-            <th>Badges Claimed</th>
-            <th>Stage Plans</th>
+            {% if c.BAND_PANEL_DEADLINE %}<th>Panel</th>{% endif %}
+            {% if c.BAND_BIO_DEADLINE %}<th>Bio Provided</th>{% endif %}
+            {% if c.BAND_AGREEMENT_DEADLINE %}<th>Agreement Completed</th>{% endif %}
+            {% if c.BAND_W9_DEADLINE %}<th>W9 Uploaded</th>{% endif %}
+            {% if c.BAND_MERCH_DEADLINE %}<th>Merch</th>{% endif %}
+            {% if c.BAND_CHARITY_DEADLINE %}<th>Charity</th>{% endif %}
+            {% if c.BAND_BADGE_DEADLINE %}<th>Badges Claimed</th>{% endif %}
+            {% if c.STAGE_AGREEMENT_DEADLINE %}<th>Stage Plans</th>{% endif %}
         </tr>
     </thead>
     <tbody>
@@ -44,14 +44,16 @@ h1 {
                     <button class="btn btn-sm btn-primary" onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
                 {% endif %}
             </td>
-            <td>{% if group.band.panel %}{{ group.band.panel.completed|yesno("Y,") }}{% endif %}</td>
-            <td>{% if group.band.bio %}{{ group.band.bio.completed|yesno("Y,") }}{% endif %}</td>
-            <td>{% if group.band.info %}{{ group.band.info.completed|yesno("Y,") }}{% endif %}</td>
-            <td>{% if group.band.taxes %}{% if group.band.taxes.completed or not group.band.payment %}Y{% endif %}{% endif %}</td>
-            <td>{% if group.band.merch %}{{ group.band.merch.completed|yesno("Y,") }}{% endif %}</td>
-            <td>{% if group.band.charity %}{{ group.band.charity.completed|yesno("Y,") }}{% endif %}</td>
-            <td>{% if group.band.all_badges_claimed %}{{ group.band.all_badges_claimed|yesno("Y,") }}{% endif %}</td>
-            <td>{% if group.band.stage_plot %}{{ group.band.stage_plot.completed|yesno("Y,") }}{% endif %}</td>
+            {% if c.BAND_PANEL_DEADLINE %}<td>{% if group.band.panel %}{{ group.band.panel.status }}{% endif %}</td>{% endif %}
+            {% if c.BAND_BIO_DEADLINE %}<td>{% if group.band.bio %}{{ group.band.bio.status }}{% endif %}</td>{% endif %}
+            {% if c.BAND_AGREEMENT_DEADLINE %}<td>{{ group.band.info.status }}</td>{% endif %}
+            {% if c.BAND_W9_DEADLINE %}<td>
+                {% if not group.band.payment %}Not Needed
+                {% else %}{{ group.band.taxes.status|safe }}{% endif %}</td>{% endif %}
+            {% if c.BAND_MERCH_DEADLINE %}<td>{{ group.band.merch.status }}</td>{% endif %}
+            {% if c.BAND_CHARITY_DEADLINE %}<td>{{ group.band.charity.status }}</td>{% endif %}
+            {% if c.BAND_BADGE_DEADLINE %}<td>{{ group.band.all_badges_claimed|yesno("Yes,") }}</td>{% endif %}
+            {% if c.STAGE_AGREEMENT_DEADLINE %}<td>{{ group.band.stage_plot.status|safe }}</td>{% endif %}
         </tr>
     {% endfor %}
     </tbody>
