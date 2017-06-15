@@ -49,11 +49,11 @@ h1 {
             {% if c.BAND_AGREEMENT_DEADLINE %}<td>{{ group.band.info.status }}</td>{% endif %}
             {% if c.BAND_W9_DEADLINE %}<td>
                 {% if not group.band.payment %}Not Needed
-                {% else %}{{ group.band.taxes.status|safe }}{% endif %}</td>{% endif %}
+                {% else %}{{ group.band.taxes.status|url_to_link("Yes", "_blank") }}{% endif %}</td>{% endif %}
             {% if c.BAND_MERCH_DEADLINE %}<td>{{ group.band.merch.status }}</td>{% endif %}
             {% if c.BAND_CHARITY_DEADLINE %}<td>{{ group.band.charity.status }}</td>{% endif %}
-            {% if c.BAND_BADGE_DEADLINE %}<td>{{ group.band.all_badges_claimed|yesno("Yes,") }}</td>{% endif %}
-            {% if c.STAGE_AGREEMENT_DEADLINE %}<td>{{ group.band.stage_plot.status|safe }}</td>{% endif %}
+            {% if c.BAND_BADGE_DEADLINE %}<td>{{ group.unregistered_badges ~ " Unclaimed" if group.unregistered_badges else "Yes" }}</td>{% endif %}
+            {% if c.STAGE_AGREEMENT_DEADLINE %}<td>{{ group.band.stage_plot.status|url_to_link("Yes", "_blank") }}</td>{% endif %}
         </tr>
     {% endfor %}
     </tbody>

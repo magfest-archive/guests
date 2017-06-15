@@ -136,7 +136,7 @@ class BandTaxes(MagModel):
 
     @property
     def status(self):
-        return 'Yes <a href="{}">(view file)</a>'.format(self.w9_url) if self.w9_filename else ''
+        return self.w9_url if self.w9_url else ''
 
 
 class BandStagePlot(MagModel):
@@ -162,7 +162,7 @@ class BandStagePlot(MagModel):
 
     @property
     def status(self):
-        return "Yes <a href='{}'>(view file)</a>".format(self.url) if self.uploaded_file else ''
+        return self.url if self.url else ''
 
 
 class BandPanel(MagModel):
