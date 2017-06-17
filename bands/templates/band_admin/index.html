@@ -44,16 +44,16 @@ h1 {
                     <button class="btn btn-sm btn-primary" onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
                 {% endif %}
             </td>
-            {% if c.BAND_PANEL_DEADLINE %}<td>{% if group.band.panel %}{{ group.band.panel.status }}{% endif %}</td>{% endif %}
-            {% if c.BAND_BIO_DEADLINE %}<td>{% if group.band.bio %}{{ group.band.bio.status }}{% endif %}</td>{% endif %}
-            {% if c.BAND_AGREEMENT_DEADLINE %}<td>{{ group.band.info.status }}</td>{% endif %}
+            {% if c.BAND_PANEL_DEADLINE %}<td>{{ group.band.panel.status if group.band else '' }}</td>{% endif %}
+            {% if c.BAND_BIO_DEADLINE %}<td>{{ group.band.bio.status if group.band else '' }}</td>{% endif %}
+            {% if c.BAND_AGREEMENT_DEADLINE %}<td>{{ group.band.info.status if group.band else '' }}</td>{% endif %}
             {% if c.BAND_W9_DEADLINE %}<td>
-                {% if not group.band.payment %}Not Needed
-                {% else %}{{ group.band.taxes.status|url_to_link("Yes", "_blank") }}{% endif %}</td>{% endif %}
-            {% if c.BAND_MERCH_DEADLINE %}<td>{{ group.band.merch.status }}</td>{% endif %}
-            {% if c.BAND_CHARITY_DEADLINE %}<td>{{ group.band.charity.status }}</td>{% endif %}
+                {% if group.band and not group.band.payment %}Not Needed
+                {% else %}{{ group.band.taxes.status|url_to_link("Yes", "_blank") if group.band else '' }}{% endif %}</td>{% endif %}
+            {% if c.BAND_MERCH_DEADLINE %}<td>{{ group.band.merch.status if group.band else '' }}</td>{% endif %}
+            {% if c.BAND_CHARITY_DEADLINE %}<td>{{ group.band.charity.status if group.band else '' }}</td>{% endif %}
             {% if c.BAND_BADGE_DEADLINE %}<td>{{ group.unregistered_badges ~ " Unclaimed" if group.unregistered_badges else "Yes" }}</td>{% endif %}
-            {% if c.STAGE_AGREEMENT_DEADLINE %}<td>{{ group.band.stage_plot.status|url_to_link("Yes", "_blank") }}</td>{% endif %}
+            {% if c.STAGE_AGREEMENT_DEADLINE %}<td>{{ group.band.stage_plot.status|url_to_link("Yes", "_blank") if group.band else '' }}</td>{% endif %}
         </tr>
     {% endfor %}
     </tbody>
