@@ -68,8 +68,7 @@ class Band(MagModel):
         """
 
         subclass = getattr(self, model)
-        if getattr(subclass, 'id'):
-            return getattr(subclass, 'status', "Completed")
+        return getattr(subclass, 'completed', getattr(subclass, 'id')) if subclass else None
 
 
 class BandInfo(MagModel):
