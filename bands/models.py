@@ -59,7 +59,10 @@ class Band(MagModel):
 
     @property
     def normalized_group_name(self):
-        return ''.join(e for e in self.group.name.strip().lower() if e.isalnum() or e == ' ').replace(' ', '_')
+        # Remove all special characters, then remove all extra whitespace, then replace spaces with underscores
+        return ' '.join(
+            ''.join(e for e in self.group.name.strip().lower() if e.isalnum() or e == ' ').split()
+        ).replace(' ', '_')
 
     def status(self, model):
         """
