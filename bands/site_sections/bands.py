@@ -169,12 +169,12 @@ class Root:
 
     def view_bio_pic(self, session, id):
         band = session.band(id)
-        return serve_file(band.bio.pic_fpath, name=band.bio.pic_filename, content_type=band.bio.pic_content_type)
+        return serve_file(band.bio.pic_fpath, disposition="attachment", name=band.bio.download_filename, content_type=band.bio.pic_content_type)
 
     def view_w9(self, session, id):
         band = session.band(id)
-        return serve_file(band.taxes.w9_fpath, name=band.taxes.w9_filename, content_type=band.taxes.w9_content_type)
+        return serve_file(band.taxes.w9_fpath, disposition="attachment", name=band.taxes.download_filename, content_type=band.taxes.w9_content_type)
 
     def view_stage_plot(self, session, id):
         band = session.band(id)
-        return serve_file(band.stage_plot.fpath, name=band.stage_plot.filename, content_type=band.stage_plot.content_type)
+        return serve_file(band.stage_plot.fpath, disposition="attachment", name=band.stage_plot.download_filename, content_type=band.stage_plot.content_type)
