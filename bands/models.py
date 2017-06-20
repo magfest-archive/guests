@@ -57,6 +57,13 @@ class Band(MagModel):
     def email(self):
         return self.group.email
 
+    @property
+    def normalized_group_name(self):
+        # Remove all special characters, then remove all extra whitespace, then replace spaces with underscores
+        return ' '.join(
+            ''.join(e for e in self.group.name.strip().lower() if e.isalnum() or e == ' ').split()
+        ).replace(' ', '_')
+
     def status(self, model):
         """
         This is a safe way to check if a step has been completed and what its status is for a particular band.
@@ -112,6 +119,10 @@ class BandBio(MagModel):
         return extension(self.pic_filename)
 
     @property
+    def download_filename(self):
+        return self.band.normalized_group_name + "_bio_pic." + self.pic_extension
+
+    @property
     def status(self):
         return "Yes" if self.desc else ""
 
@@ -132,6 +143,10 @@ class BandTaxes(MagModel):
     @property
     def w9_extension(self):
         return extension(self.w9_filename)
+
+    @property
+    def download_filename(self):
+        return self.band.normalized_group_name + "_w9_form." + self.w9_extension
 
     @property
     def status(self):
@@ -158,6 +173,10 @@ class BandStagePlot(MagModel):
     @property
     def stage_plot_extension(self):
         return extension(self.filename)
+
+    @property
+    def download_filename(self):
+        return self.band.normalized_group_name + "_stage_plot." + self.stage_plot_extension
 
     @property
     def status(self):
