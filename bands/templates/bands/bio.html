@@ -51,7 +51,8 @@ information, we'll include that as well.
     <div class="form-group">
         <label class="col-sm-2 control-label optional-field">Picture:</label>
         <div class="col-sm-6">
-            <input type="file" name="bio_pic" />
+            {% if band.bio.uploaded_pic %}<a href="{{ band.bio.pic_url }}">View your current bio pic</a>
+                or upload a new one: {% endif %}<input type="file" name="bio_pic" />
         </div>
     </div>
 

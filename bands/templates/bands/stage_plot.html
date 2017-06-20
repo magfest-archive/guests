@@ -2,8 +2,10 @@
 {% block body %}
 
 <h2>Stage Layout for {{ band.group.name }}</h2>
+{% if band.stage_plot.status %}
+    <a href="{{ band.stage_plot.url }}">Click here to view the stage layouts you uploaded.</a>
 
-Please upload your desired stage layouts.  This can be in the form of written directions, an image, PDF, or a zipfile
+    <br/><br/> Need to update something? {% endif %} Please upload your desired stage layouts.  This can be in the form of written directions, an image, PDF, or a zipfile
 containing a collection of files explaining what you need.
 
 <br/> <br/>

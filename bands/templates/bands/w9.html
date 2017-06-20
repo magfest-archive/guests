@@ -3,7 +3,10 @@
 
 <h2>Completed W9 for {{ band.group.name }}</h2>
 
-You can find a blank W9 form <a target="_blank" href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">here</a>.  Please upload
+{% if band.taxes.status %}
+    <a href="{{ band.taxes.w9_url }}">Click here to view the W9 tax form you uploaded.</a>
+
+    <br/><br/> Need to update this form? {% endif %}You can find a blank W9 form <a target="_blank" href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">here</a>.  Please upload
 a filled out copy of this form below:
 
 <br/> <br/>
