@@ -94,7 +94,7 @@ class Root:
     def everything(self, out, session):
         out.writerow([
             'Group Name', 'Primary Contact Email',
-            'Payment', 'Vehicles', 'Load-In', 'Performance Time',
+            'Payment', 'Vehicles', 'Hotel Rooms', 'Load-In', 'Performance Time',
             'PoC Cellphone', 'Performer Count', 'Bringing Vehicle', 'Vehicle Info', 'Arrival Time',
             'Bio', 'Website', 'Facebook', 'Twitter', 'Other Social Media', 'Bio Pic',
             'Wants Panel', 'Panel Name', 'Panel Description', 'Panel Length', 'Panel Tech Needs',
@@ -108,7 +108,7 @@ class Root:
             absolute_stageplot_url = convert_to_absolute_url(getattr(band.stage_plot, 'url', ''))
             out.writerow([
                 band.group.name, band.email,
-                band.payment, band.vehicles, band.estimated_loadin_minutes, band.estimated_performance_minutes,
+                band.payment, band.vehicles, band.num_hotel_rooms, band.estimated_loadin_minutes, band.estimated_performance_minutes,
                 getattr(band.info, 'poc_phone', ''), getattr(band.info, 'performer_count', ''), getattr(band.info, 'bringing_vehicle', ''), getattr(band.info, 'vehicle_info', ''), getattr(band.info, 'arrival_time', ''),
                 getattr(band.bio, 'desc', ''), getattr(band.bio, 'website', ''), getattr(band.bio, 'facebook', ''), getattr(band.bio, 'twitter', ''), getattr(band.bio, 'other_social_media', ''), absolute_pic_url,
                 getattr(band.panel, 'wants_panel', ''), getattr(band.panel, 'name', ''), getattr(band.panel, 'length', ''), getattr(band.panel, 'desc', ''), ' / '.join(getattr(band.panel, 'panel_tech_needs_labels', '')),

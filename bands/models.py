@@ -36,6 +36,7 @@ class Band(MagModel):
     merch = relationship('BandMerch', backref=backref('band', load_on_pending=True), uselist=False)
     charity = relationship('BandCharity', backref=backref('band', load_on_pending=True), uselist=False)
 
+    num_hotel_rooms = Column(Integer, default=1, admin_only=True)
     payment = Column(Integer, default=0, admin_only=True)
     vehicles = Column(Integer, default=1, admin_only=True)
     estimated_loadin_minutes = Column(Integer, default=c.DEFAULT_LOADIN_MINUTES, admin_only=True)
