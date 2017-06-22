@@ -67,15 +67,17 @@
 {% endblock %}
 
 {% block band_text_accommodations %}
-    <h3>
-        Accommodations
-    </h3>
-    <p>
-        {% block band_text_accommodations_inner %}
-        One hotel room with 2 queen beds will be provided,
-        with check in and out times provided as part of our final agreement.
-        {% endblock %}
-    </p>
+    {% if band.num_hotel_rooms > 0 %}
+        <h3>
+            Accommodations
+        </h3>
+        <p>
+            {% block band_text_accommodations_inner %}
+            {{ band.num_hotel_rooms }} hotel room{{ band.num_hotel_rooms|pluralize }} with 2 queen beds
+            will be provided, with check in and out times provided as part of our final agreement.
+            {% endblock %}
+        </p>
+    {% endif %}
 {% endblock %}
 
 {% block band_text_parking %}
@@ -84,7 +86,9 @@
     </h3>
     <p>
         {% block band_text_parking_inner %}
-        To be included with hotel room for <b>{{ band.vehicles }} vehicle{{ band.vehicles|pluralize }}</b>.
+        To be included
+        {% if band.num_hotel_rooms > 0 %}with hotel room{% endif %}
+        for <b>{{ band.vehicles }} vehicle{{ band.vehicles|pluralize }}</b>.
         {% endblock %}
     </p>
 {% endblock %}
