@@ -81,7 +81,10 @@ class Root:
         if cherrypy.request.method == 'POST':
             if event_id:
                 band.event_id = event_id
-            raise HTTPRedirect('index?message={}{}', band.group.name, ' data uploaded')
+            message = self._required_message(
+                params, ['payment', 'vehicles', 'estimated_loadin_minutes', 'estimated_performance_minutes'])
+            if not message:
+                raise HTTPRedirect('index?message={}{}', band.group.name, ' data uploaded')
 
         events = session.query(Event).filter_by(location=c.CONCERTS).order_by(Event.start_time).all()
         return {
