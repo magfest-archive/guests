@@ -16,11 +16,10 @@ h1 {
 <h1>Bands and Other Groups <a class="btn btn-primary" href="add_band">Add a Band</a></h1>
 
 <div class="table-responsive">
-  <table class="datatable table table-striped" data-page-length="-1">
+  <table id="group-table" class="datatable table table-striped" data-page-length="-1">
     <thead>
         <tr>
             <th>Group</th>
-            <th>Band?</th>
             {% if c.BAND_PANEL_DEADLINE %}<th>Panel</th>{% endif %}
             {% if c.BAND_BIO_DEADLINE %}<th>Bio Provided</th>{% endif %}
             {% if c.BAND_AGREEMENT_DEADLINE %}<th>Agreement Completed</th>{% endif %}
@@ -29,20 +28,15 @@ h1 {
             {% if c.BAND_CHARITY_DEADLINE %}<th>Charity</th>{% endif %}
             {% if c.BAND_BADGE_DEADLINE %}<th>Badges Claimed</th>{% endif %}
             {% if c.STAGE_AGREEMENT_DEADLINE %}<th>Stage Plans</th>{% endif %}
+            <th>Band?</th>
         </tr>
     </thead>
     <tbody>
     {% for group in groups %}
         <tr id="{{ group.id }}" class="{{ group.band|yesno("band,nonband") }}">
-            <td><a href="../groups/form?id={{ group.id }}">{{ group.name }}</a></td>
-            <td class="band">
-                {% if group.band %}
-                    <button class="btn btn-sm btn-warning" onClick="removeAsBand('{{ group.id }}')">Unmark as a Band</button>
-                    <br>
-                    <a href="band_info?id={{ group.band.id }}">Band Info</a>
-                {% else %}
-                    <button class="btn btn-sm btn-primary" onClick="markAsBand('{{ group.id }}')">Mark as a Band</button>
-                {% endif %}
+            <td>
+              <a href="../groups/form?id={{ group.id }}">{{ group.name }}</a>
+              <span class="band_info">{% if group.band %}(<a href="band_info?id={{ group.band.id }}">Band Info</a>){% endif %}</span>
             </td>
             {% if c.BAND_PANEL_DEADLINE %}<td>{{ group.band.panel.status if group.band else '' }}</td>{% endif %}
             {% if c.BAND_BIO_DEADLINE %}<td>{{ group.band.bio.status if group.band else '' }}</td>{% endif %}
@@ -54,6 +48,13 @@ h1 {
             {% if c.BAND_CHARITY_DEADLINE %}<td>{{ group.band.charity.status if group.band else '' }}</td>{% endif %}
             {% if c.BAND_BADGE_DEADLINE %}<td>{{ group.unregistered_badges ~ " Unclaimed" if group.unregistered_badges else "Yes" }}</td>{% endif %}
             {% if c.STAGE_AGREEMENT_DEADLINE %}<td>{{ group.band.stage_plot.status|url_to_link("Yes", "_blank") if group.band else '' }}</td>{% endif %}
+            <td class="band">
+                {% if group.band %}
+                    <button class="btn btn-sm btn-danger btn-unmark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Unmark as Band</button>
+                {% else %}
+                    <button class="btn btn-sm btn-primary btn-mark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Mark as Band</button>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
@@ -63,8 +64,10 @@ h1 {
 <p><a href="everything">Export all band data as a CSV file</a></p>
 
 <script>
-    var markAsBand = function (groupId) {
-        var $band = $('#' + groupId).find('.band'),
+    var markAsBand = function (groupId, groupName) {
+        var $group = $('#' + groupId),
+            $band = $group.find('.band'),
+            $bandInfo = $group.find('.band_info'),
             $button = $band.find('.btn').prop('disabled', true).text('Marking...');
         $.ajax({
             method: 'POST',
@@ -76,17 +79,21 @@ h1 {
             success: function (response) {
                 if (response.id) {
                     $band.empty().append(
-                        '<button class="btn btn-sm btn-warning" onClick="removeAsBand(\'' + groupId + '\')">Unmark as a Band</button>' +
-                        '<br>' +
-                        '<a href="band_info?id=' + response.id + '">Band Info</a>'
+                        '<button class="btn btn-sm btn-danger btn-unmark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Unmark as Band</button>'
                     ).parents('tr').removeClass('nonband').addClass('band');
+                    $bandInfo.empty().append(
+                        '(<a href="band_info?id=' + response.id + '">Band Info</a>)'
+                    );
                 }
                 toastr.info(response.message);
             }
         });
     };
-    var removeAsBand = function (groupId) {
-        var $band = $('#' + groupId).find('.band'),
+
+    var removeAsBand = function (groupId, groupName) {
+        var $group = $('#' + groupId),
+            $band = $group.find('.band'),
+            $bandInfo = $group.find('.band_info'),
             $button = $band.find('.btn').prop('disabled', true).text('Unmarking...');
         $.ajax({
             method: 'POST',
@@ -98,14 +105,16 @@ h1 {
             success: function (response) {
                 if (response.id) {
                     $band.empty().append(
-                        '<button class="btn btn-sm btn-primary" onClick="markAsBand(\'' + response.id + '\')">Mark as a Band</button>'
+                        '<button class="btn btn-sm btn-primary btn-mark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Mark as Band</button>'
                     ).parents('tr').removeClass('band').addClass('nonband');
+                    $bandInfo.empty();
                 }
                 toastr.info(response.message);
             }
         });
     };
-    $(document).ready(function() {
+
+    $(function() {
         $(window).load(function() {
             $('.dataTables_length').append(
                 '<label class="dataTables_addon">' +
@@ -114,6 +123,33 @@ h1 {
 
             var $onlyBands = $('#only-bands').on('click', function () {
                 setVisible('.nonband', !$onlyBands.prop('checked'))
+            });
+        });
+
+        $('#group-table').on('click', '.btn-mark', function(event) {
+            event.preventDefault();
+            var groupId = $(this).data('group_id'),
+                groupName = $(this).data('group_name');
+            markAsBand(groupId, groupName);
+        });
+
+        $('#group-table').on('click', '.btn-unmark', function(event) {
+            event.preventDefault();
+            var groupId = $(this).data('group_id'),
+                groupName = $(this).data('group_name');
+            bootbox.confirm({
+                backdrop: true,
+                title: 'Unmark "' + groupName + '" as Band',
+                message: 'Are you sure you want to unmark "' + groupName + '" as a band? This will permanently erase their bio info, stage layouts, agreements, etc...',
+                buttons: {
+                    confirm: { label: 'Unmark as Band', className: 'btn-danger' },
+                    cancel: { label: 'Nevermind', className: 'btn-default' }
+                },
+                callback: function(result) {
+                    if (result) {
+                        removeAsBand(groupId, groupName);
+                    }
+                }
             });
         });
     });
