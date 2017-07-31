@@ -1,6 +1,6 @@
 {{ band.group.name }},
 
-{{ c.EVENT_NAME }} has a yearly charity auction with 100% of proceeds going to Child's Play, and we ask our bands to contribute signed merchandise to the auction.  Please tell us whether you are able to donate anything at {{ c.URL_BASE }}/bands/charity?id={{ band.id }}
+{{ c.EVENT_NAME }} has a yearly charity auction with 100% of proceeds going to Child's Play, and we ask our bands to contribute signed merchandise to the auction.  Please tell us whether you are able to donate anything at {{ c.URL_BASE }}/bands/charity?band_id={{ band.id }}
 
 To help us plan our charity auction, we ask that you please fill out this form no later than {{ c.BAND_CHARITY_DEADLINE|datetime_local }}.
 
