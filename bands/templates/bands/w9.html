@@ -5,18 +5,22 @@
 
 {% if band.taxes.status %}
     <a href="{{ band.taxes.w9_url }}">Click here to view the W9 tax form you uploaded.</a>
+    <br/><br/>
+    Need to update this form?
+{% endif %}
 
-    <br/><br/> Need to update this form? {% endif %}You can find a blank W9 form <a target="_blank" href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">here</a>.  Please upload
-a filled out copy of this form below:
+You can find a blank W9 form <a target="_blank" href="https://www.irs.gov/pub/irs-pdf/fw9.pdf">here</a>.
+Please upload a filled out copy of this form.
 
-<br/> <br/>
+<br/><br/>
 
 <form method="post" action="w9" enctype="multipart/form-data">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
     <input type="hidden" name="id" value="{{ band_taxes.db_id }}" />
     {{ csrf_token() }}
     <input type="file" name="w9" />
-    <input type="submit" value="Upload Completed Form" />
+    <br/>
+    <input type="submit" class="btn btn-primary" value="Upload Completed Form" />
 </form>
 
 {% endblock %}

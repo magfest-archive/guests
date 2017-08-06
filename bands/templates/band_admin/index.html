@@ -36,7 +36,7 @@ h1 {
         <tr id="{{ group.id }}" class="{{ group.band|yesno("band,nonband") }}">
             <td>
               <a href="../groups/form?id={{ group.id }}">{{ group.name }}</a>
-              <span class="band_info">{% if group.band %}(<a href="band_info?id={{ group.band.id }}">Band Info</a>){% endif %}</span>
+              <span class="band_info">{% if group.band %}(<a href="band_info?id={{ group.band.id }}" class="text-nowrap">Band Info</a>){% endif %}</span>
             </td>
             {% if c.BAND_PANEL_DEADLINE %}<td>{{ group.band.panel.status if group.band else '' }}</td>{% endif %}
             {% if c.BAND_BIO_DEADLINE %}<td>{{ group.band.bio.status if group.band else '' }}</td>{% endif %}

@@ -1,0 +1,18 @@
+{% if band.payment %}
+  <tr>
+    <td width="25">{{ macros.checklist_image(band.taxes.status) }}</td>
+    <td><b><a href="w9?band_id={{ band.id }}">Completed W9</a></b></td>
+    <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime_local }}</td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      {% if band.taxes.status %}
+        You have already uploaded your W9 form, but if you need to make changes you can upload a new one
+        using the link above.
+      {% else %}
+        Use the link above to upload a completed W9 form (a link will be provided to a blank form).
+      {% endif %}
+      <br/></br>
+    </td>
+  </tr>
+{% endif %}

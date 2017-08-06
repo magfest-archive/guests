@@ -1,0 +1,21 @@
+<tr>
+  <td width="25">{{ macros.checklist_image(band.all_badges_claimed) }}</td>
+  <td><b><a target="_blank" href="../preregistration/group_members?id={{ band.group.id }}">Assign Your Unclaimed Badges</a></b></td>
+  <td><i>Deadline:</i> {{ c.BAND_BADGE_DEADLINE|datetime_local }}</td>
+</tr>
+<tr>
+  <td colspan="3">
+    {% if band.all_badges_claimed %}
+      You have already assigned all badges which have been assigned to your group, but you may change who your
+      complementary badges are assigned to using the link above anytime until the start of {{ c.EVENT_NAME }}.
+    {% else %}
+      You currently have {{ band.group.floating|length }} unassigned complementary
+      badge{{ band.group.floating|length|pluralize }} available to your group.  You may use the link above to
+      assign these badges.
+    {% endif %}
+    <br/><br/>
+    By default, each performer receives a badge for themselves, plus an additional badge for a guest.
+    Additional complimentary badges may be issued upon request.
+    <br/></br>
+  </td>
+</tr>

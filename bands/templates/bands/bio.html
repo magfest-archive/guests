@@ -1,7 +1,7 @@
 {% extends "bandbase.html" %}
 {% block body %}
 
-<h3>Bio Info for {{ band.group.name }}</h3>
+<h2>Bio Info for {{ band.group.name }}</h2>
 
 Please provide a short bio for our website.  Everything else is optional, but if you provide a picture and any social media
 information, we'll include that as well.
@@ -14,50 +14,61 @@ information, we'll include that as well.
     {{ csrf_token() }}
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Short Bio:</label>
+        <label class="col-sm-3 control-label">Short Bio</label>
         <div class="col-sm-6">
             <textarea class="form-control" name="desc">{{ band_bio.desc }}</textarea>
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Website:</label>
+        <label class="col-sm-3 control-label optional-field">Website</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="website" value="{{ band_bio.website }}" />
+            <input type="text" class="form-control" name="website" value="{{ band_bio.website }}" />
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Facebook:</label>
+        <label class="col-sm-3 control-label optional-field">Facebook</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="facebook" value="{{ band_bio.facebook }}" />
+            <input type="text" class="form-control" name="facebook" value="{{ band_bio.facebook }}" />
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Twitter:</label>
+        <label class="col-sm-3 control-label optional-field">Twitter</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="twitter" value="{{ band_bio.twitter }}" />
+            <input type="text" class="form-control" name="twitter" value="{{ band_bio.twitter }}" />
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Other Social Media:</label>
+        <label class="col-sm-3 control-label optional-field">Other Social Media</label>
         <div class="col-sm-6">
-            <input type=text" class="form-control" name="other_social_media" value="{{ band_bio.other_social_media }}" />
+            <input type="text" class="form-control" name="other_social_media" value="{{ band_bio.other_social_media }}" />
         </div>
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label optional-field">Picture:</label>
+        <label class="col-sm-3 control-label optional-field">Picture</label>
         <div class="col-sm-6">
-            {% if band.bio.uploaded_pic %}<a href="{{ band.bio.pic_url }}">View your current bio pic</a>
-                or upload a new one: {% endif %}<input type="file" name="bio_pic" />
+          <div class="form-control-static">
+            {% if band.bio.uploaded_pic -%}
+              <a href="{{ band.bio.pic_url }}">View your current bio pic</a> or upload a new one:
+            {%- endif -%}
+            <input type="file" name="bio_pic" />
+          </div>
         </div>
     </div>
 
+    {{ macros.form_group(
+        band.bio,
+        'teaser_song_url',
+        label='Teaser Song',
+        placeholder='www.example.com/teaser-song.mp3',
+        help='Please provide a cloud storage link to an .mp3 of the song you would featured in a "teaser" to be shared via MAGFest social media') }}
+
     <div class="form-group">
-        <div class="col-sm-6 col-sm-offset-2">
+        <div class="col-sm-6 col-sm-offset-3">
             <button type="submit" class="btn btn-primary">Upload Bio Info</button>
         </div>
     </div>
