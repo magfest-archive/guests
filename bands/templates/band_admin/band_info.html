@@ -3,76 +3,38 @@
 {% block content %}
 
 <style type="text/css">
-    .col-sm-6 {
-        font-family: Courier;
-        padding-top: 8px;
-    }
+    .form-group { margin-bottom: 8px; }
 </style>
 
 <h2>Band Info for <a href="../bands/index?id={{ band.id }}">{{ band.group.name }}</a></h2>
 
-<br/> <br/>
 <form class="form-horizontal" role="form" method="post" action="band_info">
     {{ csrf_token() }}
     <input type="hidden" name="id" value="{{ band.id }}" />
 
-    {% if band.panel.name %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Panel Name:</label>
-        <div class="col-sm-6">
-            {{ band.panel.name }}
-        </div>
-    </div>
+    {{ macros.form_group(band.panel, 'name', label='Panel Name', is_readonly=True) }}
+    {{ macros.form_group(band.panel, 'length', label='Panel Length', is_readonly=True) }}
+    {{ macros.form_group(band.panel, 'desc', label='Panel Description', is_readonly=True) }}
+
+    {% if band.panel.tech_needs or band.panel.other_tech_needs %}
+      {{ macros.form_checkgroup(band.panel, 'tech_needs',
+          other_field='other_tech_needs',
+          label='Panel Tech Needs',
+          is_required=True,
+          is_readonly=True) }}
     {% endif %}
 
-    {% if band.panel.length %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Panel Length:</label>
-        <div class="col-sm-6">
-            {{ band.panel.length }}
-        </div>
-    </div>
-    {% endif %}
+    {{ macros.form_group(band.bio, 'desc', label='Bio', is_readonly=True) }}
+    {{ macros.form_group(band.bio, 'pic_url',
+        url_text="Click here to view the band's uploaded picture",
+        url_is_relative=True,
+        label='Bio Pic',
+        is_readonly=True) }}
 
-    {% if band.panel.desc %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Panel Description:</label>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">W9</label>
         <div class="col-sm-6">
-            {{ band.panel.desc|linebreaksbr }}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if band.panel.tech_needs %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Panel Tech Needs:</label>
-        <div class="col-sm-6">
-            {{ band.panel.panel_tech_needs_labels|join(" / ") }}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if band.bio.desc %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Bio:</label>
-        <div class="col-sm-6">
-            {{ band.bio.desc|linebreaksbr }}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if band.bio.uploaded_pic %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Bio Pic:</label>
-        <div class="col-sm-6">
-            <a href="{{ band.bio.pic_url }}">Click here to view the band's uploaded picture</a>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="row">
-        <label class="col-sm-2 control-label">W9:</label>
-        <div class="col-sm-6">
+          <div class="form-control-static">
             {% if not band.payment %}
             This band isn't being paid and thus doesn't need a W9 tax form.
             {% elif band.taxes.status %}
@@ -80,185 +42,76 @@
             {% else %}
             This band is supposed to be paid, but has not uploaded a W9 tax form yet.
             {% endif %}
+          </div>
         </div>
     </div>
 
-    {% if band.bio.website %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Website:</label>
-        <div class="col-sm-6">
-            {{ band.bio.website }}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if band.bio.facebook %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Facebook:</label>
-        <div class="col-sm-6">
-            {{ band.bio.facebook }}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if band.bio.twitter %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Twitter:</label>
-        <div class="col-sm-6">
-            {{ band.bio.twitter }}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if band.bio.other_social_media %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Other Social Media:</label>
-        <div class="col-sm-6">
-            {{ band.bio.other_social_media }}
-        </div>
-    </div>
-    {% endif %}
-
-    {% if band.info.poc_phone %}
-    <div class="row">
-        <label class="col-sm-2 control-label">PoC Cellphone:</label>
-        <div class="col-sm-6">
-            {{ band.info.poc_phone }}
-        </div>
-    </div>
-    {% endif %}
+    {{ macros.form_group(band.bio, 'website', type='url', is_readonly=True) }}
+    {{ macros.form_group(band.bio, 'facebook', is_readonly=True) }}
+    {{ macros.form_group(band.bio, 'twitter', is_readonly=True) }}
+    {{ macros.form_group(band.bio, 'other_social_media', is_readonly=True) }}
+    {{ macros.form_group(band.bio, 'teaser_song_url', type='url', label='Teaser Song', is_readonly=True) }}
+    {{ macros.form_group(band.info, 'poc_phone', label='PoC Cellphone', is_readonly=True) }}
 
     {% if band.info.performer_count %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Performer Count:</label>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Performer Count</label>
         <div class="col-sm-6">
-            {{ band.info.performer_count }} ({{ band.estimated_performer_count }} is the number of Guest badges assigned)
+            <div class="form-control-static">{{ band.info.performer_count }} ({{ band.estimated_performer_count }} is the number of Guest badges assigned)</div>
         </div>
     </div>
     {% endif %}
 
     {% if band.info.bringing_vehicle %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Vehicle Information:</label>
-        <div class="col-sm-6">
-            {{ band.info.vehicle_information }}
-        </div>
-    </div>
+      {{ macros.form_group(band.info, 'vehicle_info', is_readonly=True) }}
     {% endif %}
+    {{ macros.form_group(band.info, 'arrival_time', is_readonly=True) }}
+    {{ macros.form_group(band.stage_plot, 'url',
+        url_text="Click here to view the band's stage plot",
+        url_is_relative=True,
+        label='Stage Plot',
+        is_readonly=True) }}
 
-    {% if band.info.arrival_time %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Arrival Time:</label>
-        <div class="col-sm-6">
-            {{ band.info.arrival_time }}
-        </div>
-    </div>
-    {% endif %}
+    {{ macros.form_group(band.merch, 'selling_merch_label', label='Merchandise', is_readonly=True) }}
+    {{ macros.form_group(band.charity, 'donating_label', label='Charity', is_readonly=True) }}
+    {{ macros.form_group(band.charity, 'desc', label='Donation', is_readonly=True) }}
 
-    {% if band.stage_plot.uploaded_file %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Stage Plot:</label>
-        <div class="col-sm-6">
-            <a href="{{ band.stage_plot.url }}">Click here to view the band's stage plot</a>
-        </div>
-    </div>
-    {% endif %}
+    {{ macros.form_group(band, 'payment', type='number',
+        help="""The number of dollars we're paying the band.  If you leave this
+        at zero, then no mention of payment will be made in their band agreement,
+        otherwise the amount will be listed and the band will be told they will
+        receive a check on-site after their performance.""") }}
 
-    {% if band.merch.selling_merch %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Merchandise:</label>
-        <div class="col-sm-6">
-            {{ band.merch.merch_label }}
-        </div>
-    </div>
-    {% endif %}
+    {{ macros.form_group(band, 'vehicles', type='number',
+        help="The number of vehicles we're paying for parking (attached to the band's room).") }}
 
-    {% if band.charity.donating %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Charity:</label>
-        <div class="col-sm-6">
-            {{ band.charity.charity_label }}
-        </div>
-    </div>
-    {% endif %}
+    {{ macros.form_group(band, 'num_hotel_rooms', type='number', label='Hotel Rooms',
+        help="How many hotel rooms are we offering the band.") }}
 
-    {% if band.charity.desc %}
-    <div class="row">
-        <label class="col-sm-2 control-label">Donation:</label>
-        <div class="col-sm-6">
-            {{ band.charity.desc }}
-        </div>
-    </div>
-    {% endif %}
+    {{ macros.form_group(band, 'estimated_loadin_minutes', type='number', label='Load-In length',
+        help="""The number of minutes we're telling the band they will
+        have prior to performance for stage load-in and setup.""") }}
 
-    <div class="row">
-        <label class="col-sm-2 control-label">Payment:</label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" name="payment" value="{{ band.payment }}" />
-            <p class="help-text">
-                The number of dollars we're paying the band.  If you leave this at zero, then no mention
-                of payment will be made in their band agreement, otherwise the amount will be listed and
-                the band will be told they will receive a check on-site after their performance.
-            </p>
-        </div>
-    </div>
+    {{ macros.form_group(band, 'estimated_performance_minutes', type='number', label='Performance length',
+        help="The number of minutes we're telling the band they will have to perform.") }}
 
-    <div class="row">
-        <label class="col-sm-2 control-label">Vehicles:</label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" name="vehicles" value="{{ band.vehicles }}" />
-            <p class="help-text">
-                The number of vehicles we're paying for parking (attached to the band's room).
-            </p>
-        </div>
-    </div>
 
-    <div class="row">
-        <label class="col-sm-2 control-label">Hotel Rooms:</label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" name="num_hotel_rooms" value="{{ band.num_hotel_rooms }}" />
-            <p class="help-text">
-                How many hotel rooms are we offering the band.
-            </p>
-        </div>
-    </div>
-
-    <div class="row">
-        <label class="col-sm-2 control-label">Load-In length:</label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" name="estimated_loadin_minutes" value="{{ band.estimated_loadin_minutes }}" />
-            <p class="help-text">
-                The number of minutes we're telling the band they will have prior to performance for stage load-in and setup.
-            </p>
-        </div>
-    </div>
-
-    <div class="row">
-        <label class="col-sm-2 control-label">Performance length:</label>
-        <div class="col-sm-6">
-            <input type="number" class="form-control" name="estimated_performance_minutes" value="{{ band.estimated_performance_minutes }}" />
-            <p class="help-text">
-                The number of minutes we're telling the band they will have to perform.
-            </p>
-        </div>
-    </div>
-
-    <div class="row">
-        <label class="col-sm-2 control-label">Event:</label>
+    <div class="form-group">
+        <label class="col-sm-3 control-label">Event</label>
         <div class="col-sm-6">
             <select name="event_id" class="form-control">
                 <option value="">Pick an Event</option>
                 {{ options(events,band.event_id) }}
             </select>
-            <p class="help-text">
+            <p class="help-block">
                 If not set, the band agreement will say "date and time information coming soon"<br/>
                 If this is set, the band agreement will reflect the start time of the event on the schedule.
             </p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-2">
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-3">
             <button type="submit" class="btn btn-primary">Upload Band Info</button>
         </div>
     </div>

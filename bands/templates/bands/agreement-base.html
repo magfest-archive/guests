@@ -105,18 +105,9 @@
     </p>
 {% endblock %}
 
-{% block band_text_agreement_confirm %}
-    <h3>
-        Agreement
-    </h3>
-    <p>
-        By submitting your band's information<span class="printhide"> below</span>, you agree to the above terms.
-    </p>
-{% endblock %}
-
 {% block band_information_form %}
 <h3>
-    Your Information:
+    Your Information
 </h3>
 <form method="post" action="agreement" class="form-horizontal" role="form">
     <input type="hidden" name="band_id" value="{{ band.id }}" />
@@ -124,7 +115,7 @@
     {{ csrf_token() }}
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Performer Count:</label>
+        <label class="col-sm-3 control-label">Performer Count</label>
         <div class="col-sm-6">
             <input class="form-control" type="number" name="performer_count" value="{{ band_info.performer_count|default(band.estimated_performer_count) }}" />
             <p class="help-text">
@@ -135,7 +126,7 @@
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">PoC Phone Number:</label>
+        <label class="col-sm-3 control-label">PoC Phone Number</label>
         <div class="col-sm-6">
             <input class="form-control" type="text" name="poc_phone" value="{{ band_info.poc_phone|default(band.group.leader.cellphone) }}" />
             <p class="help-text">
@@ -146,7 +137,7 @@
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Arrival Time:</label>
+        <label class="col-sm-3 control-label">Arrival Time</label>
         <div class="col-sm-6">
             <input class="form-control" type="text" name="arrival_time" value="{{ band_info.arrival_time }}" />
             <p class="help-text">
@@ -156,14 +147,14 @@
     </div>
 
     <div class="form-group">
-        <label class="col-sm-2 control-label">Parking:</label>
-        <div class="col-sm-6">
-            {{ macros.checkbox(band_info, 'bringing_vehicle') }} We will be parking at {{ c.EVENT_NAME }}.
+        <label class="col-sm-3 control-label">Parking</label>
+        <div class="checkbox col-sm-9">
+            {{ macros.checkbox(band_info, 'bringing_vehicle', label='We will be parking at ' + c.EVENT_NAME) }}
         </div>
     </div>
 
     <div id="vehicle-info" class="form-group" style="display:none">
-        <label class="col-sm-2 control-label">Vehicle Information:</label>
+        <label class="col-sm-3 control-label">Vehicle Information</label>
         <div class="col-sm-6">
             <input class="form-control" type="text" name="vehicle_info" value="{{ band_info.vehicle_info }}" />
             <p class="help-text">
@@ -172,10 +163,17 @@
         </div>
     </div>
 
+    <h3>
+        Performance Agreement
+    </h3>
+    <p>
+        By clicking below and submitting your information, you agree to the terms of this performance agreement.
+    </p>
+
     <div class="form-group">
-        <div class="col-sm-6 col-sm-offset-2">
+        <div class="col-sm-6 col-sm-offset-3">
             <button type="submit" class="btn btn-primary">
-                Save Band Info
+                Save Information and Agree
             </button>
         </div>
     </div>

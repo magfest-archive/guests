@@ -99,6 +99,7 @@ class BandBio(MagModel):
     facebook = Column(UnicodeText)
     twitter = Column(UnicodeText)
     other_social_media = Column(UnicodeText)
+    teaser_song_url = Column(UnicodeText)
 
     pic_filename = Column(UnicodeText)
     pic_content_type = Column(UnicodeText)
@@ -191,6 +192,7 @@ class BandPanel(MagModel):
     length = Column(UnicodeText)
     desc = Column(UnicodeText)
     tech_needs = Column(MultiChoice(c.TECH_NEED_OPTS))
+    other_tech_needs = Column(UnicodeText)
 
     @property
     def status(self):

@@ -1,0 +1,15 @@
+<tr>
+  <td width="25">{{ macros.checklist_image(band.stage_plot.status) }}</td>
+  <td><b><a href="stage_plot?band_id={{ band.id }}">Stage Layouts & Tech Requests</a></b></td>
+  <td><i>Deadline:</i> {{ c.STAGE_AGREEMENT_DEADLINE|datetime_local }}</td>
+</tr>
+<tr>
+  <td colspan="3">
+    We require that you upload an exact description of your desired stage layout.
+    Also include any needed extra rental requests, set lists, information regarding
+    video/visuals, etc...
+    <br/></br>
+    Failure to do so may result in you not receiving the setup you expect or want.
+    <br/></br>
+  </td>
+</tr>
