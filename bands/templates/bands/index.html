@@ -26,7 +26,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
 ] -%}
 
 <table style="width:auto">
-  {% for item in items|sort(attribute='deadline') -%}
+  {% for item in items|selectattr('deadline')|sort(attribute='deadline') -%}
     {%- if item.deadline -%}
       {%- include item.template -%}
     {%- endif -%}
