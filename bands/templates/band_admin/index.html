@@ -82,7 +82,7 @@ h1 {
                         '<button class="btn btn-sm btn-danger btn-unmark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Unmark as Band</button>'
                     ).parents('tr').removeClass('nonband').addClass('band');
                     $bandInfo.empty().append(
-                        '(<a href="band_info?id=' + response.id + '">Band Info</a>)'
+                        '(<a href="band_info?id=' + response.id + '" class="text-nowrap">Band Info</a>)'
                     );
                 }
                 toastr.info(response.message);
