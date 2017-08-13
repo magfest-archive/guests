@@ -103,5 +103,5 @@ class TestAddBand(object):
             assert group.badges == 4
             for attendee in group.attendees:
                 assert attendee.paid == c.PAID_BY_GROUP
-                assert attendee.badge_type == c.ATTENDEE_BADGE
+                assert attendee.badge_type == c.GUEST_BADGE
                 assert c.BAND in attendee.ribbon_ints
