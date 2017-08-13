@@ -26,7 +26,7 @@ class Root:
             if not message:
                 group.auto_recalc = False
                 session.add(group)
-                message = session.assign_badges(group, params.get('badges', 1), new_ribbon_type=c.BAND, paid=c.PAID_BY_GROUP)
+                message = session.assign_badges(group, params.get('badges', 1), new_badge_type=c.GUEST_BADGE, new_ribbon_type=c.BAND, paid=c.PAID_BY_GROUP)
             if not message:
                 session.commit()
                 leader = group.leader = group.attendees[0]
