@@ -153,7 +153,7 @@ class Root:
         band_charity = session.band_charity(params)
         if cherrypy.request.method == 'POST':
             if not band_charity.donating:
-                message = 'You need to tell is whether you are donating anything'
+                message = 'You need to tell us whether you are donating anything'
             elif band_charity.donating == c.DONATING and not band_charity.desc:
                 message = 'You need to tell us what you intend to donate'
             else:
