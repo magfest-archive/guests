@@ -59,8 +59,9 @@ class Root:
             'message': message
         }
 
-    def w9(self, session, band_id=None, id=None, message='', w9=None, **params):
-        band_id = band_id or id
+    def w9(self, session, band_id=None, message='', w9=None, **params):
+        if not band_id:
+            band_id = params.pop('id', None)
         assert band_id, 'Either a band_id or id is required'
         band = session.band(band_id)
         band_taxes = session.band_taxes(params, restricted=True)
