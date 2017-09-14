@@ -13,8 +13,8 @@ h1 {
 }
 </style>
 
-<h1>Bands and Other Groups <a class="btn btn-primary" href="add_band">Add a Group</a></h1>
-  <div id="show-opts" class="btn-group" data-toggle="buttons"></div>
+<h1>Bands and Other Groups <a class="btn btn-primary" href="add_group">Add a Group</a></h1>
+  <div id="show-opts" class="btn-group" style="margin-bottom: 10px" data-toggle="buttons"></div>
 
 <div class="table-responsive">
   <table id="group-table" class="datatable table table-striped" data-page-length="-1">
@@ -39,10 +39,10 @@ h1 {
             </td>
             {% for item in c.CHECKLIST_ITEMS %}
               {% set item_display = group.band.status(item.name) if group.band else '' %}
-              {% set item_display = "Not Needed" if item.name == 'taxes' and not group.band.payment else item_display %}
+              {% set item_display = "Not Needed" if item.name == 'taxes' and item_display != 'N/A' and not group.band.payment else item_display %}
 
               {% if item.is_link %}
-                <td>{{ item_display|url_to_link("Yes", "_blank") if item_display != 'N/A' else item_display }}</td>
+                <td>{{ item_display|url_to_link("Yes", "_blank") if '../' in item_display else item_display }}</td>
               {% elif item.name == 'badges' %}
                 <td>{{ group.unregistered_badges ~ " Unclaimed" if group.unregistered_badges else "Yes" }}</td>
               {% else %}

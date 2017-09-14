@@ -9,8 +9,8 @@ h1 {
 }
 </style>
 
-<form method="post" action="add_band" class="form-horizontal" style="max-width: 738px;">
-  <h1>Band Info <small><a href="index">Return to group list</a></small></h1>
+<form method="post" action="add_group" class="form-horizontal" style="max-width: 738px;">
+  <h1>Group Info <small><a href="index">Return to group list</a></small></h1>
 
   {{ csrf_token() }}
   <input type="hidden" name="id" value="{{ group.db_id }}" />

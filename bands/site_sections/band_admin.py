@@ -52,10 +52,12 @@ class Root:
         }
 
     @ajax
-    def mark_as_band(self, session, group_id, group_type):
+    def mark_as_band(self, session, group_id, group_type=None):
         group = session.group(group_id)
         if not group.leader:
             return {'message': '{} does not have an assigned group leader'.format(group.name)}
+        elif not group_type:
+            return {'message': 'Please select a group type.'}
 
         if not group.band:
             group.band = Band()
