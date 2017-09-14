@@ -1,8 +1,8 @@
 {% if band.payment %}
   <tr>
     <td width="25">{{ macros.checklist_image(band.taxes.status) }}</td>
-    <td><b><a href="w9?band_id={{ band.id }}">Completed W9</a></b></td>
-    <td><i>Deadline:</i> {{ c.BAND_W9_DEADLINE|datetime_local }}</td>
+    <td><b><a href="taxes?band_id={{ band.id }}">Completed W9</a></b></td>
+    <td><i>Deadline:</i> {{ band.deadline_from_model('taxes')|datetime_local }}</td>
   </tr>
   <tr>
     <td colspan="3">

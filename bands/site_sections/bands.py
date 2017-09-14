@@ -4,9 +4,11 @@ from bands import *
 @all_renderable()
 class Root:
     def index(self, session, id, message=''):
+        band = session.band(id)
         return {
             'message': message,
-            'band': session.band(id)
+            'band': band,
+            'sorted_checklist': sorted(c.CHECKLIST_ITEMS, key=lambda x: band.deadline_from_model(x['name'])),
         }
 
     def agreement(self, session, band_id, message='', **params):

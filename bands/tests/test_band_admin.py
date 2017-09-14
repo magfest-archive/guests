@@ -86,6 +86,7 @@ class TestAddBand(object):
                 first_name='Al',
                 last_name='Bert',
                 email='al@example.com',
+                group_type=c.BAND,
                 badges=4)
 
         with Session() as session:
