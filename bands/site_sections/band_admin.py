@@ -19,15 +19,15 @@ class Root:
             'groups_filter': filter
         }
 
-    def add_band(self, session, message='', **params):
+    def add_group(self, session, message='', **params):
         group = session.group(params, checkgroups=Group.all_checkgroups, bools=Group.all_bools)
         if cherrypy.request.method == 'POST':
             message = self._required_message(
-                params, ['name', 'first_name', 'last_name', 'email'])
+                params, ['name', 'first_name', 'last_name', 'email', 'group_type'])
             if not message:
                 group.auto_recalc = False
                 session.add(group)
-                new_ribbon = c.BAND if params['group_type'] == c.BAND else None
+                new_ribbon = c.BAND if params['group_type'] == str(c.BAND) else None
                 message = session.assign_badges(group, params.get('badges', 1), new_badge_type=c.GUEST_BADGE, new_ribbon_type=new_ribbon, paid=c.PAID_BY_GROUP)
             if not message:
                 session.commit()

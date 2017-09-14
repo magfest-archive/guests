@@ -47,30 +47,31 @@ def admin_attendee():
 
 class TestAddBand(object):
 
-    def _add_band_response(self, **params):
-        response = band_admin.Root().add_band(**params)
+    def _add_group_response(self, **params):
+        response = band_admin.Root().add_group(**params)
         if isinstance(response, bytes):
-            response = response.decode('utf-8')
+            response = response.decodes('utf-8')
         response = response.strip()
         assert response.startswith('<!DOCTYPE HTML>')
         return response
 
     def test_GET(self, GET, admin_attendee):
-        response = self._add_band_response()
+        response = self._add_group_response()
         message = _extract_message_from_html(response)
         assert message == ''
 
     def test_POST_requires_csrf_token(self, POST, admin_attendee):
         with pytest.raises(HTTPRedirect, match='CSRF'):
-            band_admin.Root().add_band()
+            band_admin.Root().add_group()
 
     @pytest.mark.parametrize('params,message_start', [
         (dict(), 'Name, First Name, Last Name, and Email are'),
         (dict(name='Group1', first_name='Al'), 'Last Name and Email are'),
-        (dict(name='Group1', first_name='Al', last_name='Bert'), 'Email is')])
+        (dict(name='Group1', first_name='Al', last_name='Bert'), 'Email is'),
+        (dict(name='Group1', first_name='Al', last_name='Bert', email='email@example.com'), 'Group Type is')])
     def test_POST_required_fields(
             self, POST, csrf_token, admin_attendee, params, message_start):
-        response = self._add_band_response(**params)
+        response = self._add_group_response(**params)
         message = _extract_message_from_html(response)
         assert message.startswith(message_start)
 
@@ -80,13 +81,13 @@ class TestAddBand(object):
 
     def test_POST_creates_group(self, POST, csrf_token, admin_attendee):
         with pytest.raises(HTTPRedirect, match='Group1 has been uploaded'):
-            response = self._add_band_response(
+            response = self._add_group_response(
                 name='Group1',
                 admin_notes='Stuff',
                 first_name='Al',
                 last_name='Bert',
                 email='al@example.com',
-                group_type=c.BAND,
+                group_type=str(c.BAND),
                 badges=4)
 
         with Session() as session:
