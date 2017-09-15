@@ -12,6 +12,9 @@ h1 {
   margin-left: 25px;
 }
 </style>
+  <div id="group-type-opts" style="display:none;">
+  {{ options(c.GROUP_TYPE_OPTS) }}
+  </div>
 
 <h1>Bands and Other Groups <a class="btn btn-primary" href="add_group">Add a Group</a></h1>
   <div id="show-opts" class="btn-group" style="margin-bottom: 10px" data-toggle="buttons"></div>
@@ -116,7 +119,7 @@ h1 {
                     $band.empty().append(
                         '<select class="form-control" class="group_type" name="group_type">'+
                         '<option value="">Select a group type</option>'+
-                        `{{ options(c.GROUP_TYPE_OPTS) }}`+
+                        $('#group-type-opts').innerHTML +
                         '</select>'+
                         '<button class="btn btn-sm btn-primary btn-mark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Mark as Group Type</button>'
                     ).parents('tr').removeClass('band').addClass('nonband');

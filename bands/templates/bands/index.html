@@ -19,7 +19,7 @@ Here is a list of things which {{ c.EVENT_NAME }} needs from you before the even
   {% for item in sorted_checklist -%}
     {# Try to include the checklist template with a prefix matching the group's type, e.g. band_info_deadline.html #}
     {%- include [
-    item['deadline_template'][0] ~ band.group_type_label|lower ~ item['deadline_template'][1],
+    item['deadline_template'][0] ~ band.group_type_label|lower ~ '_' ~ item['deadline_template'][1],
     item['deadline_template'][0] ~ item['deadline_template'][1]
     ] -%}
   {%- endfor %}

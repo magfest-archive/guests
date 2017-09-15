@@ -52,7 +52,11 @@ sqlite_reflect_kwargs = {
 
 
 def upgrade():
-    op.add_column('band', sa.Column('group_type', sa.Integer(), server_default='147019101', nullable=False))
+    if is_sqlite:
+        with op.batch_alter_table('band', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.add_column(sa.Column('group_type', sa.Integer(), server_default='147019101', nullable=False))
+    else:
+        op.add_column('band', sa.Column('group_type', sa.Integer(), server_default='147019101', nullable=False))
 
 
 def downgrade():
