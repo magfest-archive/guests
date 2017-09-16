@@ -41,13 +41,10 @@ h1 {
                 {% endif %}</span>
             </td>
             {% for item in c.CHECKLIST_ITEMS %}
-              {% set item_display = group.band.status(item.name) if group.band else '' %}
-              {% set item_display = "Not Needed" if item.name == 'taxes' and item_display != 'N/A' and not group.band.payment else item_display %}
+              {% set item_display = group.band[item.name ~ '_status'] if group.band else '' %}
 
               {% if item.is_link %}
                 <td>{{ item_display|url_to_link("Yes", "_blank") if '../' in item_display else item_display }}</td>
-              {% elif item.name == 'badges' %}
-                <td>{{ group.unregistered_badges ~ " Unclaimed" if group.unregistered_badges else "Yes" }}</td>
               {% else %}
                 <td>{{ item_display }}</td>
               {% endif %}

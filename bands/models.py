@@ -43,6 +43,18 @@ class Band(MagModel):
     estimated_loadin_minutes = Column(Integer, default=c.DEFAULT_LOADIN_MINUTES, admin_only=True)
     estimated_performance_minutes = Column(Integer, default=c.DEFAULT_PERFORMANCE_MINUTES, admin_only=True)
 
+    def __getattr__(self, name):
+        """
+        If someone tries to access a property called, e.g., info_status, and the named property doesn't exist, we
+        instead call self.status. This allows us to refer to status config options indirectly, which in turn
+        allows us to override certain status options on a case-by-case basis. This is helpful for a couple of
+        properties here, but it's vital to allow events to control group checklists with granularity.
+        """
+        if name.endswith('_status'):
+            return self.status(name.split('_')[0])
+        else:
+            return super(Band, self).__getattr__(name)
+
     def deadline_from_model(self, model):
         return getattr(c, str(self.group_type_label).upper() + "_" + str(model).upper() + "_DEADLINE", None)
 
@@ -68,6 +80,14 @@ class Band(MagModel):
         return ' '.join(
             ''.join(e for e in self.group.name.strip().lower() if e.isalnum() or e == ' ').split()
         ).replace(' ', '_')
+
+    @property
+    def badges_status(self):
+        return str(self.group.unregistered_badges) + " Unclaimed" if self.group.unregistered_badges else "Yes"
+
+    @property
+    def taxes_status(self):
+        return "Not Needed" if not self.payment else self.status('taxes')
 
     def status(self, model):
         """
