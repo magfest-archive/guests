@@ -2,7 +2,7 @@
     .form-group { margin-bottom: 8px; }
 </style>
 
-<h2>Band Info for <a href="../bands/index?id={{ band.id }}">{{ band.group.name }}</a></h2>
+<h2>Guest Info for <a href="../bands/index?id={{ band.id }}">{{ band.group.name }}</a></h2>
 
 <form class="form-horizontal" role="form" method="post" action="group_info">
     {{ csrf_token() }}
@@ -21,7 +21,7 @@
 
     {{ macros.form_group(band.bio, 'desc', label='Bio', is_readonly=True) }}
     {{ macros.form_group(band.bio, 'pic_url',
-        url_text="Click here to view the band's uploaded picture",
+        url_text="Click here to view the guest's uploaded picture",
         url_is_relative=True,
         label='Bio Pic',
         is_readonly=True) }}
@@ -31,11 +31,11 @@
         <div class="col-sm-6">
           <div class="form-control-static">
             {% if not band.payment %}
-            This band isn't being paid and thus doesn't need a W9 tax form.
+            This guest isn't being paid and thus doesn't need a W9 tax form.
             {% elif band.taxes.status %}
-            <a href="{{ band.taxes.w9_url }}">Click here to view the band's uploaded W9 tax form</a>
+            <a href="{{ band.taxes.w9_url }}">Click here to view the guest's uploaded W9 tax form</a>
             {% else %}
-            This band is supposed to be paid, but has not uploaded a W9 tax form yet.
+            This guest is supposed to be paid, but has not uploaded a W9 tax form yet.
             {% endif %}
           </div>
         </div>
@@ -45,50 +45,28 @@
     {{ macros.form_group(band.bio, 'facebook', is_readonly=True) }}
     {{ macros.form_group(band.bio, 'twitter', is_readonly=True) }}
     {{ macros.form_group(band.bio, 'other_social_media', is_readonly=True) }}
-    {{ macros.form_group(band.bio, 'teaser_song_url', type='url', label='Teaser Song', is_readonly=True) }}
     {{ macros.form_group(band.info, 'poc_phone', label='PoC Cellphone', is_readonly=True) }}
-
-    {% if band.info.performer_count %}
-    <div class="form-group">
-        <label class="col-sm-3 control-label">Performer Count</label>
-        <div class="col-sm-6">
-            <div class="form-control-static">{{ band.info.performer_count }} ({{ band.estimated_performer_count }} is the number of Guest badges assigned)</div>
-        </div>
-    </div>
-    {% endif %}
 
     {% if band.info.bringing_vehicle %}
       {{ macros.form_group(band.info, 'vehicle_info', is_readonly=True) }}
     {% endif %}
     {{ macros.form_group(band.info, 'arrival_time', is_readonly=True) }}
-    {{ macros.form_group(band.stage_plot, 'url',
-        url_text="Click here to view the band's stage plot",
-        url_is_relative=True,
-        label='Stage Plot',
-        is_readonly=True) }}
 
     {{ macros.form_group(band.merch, 'selling_merch_label', label='Merchandise', is_readonly=True) }}
     {{ macros.form_group(band.charity, 'donating_label', label='Charity', is_readonly=True) }}
     {{ macros.form_group(band.charity, 'desc', label='Donation', is_readonly=True) }}
 
     {{ macros.form_group(band, 'payment', type='number',
-        help="""The number of dollars we're paying the band.  If you leave this
-        at zero, then no mention of payment will be made in their band agreement,
-        otherwise the amount will be listed and the band will be told they will
+        help="""The number of dollars we're paying the guest.  If you leave this
+        at zero, then no mention of payment will be made in their guest agreement,
+        otherwise the amount will be listed and the guest will be told they will
         receive a check on-site after their performance.""") }}
 
     {{ macros.form_group(band, 'vehicles', type='number',
-        help="The number of vehicles we're paying for parking (attached to the band's room).") }}
+        help="The number of vehicles we're paying for parking (attached to the guest's room).") }}
 
     {{ macros.form_group(band, 'num_hotel_rooms', type='number', label='Hotel Rooms',
-        help="How many hotel rooms are we offering the band.") }}
-
-    {{ macros.form_group(band, 'estimated_loadin_minutes', type='number', label='Load-In length',
-        help="""The number of minutes we're telling the band they will
-        have prior to performance for stage load-in and setup.""") }}
-
-    {{ macros.form_group(band, 'estimated_performance_minutes', type='number', label='Performance length',
-        help="The number of minutes we're telling the band they will have to perform.") }}
+        help="How many hotel rooms are we offering the guest.") }}
 
 
     <div class="form-group">
@@ -99,15 +77,15 @@
                 {{ options(events,band.event_id) }}
             </select>
             <p class="help-block">
-                If not set, the band agreement will say "date and time information coming soon"<br/>
-                If this is set, the band agreement will reflect the start time of the event on the schedule.
+                If not set, the guest agreement will say "date and time information coming soon"<br/>
+                If this is set, the guest agreement will reflect the start time of the event on the schedule.
             </p>
         </div>
     </div>
 
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-3">
-            <button type="submit" class="btn btn-primary">Upload Band Info</button>
+            <button type="submit" class="btn btn-primary">Upload Guest Info</button>
         </div>
     </div>
 </form>

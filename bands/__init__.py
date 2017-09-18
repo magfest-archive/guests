@@ -15,5 +15,8 @@ template_overrides(join(bands_config['module_root'], 'templates'))
 mount_site_sections(bands_config['module_root'])
 
 c.MENU['People'].append_menu_item(
-    MenuItem(access=c.BANDS, name='Bands', href='../band_admin/')
+    MenuItem(access=c.BANDS, name='Bands', href='../band_admin/?filter=only-bands')
+)
+c.MENU['People'].append_menu_item(
+    MenuItem(access=c.BANDS, name='Guests', href='../band_admin/?filter=only-guests')
 )

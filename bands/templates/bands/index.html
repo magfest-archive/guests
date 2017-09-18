@@ -10,26 +10,18 @@
     }
 </style>
 
-<h2>Band Checklist for {{ band.group.name }}</h2>
+<h2>{{ band.group_type_label }} Checklist for {{ band.group.name }}</h2>
 
 Here is a list of things which {{ c.EVENT_NAME }} needs from you before the event.
 <br/><br/>
-{% set items = [
-  {'deadline': c.BAND_PANEL_DEADLINE, 'template': 'checklist/band_panel_deadline.html'},
-  {'deadline': c.BAND_BIO_DEADLINE, 'template': 'checklist/band_bio_deadline.html'},
-  {'deadline': c.BAND_AGREEMENT_DEADLINE, 'template': 'checklist/band_agreement_deadline.html'},
-  {'deadline': c.BAND_W9_DEADLINE, 'template': 'checklist/band_w9_deadline.html'},
-  {'deadline': c.BAND_MERCH_DEADLINE, 'template': 'checklist/band_merch_deadline.html'},
-  {'deadline': c.BAND_CHARITY_DEADLINE, 'template': 'checklist/band_charity_deadline.html'},
-  {'deadline': c.BAND_BADGE_DEADLINE, 'template': 'checklist/band_badge_deadline.html'},
-  {'deadline': c.STAGE_AGREEMENT_DEADLINE, 'template': 'checklist/stage_agreement_deadline.html'}
-] -%}
 
 <table style="width:auto">
-  {% for item in items|selectattr('deadline')|sort(attribute='deadline') -%}
-    {%- if item.deadline -%}
-      {%- include item.template -%}
-    {%- endif -%}
+  {% for item in sorted_checklist -%}
+    {# Try to include the checklist template with a prefix matching the group's type, e.g. band_info_deadline.html #}
+    {%- include [
+    item['deadline_template'][0] ~ band.group_type_label|lower ~ '_' ~ item['deadline_template'][1],
+    item['deadline_template'][0] ~ item['deadline_template'][1]
+    ] -%}
   {%- endfor %}
   {% include "bands/bandextra.html" %}
 </table>

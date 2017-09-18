@@ -1,7 +1,7 @@
 <tr>
   <td width="25">{{ macros.checklist_image(band.all_badges_claimed) }}</td>
   <td><b><a target="_blank" href="../preregistration/group_members?id={{ band.group.id }}">Assign Your Unclaimed Badges</a></b></td>
-  <td><i>Deadline:</i> {{ c.BAND_BADGE_DEADLINE|datetime_local }}</td>
+  <td><i>Deadline:</i> {{ band.deadline_from_model('badges')|datetime_local }}</td>
 </tr>
 <tr>
   <td colspan="3">
@@ -14,7 +14,7 @@
       assign these badges.
     {% endif %}
     <br/><br/>
-    By default, each performer receives a badge for themselves, plus an additional badge for a guest.
+    By default, each guest receives a badge for themselves, plus an additional badge.
     Additional complimentary badges may be issued upon request.
     <br/></br>
   </td>

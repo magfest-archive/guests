@@ -4,9 +4,17 @@ from bands import *
 @all_renderable()
 class Root:
     def index(self, session, id, message=''):
+        band = session.band(id)
+
+        sorted_checklist = []
+        for item in c.CHECKLIST_ITEMS:
+            if band.deadline_from_model(item['name']):
+                sorted_checklist.append(item)
+
         return {
             'message': message,
-            'band': session.band(id)
+            'band': band,
+            'sorted_checklist': sorted_checklist
         }
 
     def agreement(self, session, band_id, message='', **params):

@@ -1,7 +1,7 @@
 <tr>
   <td width="25">{{ macros.checklist_image(band.charity.status) }}</td>
   <td><b><a href="charity?band_id={{ band.id }}">Donating to our Charity Auction</a></b></td>
-  <td><i>Deadline:</i> {{ c.BAND_CHARITY_DEADLINE|datetime_local }}</td>
+  <td><i>Deadline:</i> {{ band.deadline_from_model('charity')|datetime_local }}</td>
 </tr>
 <tr>
   <td colspan="3">

@@ -1,7 +1,7 @@
 <tr>
   <td width="25">{{ macros.checklist_image(band.stage_plot.status) }}</td>
   <td><b><a href="stage_plot?band_id={{ band.id }}">Stage Layouts & Tech Requests</a></b></td>
-  <td><i>Deadline:</i> {{ c.STAGE_AGREEMENT_DEADLINE|datetime_local }}</td>
+  <td><i>Deadline:</i> {{ band.deadline_from_model('stage_plot')|datetime_local }}</td>
 </tr>
 <tr>
   <td colspan="3">

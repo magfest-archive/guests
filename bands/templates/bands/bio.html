@@ -60,12 +60,21 @@ information, we'll include that as well.
         </div>
     </div>
 
-    {{ macros.form_group(
+    {% if band.group_type == c.BAND %}
+      {{ macros.form_group(
+          band.bio,
+          'teaser_song_url',
+          label='Teaser Song',
+          placeholder='www.example.com/teaser-song.mp3',
+          help='Please provide a cloud storage link to an .mp3 of the song you would like featured in a "teaser" to be shared via MAGFest social media.') }}
+    {% else %}
+      {{ macros.form_group(
         band.bio,
         'teaser_song_url',
-        label='Teaser Song',
-        placeholder='www.example.com/teaser-song.mp3',
-        help='Please provide a cloud storage link to an .mp3 of the song you would featured in a "teaser" to be shared via MAGFest social media') }}
+        label='Website Link',
+        placeholder='www.example.com',
+        help='Please provide a link to your website to be shared on the MAGFest website and social media.') }}
+    {% endif %}
 
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-3">

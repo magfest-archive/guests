@@ -12,47 +12,53 @@ h1 {
   margin-left: 25px;
 }
 </style>
+  <div id="group-type-opts" style="display:none;">
+  {{ options(c.GROUP_TYPE_OPTS) }}
+  </div>
 
-<h1>Bands and Other Groups <a class="btn btn-primary" href="add_band">Add a Band</a></h1>
+<h1>Bands and Other Groups <a class="btn btn-primary" href="add_group">Add a Group</a></h1>
+  <div id="show-opts" class="btn-group" style="margin-bottom: 10px" data-toggle="buttons"></div>
 
 <div class="table-responsive">
   <table id="group-table" class="datatable table table-striped" data-page-length="-1">
     <thead>
         <tr>
             <th>Group</th>
-            {% if c.BAND_PANEL_DEADLINE %}<th>Panel</th>{% endif %}
-            {% if c.BAND_BIO_DEADLINE %}<th>Bio Provided</th>{% endif %}
-            {% if c.BAND_AGREEMENT_DEADLINE %}<th>Agreement Completed</th>{% endif %}
-            {% if c.BAND_W9_DEADLINE %}<th>W9 Uploaded</th>{% endif %}
-            {% if c.BAND_MERCH_DEADLINE %}<th>Merch</th>{% endif %}
-            {% if c.BAND_CHARITY_DEADLINE %}<th>Charity</th>{% endif %}
-            {% if c.BAND_BADGE_DEADLINE %}<th>Badges Claimed</th>{% endif %}
-            {% if c.STAGE_AGREEMENT_DEADLINE %}<th>Stage Plans</th>{% endif %}
-            <th>Band?</th>
+            {% for item in c.CHECKLIST_ITEMS %}
+              <th>{{ item.header }}</th>
+            {% endfor %}
+            <th>Group Type</th>
         </tr>
     </thead>
     <tbody>
     {% for group in groups %}
-        <tr id="{{ group.id }}" class="{{ group.band|yesno("band,nonband") }}">
+        <tr id="{{ group.id }}" class="{{ group.band.group_type_label|lower if group.band else "" }} group-row">
             <td>
               <a href="../groups/form?id={{ group.id }}">{{ group.name }}</a>
-              <span class="band_info">{% if group.band %}(<a href="band_info?id={{ group.band.id }}" class="text-nowrap">Band Info</a>){% endif %}</span>
+              <span class="band_info">
+                {% if group.band %}
+                  (<a href="group_info?id={{ group.band.id }}" class="text-nowrap">{{ group.band.group_type_label }} Info</a>)
+                {% endif %}</span>
             </td>
-            {% if c.BAND_PANEL_DEADLINE %}<td>{{ group.band.panel.status if group.band else '' }}</td>{% endif %}
-            {% if c.BAND_BIO_DEADLINE %}<td>{{ group.band.bio.status if group.band else '' }}</td>{% endif %}
-            {% if c.BAND_AGREEMENT_DEADLINE %}<td>{{ group.band.info.status if group.band else '' }}</td>{% endif %}
-            {% if c.BAND_W9_DEADLINE %}<td>
-                {% if group.band and not group.band.payment %}Not Needed
-                {% else %}{{ group.band.taxes.status|url_to_link("Yes", "_blank") if group.band else '' }}{% endif %}</td>{% endif %}
-            {% if c.BAND_MERCH_DEADLINE %}<td>{{ group.band.merch.status if group.band else '' }}</td>{% endif %}
-            {% if c.BAND_CHARITY_DEADLINE %}<td>{{ group.band.charity.status if group.band else '' }}</td>{% endif %}
-            {% if c.BAND_BADGE_DEADLINE %}<td>{{ group.unregistered_badges ~ " Unclaimed" if group.unregistered_badges else "Yes" }}</td>{% endif %}
-            {% if c.STAGE_AGREEMENT_DEADLINE %}<td>{{ group.band.stage_plot.status|url_to_link("Yes", "_blank") if group.band else '' }}</td>{% endif %}
+            {% for item in c.CHECKLIST_ITEMS %}
+              {% set item_display = group.band[item.name ~ '_status'] if group.band else '' %}
+
+              {% if item.is_link %}
+                <td>{{ item_display|url_to_link("Yes", "_blank") if '../' in item_display else item_display }}</td>
+              {% else %}
+                <td>{{ item_display }}</td>
+              {% endif %}
+
+            {% endfor %}
             <td class="band">
                 {% if group.band %}
-                    <button class="btn btn-sm btn-danger btn-unmark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Unmark as Band</button>
+                    <button class="btn btn-sm btn-danger btn-unmark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Unmark as {{ group.band.group_type_label }}</button>
                 {% else %}
-                    <button class="btn btn-sm btn-primary btn-mark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Mark as Band</button>
+                    <select class="form-control" class="group_type" name="group_type">
+                      <option value="">Select a group type</option>
+                      {{ options(c.GROUP_TYPE_OPTS) }}
+                    </select>
+                    <button class="btn btn-sm btn-primary btn-mark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Mark as Group Type</button>
                 {% endif %}
             </td>
         </tr>
@@ -69,20 +75,23 @@ h1 {
             $band = $group.find('.band'),
             $bandInfo = $group.find('.band_info'),
             $button = $band.find('.btn').prop('disabled', true).text('Marking...');
+        var groupType = $band.find('select[name=group_type]').val(),
+            groupTypeLabel = $band.find('select[name=group_type] option:selected').text();
         $.ajax({
             method: 'POST',
             url: 'mark_as_band',
             data: {
                 group_id: groupId,
+                group_type: groupType,
                 csrf_token: csrf_token
             },
             success: function (response) {
                 if (response.id) {
                     $band.empty().append(
-                        '<button class="btn btn-sm btn-danger btn-unmark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Unmark as Band</button>'
+                        '<button class="btn btn-sm btn-danger btn-unmark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Unmark as ' + groupTypeLabel + '</button>'
                     ).parents('tr').removeClass('nonband').addClass('band');
                     $bandInfo.empty().append(
-                        '(<a href="band_info?id=' + response.id + '" class="text-nowrap">Band Info</a>)'
+                        '(<a href="band_info?id=' + response.id + '" class="text-nowrap">Group Info</a>)'
                     );
                 }
                 toastr.info(response.message);
@@ -105,7 +114,11 @@ h1 {
             success: function (response) {
                 if (response.id) {
                     $band.empty().append(
-                        '<button class="btn btn-sm btn-primary btn-mark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Mark as Band</button>'
+                        '<select class="form-control" class="group_type" name="group_type">'+
+                        '<option value="">Select a group type</option>'+
+                        $('#group-type-opts').innerHTML +
+                        '</select>'+
+                        '<button class="btn btn-sm btn-primary btn-mark" data-group_id="' + groupId + '" data-group_name="' + groupName + '">Mark as Group Type</button>'
                     ).parents('tr').removeClass('band').addClass('nonband');
                     $bandInfo.empty();
                 }
@@ -116,14 +129,25 @@ h1 {
 
     $(function() {
         $(window).load(function() {
-            $('.dataTables_length').append(
-                '<label class="dataTables_addon">' +
-                '<input type="checkbox" id="only-bands" /> Show only bands' +
+            $('#show-opts').append(
+                '<label class="btn btn-default dataTables_addon">' +
+                '<input type="radio" name="group_type" autocomplete="off" id="show-all"> All groups' +
+                '</label>');
+            $('#show-all').on('change', function() {$('.group-row').show()});
+
+            {% for key, type in c.GROUP_TYPE_OPTS %}
+            $('#show-opts').append(
+                '<label class="btn btn-default dataTables_addon">' +
+                '<input type="radio" name="group_type" autocomplete="off" id="only-{{ type|lower }}s"> Only {{ type }}s' +
                 '</label>');
 
-            var $onlyBands = $('#only-bands').on('click', function () {
-                setVisible('.nonband', !$onlyBands.prop('checked'))
+            var $only{{ type }}s = $('#only-{{ type|lower }}s').on('change', function () {
+                $('.group-row').hide();
+                setVisible('.{{ type|lower }}', $only{{ type }}s.prop('checked', true))
             });
+            {% endfor %}
+
+            $('#{{ groups_filter }}').prop('checked', true).trigger('click');
         });
 
         $('#group-table').on('click', '.btn-mark', function(event) {
@@ -139,10 +163,10 @@ h1 {
                 groupName = $(this).data('group_name');
             bootbox.confirm({
                 backdrop: true,
-                title: 'Unmark "' + groupName + '" as Band',
-                message: 'Are you sure you want to unmark "' + groupName + '" as a band? This will permanently erase their bio info, stage layouts, agreements, etc...',
+                title: 'Unmark "' + groupName + '" as Band/Guest',
+                message: 'Are you sure you want to unmark "' + groupName + '" as a band or guest? This will permanently erase their bio info, stage layouts, agreements, etc...',
                 buttons: {
-                    confirm: { label: 'Unmark as Band', className: 'btn-danger' },
+                    confirm: { label: 'Unmark as Band/Guest', className: 'btn-danger' },
                     cancel: { label: 'Nevermind', className: 'btn-default' }
                 },
                 callback: function(result) {

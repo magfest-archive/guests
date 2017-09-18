@@ -12,21 +12,23 @@ class Root:
                 'is' if len(missing) == 1 else 'are')
         return ''
 
-    def index(self, session, message=''):
+    def index(self, session, message='', filter='show-all'):
         return {
             'message': message,
-            'groups': session.query(Group).order_by('name').all()
+            'groups': session.query(Group).order_by('name').all(),
+            'groups_filter': filter
         }
 
-    def add_band(self, session, message='', **params):
+    def add_group(self, session, message='', **params):
         group = session.group(params, checkgroups=Group.all_checkgroups, bools=Group.all_bools)
         if cherrypy.request.method == 'POST':
             message = self._required_message(
-                params, ['name', 'first_name', 'last_name', 'email'])
+                params, ['name', 'first_name', 'last_name', 'email', 'group_type'])
             if not message:
                 group.auto_recalc = False
                 session.add(group)
-                message = session.assign_badges(group, params.get('badges', 1), new_badge_type=c.GUEST_BADGE, new_ribbon_type=c.BAND, paid=c.PAID_BY_GROUP)
+                new_ribbon = c.BAND if params['group_type'] == str(c.BAND) else None
+                message = session.assign_badges(group, params.get('badges', 1), new_badge_type=c.GUEST_BADGE, new_ribbon_type=new_ribbon, paid=c.PAID_BY_GROUP)
             if not message:
                 session.commit()
                 leader = group.leader = group.attendees[0]
@@ -35,6 +37,7 @@ class Root:
                 message = check(leader)
                 if not message:
                     group.band = Band()
+                    group.band.group_type = params['group_type']
                     session.commit()
                     raise HTTPRedirect('index?message={} has been uploaded', group.name)
                 else:
@@ -49,23 +52,27 @@ class Root:
         }
 
     @ajax
-    def mark_as_band(self, session, group_id):
+    def mark_as_band(self, session, group_id, group_type=None):
         group = session.group(group_id)
         if not group.leader:
             return {'message': '{} does not have an assigned group leader'.format(group.name)}
+        elif not group_type:
+            return {'message': 'Please select a group type.'}
 
         if not group.band:
             group.band = Band()
+            group.band.group_type = group_type
             session.commit()
 
         return {
             'id': group.band.id,
-            'message': '{} has been marked as a band'.format(group.name)
+            'message': '{} has been marked as a {}'.format(group.name, group.band.group_type_label)
         }
 
     @ajax
     def remove_as_band(self, session, group_id):
         group = session.group(group_id)
+        group_type_label = group.band.group_type_label
 
         if group.band:
             group.band = None
@@ -73,16 +80,14 @@ class Root:
 
         return {
             'id': group.id,
-            'message': '{} has been removed as a band'.format(group.name)
+            'message': '{} has been removed as a {}'.format(group.name, group_type_label)
         }
 
-    def band_info(self, session, message='', event_id=None, **params):
+    def group_info(self, session, message='', event_id=None, **params):
         band = session.band(params)
         if cherrypy.request.method == 'POST':
             if event_id:
                 band.event_id = event_id
-            message = self._required_message(
-                params, ['payment', 'vehicles', 'estimated_loadin_minutes', 'estimated_performance_minutes'])
             if not message:
                 raise HTTPRedirect('index?message={}{}', band.group.name, ' data uploaded')
 
