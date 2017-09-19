@@ -1,0 +1,91 @@
+<style type="text/css">
+  .form-group { margin-bottom: 8px; }
+</style>
+
+<h2>Guest Info for <a href="../guests/index?id={{ guest.id }}">{{ guest.group.name }}</a></h2>
+
+<form class="form-horizontal" role="form" method="post" action="group_info">
+  {{ csrf_token() }}
+  <input type="hidden" name="id" value="{{ guest.id }}" />
+
+  {{ macros.form_group(guest.panel, 'name', label='Panel Name', is_readonly=True) }}
+  {{ macros.form_group(guest.panel, 'length', label='Panel Length', is_readonly=True) }}
+  {{ macros.form_group(guest.panel, 'desc', label='Panel Description', is_readonly=True) }}
+
+  {% if guest.panel.tech_needs or guest.panel.other_tech_needs %}
+    {{ macros.form_checkgroup(guest.panel, 'tech_needs',
+          other_field='other_tech_needs',
+          label='Panel Tech Needs',
+          is_readonly=True) }}
+  {% endif %}
+
+  {{ macros.form_group(guest.bio, 'desc', label='Bio', is_readonly=True) }}
+  {{ macros.form_group(guest.bio, 'pic_url',
+        url_text="Click here to view the guest's uploaded picture",
+        url_is_relative=True,
+        label='Bio Pic',
+        is_readonly=True) }}
+
+  <div class="form-group">
+    <label class="col-sm-3 control-label">W9</label>
+    <div class="col-sm-6">
+      <div class="form-control-static">
+        {% if not guest.payment %}
+          This guest isn't being paid and thus doesn't need a W9 tax form.
+        {% elif guest.taxes.status %}
+          <a href="{{ guest.taxes.w9_url }}">Click here to view the guest's uploaded W9 tax form</a>
+        {% else %}
+          This guest is supposed to be paid, but has not uploaded a W9 tax form yet.
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {{ macros.form_group(guest.bio, 'website', type='url', is_readonly=True) }}
+  {{ macros.form_group(guest.bio, 'facebook', is_readonly=True) }}
+  {{ macros.form_group(guest.bio, 'twitter', is_readonly=True) }}
+  {{ macros.form_group(guest.bio, 'other_social_media', is_readonly=True) }}
+  {{ macros.form_group(guest.info, 'poc_phone', label='PoC Cellphone', is_readonly=True) }}
+
+  {% if guest.info.bringing_vehicle %}
+    {{ macros.form_group(guest.info, 'vehicle_info', is_readonly=True) }}
+  {% endif %}
+  {{ macros.form_group(guest.info, 'arrival_time', is_readonly=True) }}
+
+  {{ macros.form_group(guest.merch, 'selling_merch_label', label='Merchandise', is_readonly=True) }}
+  {{ macros.form_group(guest.charity, 'donating_label', label='Charity', is_readonly=True) }}
+  {{ macros.form_group(guest.charity, 'desc', label='Donation', is_readonly=True) }}
+
+  {{ macros.form_group(guest, 'payment', type='number',
+        help="""The number of dollars we're paying the guest.  If you leave this
+        at zero, then no mention of payment will be made in their guest agreement,
+        otherwise the amount will be listed and the guest will be told they will
+        receive a check on-site after their performance.""") }}
+
+  {{ macros.form_group(guest, 'vehicles', type='number',
+        help="The number of vehicles we're paying for parking (attached to the guest's room).") }}
+
+  {{ macros.form_group(guest, 'num_hotel_rooms', type='number', label='Hotel Rooms',
+        help="How many hotel rooms are we offering the guest.") }}
+
+
+  <div class="form-group">
+    <label class="col-sm-3 control-label">Event</label>
+    <div class="col-sm-6">
+      <select name="event_id" class="form-control">
+        <option value="">Pick an Event</option>
+        {{ options(events,guest.event_id) }}
+      </select>
+      <p class="help-block">
+        If not set, the guest agreement will say "date and time information coming soon"<br/>
+        If this is set, the guest agreement will reflect the start time of the event on the schedule.
+      </p>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-6 col-sm-offset-3">
+      <button type="submit" class="btn btn-primary">Upload Guest Info</button>
+    </div>
+  </div>
+</form>

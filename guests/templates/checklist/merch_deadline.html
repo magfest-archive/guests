@@ -1,0 +1,16 @@
+<tr>
+  <td width="25">{{ macros.checklist_image(guest.merch.status) }}</td>
+  <td><b><a href="merch?guest_id={{ guest.id }}">Selling Merchandise</a></b></td>
+  <td><i>Deadline:</i> {{ guest.deadline_from_model('merch')|datetime_local }}</td>
+</tr>
+<tr>
+  <td colspan="3">
+    {% if guest.merch.status %}
+      You have already indicated your merchandise preferences, but you may update them using the link above.
+    {% else %}
+      We need you to tell us whether you have any merchandise to sell{% if c.ROCK_ISLAND %}, and whether you intend to participate in
+      our "Rock Island" program where we sell your merchandise so that you do not need to staff your own table{% endif %}.
+    {% endif %}
+    <br/></br>
+  </td>
+</tr>
