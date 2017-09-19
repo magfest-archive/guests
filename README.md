@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/magfest/bands.svg)](https://travis-ci.org/magfest/bands) [![Coverage Status](https://coveralls.io/repos/github/magfest/bands/badge.svg?branch=master)](https://coveralls.io/github/magfest/bands?branch=master)
+[![Build Status](https://travis-ci.org/magfest/guests.svg)](https://travis-ci.org/magfest/guests) [![Coverage Status](https://coveralls.io/repos/github/magfest/guests/badge.svg?branch=master)](https://coveralls.io/github/magfest/guests?branch=master)
 
-# bands
-a band management plugin for http://github.com/magfest/ubersystem
+# guests
+a guest group management plugin for http://github.com/magfest/ubersystem

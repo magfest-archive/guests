@@ -1,0 +1,16 @@
+<tr>
+  <td width="25">{{ macros.checklist_image(guest.charity.status) }}</td>
+  <td><b><a href="charity?guest_id={{ guest.id }}">Donating to our Charity Auction</a></b></td>
+  <td><i>Deadline:</i> {{ guest.deadline_from_model('charity')|datetime_local }}</td>
+</tr>
+<tr>
+  <td colspan="3">
+    {% if guest.charity.status %}
+      You have already indicated your charity preferences, but you may update them using the link above.
+    {% else %}
+      {{ c.EVENT_NAME }} runs a yearly charity auction, and we need you to tell us whether you can contribute any
+      signed merchandise.
+    {% endif %}
+    <br/></br>
+  </td>
+</tr>
