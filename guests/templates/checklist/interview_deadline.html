@@ -1,0 +1,16 @@
+<tr>
+  <td width="25">{{ macros.checklist_image(guest.interview_status) }}</td>
+  <td><b><a href="interview?guest_id={{ guest.id }}">Interview Preferences</a></b></td>
+  <td><i>Deadline:</i> {{ guest.deadline_from_model('interview')|datetime_local }}</td>
+</tr>
+<tr>
+  <td colspan="3">
+    {% if guest.interview_status %}
+      You have already {% if not guest.interview.will_interview %}declined interviews{% else %}told us your interview
+    preferences{% endif %}, but you can use the link above to update your preferences.
+    {% else %}
+      Use the link above to let us know how you would like us to handle interview requests from press.
+    {% endif %}
+    <br/></br>
+  </td>
+</tr>

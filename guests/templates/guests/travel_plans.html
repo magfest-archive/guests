@@ -1,0 +1,53 @@
+{% extends "guestbase.html" %}
+{% block body %}
+
+  <script type="text/javascript">
+  var showOrHideModesText = function() {
+      setVisible('#modes-other', $(":checkbox[name=modes][value={{ c.OTHER }}]").prop("checked"));
+  };
+
+  $(function () {
+      showOrHideCategoriesText();
+      $(":checkbox[name=modes]").click(showOrHideModesText);
+  });
+  </script>
+
+  <h2>Travel Plans for {{ guest.group.name }}</h2>
+
+  <br/> <br/>
+
+  <form method="post" action="travel_plans" class="form-horizontal" role="form" enctype="multipart/form-data">
+    <input type="hidden" name="guest_id" value="{{ guest.id }}" />
+    <input type="hidden" name="id" value="{{ guest_travel_plans.db_id }}" />
+    {{ csrf_token() }}
+
+    <div class="form-group">
+      <label class="col-sm-3 control-label">Travel Plans</label>
+      <div class="col-sm-9">
+        {{ macros.checkgroup(guest_travel_plans, 'modes') }}
+      </div>
+      <div class="clearfix"></div>
+      <div class="col-sm-6 col-sm-offset-3">
+        <input id="modes-other" class="form-control" type="text" name="modes_text"
+               value="{{ guest_travel_plans.modes_text }}" placeholder="Other (Please Specify)"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-sm-3 control-label">Arrival and Departure Plans</label>
+      <div class="col-sm-6">
+        <textarea class="form-control" name="details" rows="4">{{ guest_travel_plans.details }}</textarea>
+      </div>
+      <div class="clearfix"></div>
+      <p class="help-block col-sm-9 col-sm-offset-3">PLEASE be aware that this affects programming, so the more precise
+        you can be the better. We don’t want to accidentally put you down for a panel when you won’t even be there.</p>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-6 col-sm-offset-3">
+        <button type="submit" class="btn btn-primary">Upload Travel Plans</button>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}

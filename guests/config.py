@@ -18,6 +18,9 @@ c.CHECKLIST_ITEMS = [
     {'name': 'charity', 'header': 'Charity'},
     {'name': 'badges', 'header': 'Badges Claimed'},
     {'name': 'stage_plot', 'header': 'Stage Plans', 'is_link': True},
+    {'name': 'autograph'},
+    {'name': 'interview'},
+    {'name': 'travel_plans'}
 ]
 
 # Generate the possible template prefixes per step

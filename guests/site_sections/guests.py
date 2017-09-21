@@ -166,8 +166,6 @@ class Root:
             elif guest_charity.donating == c.DONATING and not guest_charity.desc:
                 message = 'You need to tell us what you intend to donate'
             else:
-                if guest_charity.donating == c.NOT_DONATING:
-                    guest_charity.desc = ''
                 guest.charity = guest_charity
                 session.add(guest_charity)
                 raise HTTPRedirect('index?id={}&message={}', guest.id, 'Your charity decisions have been saved')
@@ -175,6 +173,59 @@ class Root:
         return {
             'guest': guest,
             'guest_charity': guest.charity or guest_charity,
+            'message': message
+        }
+
+    def autograph(self, session, guest_id, message='', **params):
+        guest = session.guest_group(guest_id)
+        guest_autograph = session.guest_autograph(params)
+        if cherrypy.request.method == 'POST':
+            guest_autograph.length = 60 * int(params['length'])  # Convert hours to minutes
+            guest.autograph = guest_autograph
+            session.add(guest_autograph)
+            raise HTTPRedirect('index?id={}&message={}', guest.id, 'Your autograph sessions have been saved')
+
+        return {
+            'guest': guest,
+            'guest_autograph': guest.autograph or guest_autograph,
+            'message': message
+        }
+
+    def interview(self, session, guest_id, message='', **params):
+        guest = session.guest_group(guest_id)
+        guest_interview = session.guest_interview(params, bools=['will_interview', 'direct_contact'])
+        if cherrypy.request.method == 'POST':
+            if guest_interview.will_interview and not guest_interview.email:
+                message = 'Please provide an email for interview requests.'
+            else:
+                guest.interview = guest_interview
+                session.add(guest_interview)
+                raise HTTPRedirect('index?id={}&message={}', guest.id, 'Your interview preferences have been saved')
+
+        return {
+            'guest': guest,
+            'guest_interview': guest.interview or guest_interview,
+            'message': message
+        }
+
+    def travel_plans(self, session, guest_id, message='', **params):
+        guest = session.guest_group(guest_id)
+        guest_travel_plans = session.guest_travel_plans(params, checkgroups=['modes'])
+        if cherrypy.request.method == 'POST':
+            if not guest_travel_plans.modes:
+                message = 'Please tell us how you will arrive at MAGFest.'
+            elif c.OTHER in guest_travel_plans.modes_ints and not guest_travel_plans.modes_text:
+                message = 'You need to tell us what "other" travel modes you are using.'
+            elif not guest_travel_plans.details:
+                message = 'Please provide details of your arrival and departure plans.'
+            else:
+                guest.travel_plans = guest_travel_plans
+                session.add(guest_travel_plans)
+                raise HTTPRedirect('index?id={}&message={}', guest.id, 'Your travel plans have been saved')
+
+        return {
+            'guest': guest,
+            'guest_travel_plans': guest.travel_plans or guest_travel_plans,
             'message': message
         }
 
