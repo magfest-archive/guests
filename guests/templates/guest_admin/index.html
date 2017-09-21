@@ -25,7 +25,9 @@
       <tr>
         <th>Group</th>
         {% for item in c.CHECKLIST_ITEMS %}
-          <th>{{ item.header }}</th>
+          {% if item.header %}
+            <th>{{ item.header }}</th>
+          {% endif %}
         {% endfor %}
         <th>Group Type</th>
       </tr>
@@ -41,14 +43,15 @@
                 {% endif %}</span>
           </td>
           {% for item in c.CHECKLIST_ITEMS %}
-            {% set item_display = group.guest[item.name ~ '_status'] if group.guest else '' %}
+            {% if item.header %}
+              {% set item_display = group.guest[item.name ~ '_status'] if group.guest else '' %}
 
-            {% if item.is_link %}
-              <td>{{ item_display|url_to_link("Yes", "_blank") if '../' in item_display else item_display }}</td>
-            {% else %}
-              <td>{{ item_display }}</td>
+              {% if item.is_link %}
+                <td>{{ item_display|url_to_link("Yes", "_blank") if '../' in item_display else item_display }}</td>
+              {% else %}
+                <td>{{ item_display }}</td>
+              {% endif %}
             {% endif %}
-
           {% endfor %}
           <td class="guest">
             {% if group.guest %}

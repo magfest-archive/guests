@@ -1,0 +1,21 @@
+<tr>
+  <td width="25">{{ macros.checklist_image(guest.autograph_status) }}</td>
+  <td><b><a href="autograph?guest_id={{ guest.id }}">Autograph Sessions</a></b></td>
+  <td><i>Deadline:</i> {{ guest.deadline_from_model('autograph')|datetime_local }}</td>
+</tr>
+<tr>
+  <td colspan="3">
+    {% if guest.autograph_status %}
+      You have already indicated
+      {% if not guest.autograph.num %}
+        that you do not wish to hold any autograph sessions,
+      {% else %}
+        that you would like {{ guest.autograph.num }} autograph session{{ guest.autograph.num|pluralize }},
+      {% endif %}
+      but you can use the link above to update your preferences.
+    {% else %}
+      Use the link above to let us know if you would like to host any autograph sessions.
+    {% endif %}
+    <br/></br>
+  </td>
+</tr>

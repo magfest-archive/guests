@@ -1,0 +1,16 @@
+<tr>
+  <td width="25">{{ macros.checklist_image(guest.travel_plans_status) }}</td>
+  <td><b><a href="travel_plans?guest_id={{ guest.id }}">Travel Plans</a></b></td>
+  <td><i>Deadline:</i> {{ guest.deadline_from_model('travel_plans')|datetime_local }}</td>
+</tr>
+<tr>
+  <td colspan="3">
+    {% if guest.travel_plans_status %}
+      You have already told us how you will be traveling to MAGFest, but you can use the link above to update your
+      preferences.
+    {% else %}
+      Use the link above to let us know your travel plans for getting to MAGFest.
+    {% endif %}
+    <br/></br>
+  </td>
+</tr>

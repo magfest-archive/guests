@@ -36,6 +36,9 @@ class GuestGroup(MagModel):
     panel = relationship('GuestPanel', backref=backref('guest', load_on_pending=True), uselist=False)
     merch = relationship('GuestMerch', backref=backref('guest', load_on_pending=True), uselist=False)
     charity = relationship('GuestCharity', backref=backref('guest', load_on_pending=True), uselist=False)
+    autograph = relationship('GuestAutograph', backref=backref('guest', load_on_pending=True), uselist=False)
+    interview = relationship('GuestInterview', backref=backref('guest', load_on_pending=True), uselist=False)
+    travel_plans = relationship('GuestTravelPlans', backref=backref('guest', load_on_pending=True), uselist=False)
 
     num_hotel_rooms = Column(Integer, default=1, admin_only=True)
     payment = Column(Integer, default=0, admin_only=True)
@@ -89,6 +92,11 @@ class GuestGroup(MagModel):
     @property
     def taxes_status(self):
         return "Not Needed" if not self.payment else self.status('taxes')
+
+    @property
+    def panel_status(self):
+        return str(len(self.group.leader.panel_applications)) + " Panel Application(s)" \
+            if self.group.leader.panel_applications else self.status('panel')
 
     def status(self, model):
         """
@@ -245,3 +253,39 @@ class GuestCharity(MagModel):
     @property
     def status(self):
         return self.donating_label
+
+    @presave_adjustment
+    def no_desc_if_not_donating(self):
+        if self.donating == c.NOT_DONATING:
+            self.desc = ''
+
+
+class GuestAutograph(MagModel):
+    guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
+    num = Column(Integer, default=0)
+    length = Column(Integer, default=60)  # session length in minutes
+
+    @presave_adjustment
+    def no_length_if_zero_autographs(self):
+        if not self.num:
+            self.length = 0
+
+
+class GuestInterview(MagModel):
+    guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
+    will_interview = Column(Boolean, default=False)
+    email = Column(UnicodeText)
+    direct_contact = Column(Boolean, default=False)
+
+    @presave_adjustment
+    def no_details_if_no_interview(self):
+        if not self.will_interview:
+            self.email = ''
+            self.direct_contact = False
+
+
+class GuestTravelPlans(MagModel):
+    guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
+    modes = Column(MultiChoice(c.GUEST_TRAVEL_OPTS))
+    modes_text = Column(UnicodeText)
+    details = Column(UnicodeText)
