@@ -8,7 +8,7 @@
   <tr>
     <td colspan="3">
       {% block deadline_text %}
-        {% if guest.charity.status %}
+        {% if guest.charity_status %}
           You have already indicated your charity preferences, but you may update them using the link above.
         {% else %}
           {{ c.EVENT_NAME }} runs a yearly charity auction, and we need you to tell us whether you can contribute any
