@@ -239,10 +239,16 @@ class GuestPanel(MagModel):
 class GuestMerch(MagModel):
     guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
     selling_merch = Column(Choice(c.GUEST_MERCH_OPTS), nullable=True)
+    tax_phone = Column(UnicodeText)
 
     @property
     def status(self):
         return self.selling_merch_label
+
+    @presave_adjustment
+    def tax_phone_from_poc_phone(self):
+        if self.selling_merch == c.OWN_TABLE and not self.tax_phone:
+            self.tax_phone = self.guest.info.poc_phone
 
 
 class GuestCharity(MagModel):
