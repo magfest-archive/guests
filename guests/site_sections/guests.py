@@ -5,6 +5,7 @@ from guests import *
 class Root:
     def index(self, session, id, message=''):
         guest = session.guest_group(id)
+
         def _deadline(item):
             return guest.deadline_from_model(item['name'])
 
