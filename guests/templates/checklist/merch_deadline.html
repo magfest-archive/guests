@@ -36,21 +36,15 @@
       <div class="col-sm-6">
         <select name="selling_merch" id="selling_merch" class="form-control">
           <option value="">Tell us how you'd like to sell your merch</option>
-          {{ options(c.GUEST_MERCH_OPTS,guest_merch.selling_merch) }}
+          {% if guest.group_type == c.BAND %}
+            {{ options(c.GUEST_MERCH_OPTS,guest_merch.selling_merch) }}
+          {% else %}
+            {{ options(c.GUEST_MERCH_OPTS|rejectattr('0', "equalto", c.ROCK_ISLAND), guest_merch.selling_merch) }}
+          {% endif %}
         </select>
       </div>
     </div>
-    {% block form_extra %}
-      {% if c.ROCK_ISLAND %}
-        {# c.ROCK_ISLAND is only for bands, but it's easier to remove it from the template than to mess with the
-         actual GUEST_MERCH options. If using form_extra here for other groups, call {{ super() }} #}
-        <script type="text/javascript">
-            $(function () {
-                $("#selling_merch option[value='{{ c.ROCK_ISLAND }}']").remove();
-            });
-        </script>
-      {% endif %}
-    {% endblock %}
+    {% block form_extra %}{% endblock %}
     <input id="submit" type="submit" class="btn btn-primary" value="Save Merch Preference" />
   </form>
 {% endif %}
