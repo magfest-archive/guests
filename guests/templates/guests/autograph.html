@@ -1,42 +1,7 @@
 {% extends "guestbase.html" %}
+{% set snippet=False %}
 {% block body %}
 
-  {% set length_hours = guest_autograph.length//60 %}
-
-  <h2>Autographs for {{ guest.group.name }}</h2>
-
-  If you'd like to do one or more signing sessions, please indicate how long and if you’d like one or two.
-
-  <br/> <br/>
-
-  <form method="post" action="autograph" class="form-horizontal" role="form" enctype="multipart/form-data">
-    <input type="hidden" name="guest_id" value="{{ guest.id }}" />
-    <input type="hidden" name="id" value="{{ guest_autograph.db_id }}" />
-    {{ csrf_token() }}
-
-    <div class="form-group">
-      <label class="col-sm-3 control-label">Number of Sessions</label>
-      <div class="col-sm-6">
-        <select name="num" class="form-control">
-          {{ int_options(0, 2, guest_autograph.num) }}
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="col-sm-3 control-label">Length of Sessions (hours)</label>
-      <div class="col-sm-6">
-        <select name="length" class="form-control">
-          {{ int_options(1, 3, length_hours) }}
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <div class="col-sm-6 col-sm-offset-3">
-        <button type="submit" class="btn btn-primary">Upload Autograph Preferences</button>
-      </div>
-    </div>
-  </form>
+{%- include ['checklist/' ~ guest.group_type_label|lower ~ '_autograph_deadline.html', 'checklist/autograph_deadline.html'] -%}
 
 {% endblock %}

@@ -65,7 +65,8 @@ class Root:
             'message': message
         }
 
-    def w9(self, session, guest_id=None, message='', w9=None, **params):
+    @cherrypy.expose(['w9'])
+    def taxes(self, session, guest_id=None, message='', w9=None, **params):
         if not guest_id:
             guest_id = params.pop('id', None)
         assert guest_id, 'Either a guest_id or id is required'

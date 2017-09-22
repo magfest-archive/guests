@@ -1,19 +1,16 @@
-<tr>
-  <td width="25">{{ macros.checklist_image(guest.bio.status) }}</td>
-  <td><b><a href="bio?guest_id={{ guest.id }}">Guest/Group Information</a></b></td>
-  <td><i>Deadline:</i> {{ guest.deadline_from_model('bio')|datetime_local }}</td>
-</tr>
-<tr>
-  <td colspan="3">
-    {% if guest.bio.status %}
-      You have already provided us with your bio information, but you can use the link above to update it.
-      {% if not guest.bio.uploaded_pic %}
-        We encourage you to upload a bio pic (which you have NOT yet done) so that we can
-        include it on our website.
-      {% endif %}
-    {% else %}
-      Use the link above to add your photo and bio information for the MAGFest website and announcements.
-    {% endif %}
-    <br/></br>
-  </td>
-</tr>
+{% extends "checklist/bio_deadline.html" %}
+{% block deadline_headline %}Guest/Group Information{% endblock %}
+{% block deadline_text %}
+{% if guest.bio.status %}
+  You have already provided us with your bio information, but you can use the link above to update it.
+  {% if not guest.bio.uploaded_pic %}
+    We encourage you to upload a bio pic (which you have NOT yet done) so that we can
+    include it on our website.
+  {% endif %}
+{% else %}
+  Use the link above to add your photo and bio information for the MAGFest website and announcements.
+{% endif %}
+{% endblock %}
+
+{% block form_extra %}
+{% endblock %}
