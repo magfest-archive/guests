@@ -1,77 +1,7 @@
 {% extends "guestbase.html" %}
+{% set snippet=False %}
 {% block body %}
 
-  <script>
-      var showOrHidePanel = function () {
-          setVisible('.panel-info', $.val('wants_panel') === {{ c.PANEL }});
-      };
-      $(function () {
-          showOrHidePanel();
-          $.field('wants_panel').on('click', showOrHidePanel);
-      });
-  </script>
-
-  <h2>Want a Panel?</h2>
-
-  Many of our musical guests are also interested in offering an panel.  While we cannot guarantee that we'll have room in
-  our schedule to accommodate all requests, we definitely want to hear your ideas.  Please fill out the
-
-  <br/> <br/>
-
-  <form method="post" action="panel" class="form-horizontal" role="form">
-    <input type="hidden" name="guest_id" value="{{ guest.id }}" />
-    <input type="hidden" name="id" value="{{ guest_panel.db_id }}" />
-    {{ csrf_token() }}
-
-    <div class="form-group">
-      <label class="col-sm-3 control-label">Want a Panel?</label>
-      <div class="col-sm-6" style="padding-top:7px">
-        <select name="wants_panel">
-          <option value="">Do you want a panel?</option>
-          {{ options(c.GUEST_PANEL_OPTS,guest_panel.wants_panel) }}
-        </select>
-      </div>
-    </div>
-
-    <div class="form-group panel-info">
-      <label class="col-sm-3 control-label">Panel Name</label>
-      <div class="col-sm-6">
-        <input type="text" class="form-control" name="name" value="{{ guest_panel.name }}" />
-      </div>
-    </div>
-
-    <div class="form-group panel-info">
-      <label class="col-sm-3 control-label">Panel Length</label>
-      <div class="col-sm-6">
-        <input type="text" class="form-control" name="length" value="{{ guest_panel.length }}" />
-        <p class="help-text">
-          An hour is typical, including time for Q&A.
-        </p>
-      </div>
-    </div>
-
-    <div class="form-group panel-info">
-      <label class="col-sm-3 control-label">Panel Description</label>
-      <div class="col-sm-6">
-        <textarea class="form-control" rows="3" name="desc">{{ guest_panel.desc }}</textarea>
-      </div>
-    </div>
-
-    {{ macros.form_checkgroup(
-        guest_panel,
-        'tech_needs',
-        other_field='other_tech_needs',
-        other_placeholder='Additional technical needs',
-        form_class='panel-info',
-        label='Technical Needs',
-        desc='Check the following technical needs that apply. Panel rooms will by default have VGA compatible projector with 3.5mm (1/8") audio, and a local PA with enough microphones setup.',
-        is_required=True) }}
-
-    <div class="form-group">
-      <div class="col-sm-6 col-sm-offset-3">
-        <button class="btn btn-primary">Submit Panel Preferences</button>
-      </div>
-    </div>
-  </form>
+{%- include ['checklist/' ~ guest.group_type_label|lower ~ '_panel_deadline.html', 'checklist/panel_deadline.html'] -%}
 
 {% endblock %}

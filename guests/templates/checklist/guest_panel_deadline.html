@@ -1,19 +1,18 @@
-<tr>
-  <td width="25">{{ macros.checklist_image(guest.group.leader.panel_applications) }}</td>
-  <td><b><a href="../panel_applications/guest?poc_id={{ guest.group.leader.id }}">Add a Panel</a></b></td>
-  <td><i>Deadline:</i> {{ guest.deadline_from_model('panel')|datetime_local }}</td>
-</tr>
-<tr>
-  <td colspan="3">
-    {% if not guest.group.leader.panel_applications %}
-      What panels and/or events are you putting on at MAGFest? Please use the above link to submit each panel.
-    {% else %}
-      You have already submitted {{ guest.group.leader.panel_applications|length }} panel
-      idea{{ guest.group.leader.panel_applications|length|pluralize }}.
-      {% if c.APP_LIMIT %}
-        You may submit up to {{ c.APP_LIMIT }} panels for review.
-      {% endif %}
+{% extends "checklist/panel_deadline.html" %}
+{% block deadline_headline %}Add a Panel{% endblock %}
+{% block deadline_text %}
+  {% if not guest.group.leader.panel_applications %}
+    What panels and/or events are you putting on at MAGFest? Please use the above link to submit each panel.
+  {% else %}
+    You have already submitted {{ guest.group.leader.panel_applications|length }} panel
+    idea{{ guest.group.leader.panel_applications|length|pluralize }}.
+    {% if c.APP_LIMIT %}
+      You may submit up to {{ c.APP_LIMIT }} panels for review.
     {% endif %}
-    <br/></br>
-  </td>
-</tr>
+  {% endif %}
+  <script type="text/javascript">
+      $(function() {
+          $('a[href^="panel"]').prop("href", "../panel_applications/guest?poc_id={{ guest.group.leader.id }}");
+      });
+  </script>
+{% endblock %}

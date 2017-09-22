@@ -1,16 +1,99 @@
-<tr>
-  <td width="25">{{ macros.checklist_image(guest.merch.status) }}</td>
-  <td><b><a href="merch?guest_id={{ guest.id }}">Selling Merchandise</a></b></td>
-  <td><i>Deadline:</i> {{ guest.deadline_from_model('merch')|datetime_local }}</td>
-</tr>
-<tr>
-  <td colspan="3">
-    {% if guest.merch.status %}
-      You have already indicated your merchandise preferences, but you may update them using the link above.
-    {% else %}
-      We need you to tell us whether you have any merchandise to sell{% if c.ROCK_ISLAND %}, and whether you intend to participate in
-      our "Rock Island" program where we sell your merchandise so that you do not need to staff your own table{% endif %}.
+{% if snippet %}
+  <tr>
+    <td width="25">{{ macros.checklist_image(guest.merch_status) }}</td>
+    <td><b><a href="merch?guest_id={{ guest.id }}">
+      {% block deadline_headline %}Selling Merchandise{% endblock %}</a></b></td>
+    <td><i>Deadline:</i> {{ guest.deadline_from_model('merch')|datetime_local }}</td>
+  </tr>
+  <tr>
+    <td colspan="3">
+      {% block deadline_text %}
+        {% if guest.merch.status %}
+          You have already indicated your merchandise preferences, but you may update them using the link above.
+        {% else %}
+          We need you to tell us whether you have any merchandise to sell{% if c.ROCK_ISLAND and guest.group_type == c.BAND %},
+          and whether you intend to participate in our "Rock Island" program where we sell your merchandise so that you do
+          not need to staff your own table{% endif %}.
+        {% endif %}
+      {% endblock %}
+      <br/></br>
+    </td>
+  </tr>
+{% else %}
+  <h3>{% block form_headline %}Selling Merch{% endblock %}</h3>
+
+  {% block form_desc %}
+    <p>
+      Space will be provided in our marketplace area for merchandise sales{% if not c.ROCK_ISLAND %}.{% else %};
+      either at a dedicated table or at our “Rock Island” sales area, where {{ c.EVENT_NAME }} staff will sell performer-provided
+      merchandise throughout the festival.{% endif %}
+    </p>
+
+    {% if c.ROCK_ISLAND %}
+      <p>
+        It is recommended, but not required, for performers to use our Rock Island service in this area, as merchandise can
+        be sold more consistently, and for many more hours.
+      </p>
+      <p>
+        <a href="../static/RockIsland.pdf">
+          Click here for more info about our Rock Island service!
+        </a>
+      </p>
     {% endif %}
-    <br/></br>
-  </td>
-</tr>
+
+    {% if c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE %}
+      <p>
+        If you elect to{% if c.ROCK_ISLAND %} decline the use of Rock Island and{% endif %} sell your merchandise directly,
+        we require that your table be staffed for at least <b>8 hours per day</b>.
+      </p>
+    {% endif %}
+
+    <p>
+      On the night of the performance, table space will also be provided immediately outside the concert area for
+      merchandise sales and signings.
+    </p>
+  {% endblock %}
+
+  <br/> <br/>
+
+  <form method="post" action="merch">
+    {{ csrf_token() }}
+    <input type="hidden" name="guest_id" value="{{ guest.id }}" />
+    <input type="hidden" name="id" value="{{ guest_merch.db_id }}" />
+    <select name="selling_merch">
+      <option value="">Tell us how you'd like to sell your merch</option>
+      {{ options(c.GUEST_MERCH_OPTS,guest_merch.selling_merch) }}
+    </select>
+    <br/> <br/>
+    {% if c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE %}
+      <div id="coverage" style="display:none">
+        <input type="checkbox" name="coverage" value="yes" />
+        I commit to staffing our table in the marketplace at least <b>8 hours per day</b>.
+        <br/> <br/>
+        <input type="checkbox" name="warning" value="yes" />
+        I acknowledge that failing to staff our table for <b>8 hours per day</b> will revoke the privilege of selling our merchandise from our own dedicated table in the future
+        <br/> <br/>
+      </div>
+    {% endif %}
+    {% block form_extra %}{% endblock %}
+    <input id="submit" type="submit" class="btn btn-primary" value="Save Merch Preference" />
+  </form>
+
+  <script>
+      var checkCoverage = function () {
+          var dedicated = $.val('selling_merch') === {{ c.OWN_TABLE }};
+          setVisible('#coverage', dedicated);
+
+          {% if c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE %}
+              var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');
+              $('#submit').prop('disabled', dedicated && !allChecked);
+          {% endif %}
+      };
+      $(function () {
+          checkCoverage();
+          $.field('selling_merch').on('change', checkCoverage);
+          $.field('warning').on('click', checkCoverage);
+          $.field('coverage').on('click', checkCoverage);
+      });
+  </script>
+{% endif %}

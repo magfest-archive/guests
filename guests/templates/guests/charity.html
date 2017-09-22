@@ -1,44 +1,7 @@
 {% extends "guestbase.html" %}
+{% set snippet=False %}
 {% block body %}
 
-  <h3>Charity Donations</h3>
-
-  MAGFest hosts a yearly charity auction, with 100% of proceeds going to
-  <a target="_blank" href="http://childsplaycharity.org/">Child's Play</a>.  Do you have any cool stuff you can sign that
-  you think would sell at the auction?  Our attendees love it when performers they admire sign stuff!  If you've got
-  anything to donate, please tell us what it is!
-
-  <br/> <br/>
-
-  Our auction starts on {{ c.AUCTION_START|datetime_local("%A at %-H%p") }} and goes until everything is sold (usually around 3 hours).
-
-  <br/> <br/>
-
-  <form method="post" action="charity">
-    {{ csrf_token() }}
-    <input type="hidden" name="guest_id" value="{{ guest.id }}" />
-    <input type="hidden" name="id" value="{{ guest_charity.db_id }}" />
-    <select name="donating">
-      <option value="">Let us know whether you can donate anything</option>
-      {{ options(c.GUEST_CHARITY_OPTS,guest_charity.donating) }}
-    </select>
-    <br/> <br/>
-    <div id="donating_yes" style="display:none">
-      Please let us know what you've got.  Thanks for helping us help kids! <br/>
-      <textarea name="desc" rows="3" cols="60">{{ guest_charity.desc }}</textarea>
-      <br/> <br/>
-    </div>
-    <input id="submit" type="submit" class="btn btn-primary" value="Save Donation Preference" />
-  </form>
-
-  <script>
-      var showOrHideDonation = function () {
-          setVisible('#donating_yes', $.val('donating') === {{ c.DONATING }});
-      };
-      $(function () {
-          showOrHideDonation();
-          $.field('donating').on('change', showOrHideDonation);
-      });
-  </script>
+{%- include ['checklist/' ~ guest.group_type_label|lower ~ '_charity_deadline.html', 'checklist/charity_deadline.html'] -%}
 
 {% endblock %}
