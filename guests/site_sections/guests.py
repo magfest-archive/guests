@@ -6,15 +6,13 @@ class Root:
     def index(self, session, id, message=''):
         guest = session.guest_group(id)
 
-        sorted_checklist = []
-        for item in c.CHECKLIST_ITEMS:
-            if guest.deadline_from_model(item['name']):
-                sorted_checklist.append(item)
+        def _deadline(item):
+            return guest.deadline_from_model(item['name'])
 
         return {
             'message': message,
             'guest': guest,
-            'sorted_checklist': sorted_checklist
+            'sorted_checklist': sorted(filter(_deadline, c.CHECKLIST_ITEMS), key=_deadline)
         }
 
     def agreement(self, session, guest_id, message='', **params):
