@@ -23,7 +23,7 @@ class Root:
                 message = 'You must tell us how many people are in your group'
             elif not guest_info.poc_phone:
                 message = 'You must enter an on-site point-of-contact cellphone number'
-            elif not guest_info.arrival_time:
+            elif not guest_info.arrival_time and not guest.group_type == c.GUEST:
                 message = 'You must enter your expected arrival time'
             elif guest_info.bringing_vehicle and not guest_info.vehicle_info:
                 message = 'You must provide your vehicle information'
@@ -140,12 +140,25 @@ class Root:
     def merch(self, session, guest_id, message='', coverage=False, warning=False, **params):
         guest = session.guest_group(guest_id)
         guest_merch = session.guest_merch(params)
+        group_params = dict()
         if cherrypy.request.method == 'POST':
             if not guest_merch.selling_merch:
                 message = 'You need to tell us whether and how you want to sell merchandise'
-            elif c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE and guest_merch.selling_merch == c.OWN_TABLE and not all([coverage, warning]):
+            elif c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE and guest_merch.selling_merch == c.OWN_TABLE and \
+                            guest.group_type == c.BAND and not all([coverage, warning]):
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
-            else:
+            elif guest.group_type == c.GUEST and guest_merch.selling_merch == c.OWN_TABLE:
+                for field_name in ['country', 'region', 'zip_code', 'address1', 'address2', 'city']:
+                    group_params[field_name] = params.get(field_name, '')
+
+                if not guest.info.poc_phone and not guest_merch.tax_phone:
+                    message = 'You must provide a phone number for tax purposes.'
+                elif not (params['country'] and params['region'] and params['zip_code'] and params['address1'] and
+                              params['city']):
+                    message = 'You must provide an address for tax purposes.'
+                else:
+                    guest.group.apply(group_params, restricted=True)
+            if not message:
                 guest.merch = guest_merch
                 session.add(guest_merch)
                 raise HTTPRedirect('index?id={}&message={}', guest.id, 'Your merchandise preferences have been saved')
@@ -153,6 +166,7 @@ class Root:
         return {
             'guest': guest,
             'guest_merch': guest.merch or guest_merch,
+            'group': group_params or guest.group,
             'message': message
         }
 
