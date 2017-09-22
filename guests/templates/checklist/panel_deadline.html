@@ -8,7 +8,7 @@
   <tr>
     <td colspan="3">
       {% block deadline_text %}
-        {% if not guest.panel.status %}
+        {% if not guest.panel_status %}
           Please use the above link to let us know whether or not you are interested in also running a panel.
           We cannot accommodate all requests, but we definitely want to hear your ideas!
         {% elif guest.panel.wants_panel %}

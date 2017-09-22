@@ -21,7 +21,7 @@
   <h2>{% block form_headline %}Stage Layout for {{ guest.group.name }}{% endblock %}</h2>
 
   {% block form_desc %}
-    {% if guest.stage_plot.status %}
+    {% if guest.stage_plot_status %}
       <a href="{{ guest.stage_plot.url }}">Click here to view the stage layouts you uploaded.</a>
       <br/><br/>
       Need to update something?

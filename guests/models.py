@@ -55,7 +55,7 @@ class GuestGroup(MagModel):
         properties here, but it's vital to allow events to control group checklists with granularity.
         """
         if name.endswith('_status'):
-            return self.status(name.split('_')[0])
+            return self.status(name.rsplit('_', 1)[0])
         else:
             return super(GuestGroup, self).__getattr__(name)
 

@@ -1,7 +1,7 @@
 {% extends "checklist/bio_deadline.html" %}
 {% block deadline_headline %}Guest/Group Information{% endblock %}
 {% block deadline_text %}
-{% if guest.bio.status %}
+{% if guest.bio_status %}
   You have already provided us with your bio information, but you can use the link above to update it.
   {% if not guest.bio.uploaded_pic %}
     We encourage you to upload a bio pic (which you have NOT yet done) so that we can
