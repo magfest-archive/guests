@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% set admin_area=True %}
+{% block title %}Rock Island Inventory{% endblock %}
+{% include "guests_common.html" %}
+
+{%- set is_multi = guest_groups|length > 1 -%}
+{% block content %}
+  <style type="text/css">
+    table img {
+      width: 240px;
+      max-width: 100%;
+    }
+  </style>
+
+  <h1>
+    Rock Island
+    {% if not is_multi %}
+      {%- set guest = guest_groups|first -%}
+      Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a>
+    {% endif %}
+  </h1>
+  {% for guest in guest_groups -%}
+    {% if is_multi %}
+      <h2>Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a></h2>
+    {% endif %}
+    {%- set guest_merch = guest.merch -%}
+    {% if guest_merch.selling_merch == c.ROCK_ISLAND %}
+      {% import 'guests_macros.html' as guests_macros with context %}
+      <table class="table table-responsive">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Promo Picture</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for item in guest_merch.inventory -%}
+          <tr>
+            <td>{{ c.MERCH_TYPES[item.type|int] }}</td>
+            <td>{{ item.name }}</td>
+            <td>${{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ guests_macros.inventory_image(item, class='') }}</td>
+          </tr>
+        {%- endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <h3 class="text-danger">
+        This group is not using Rock Island services.
+      </h3>
+    {% endif %}
+  {%- endfor %}
+{% endblock %}

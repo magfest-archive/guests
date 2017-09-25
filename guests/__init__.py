@@ -20,3 +20,27 @@ c.MENU['People'].append_menu_item(
 c.MENU['People'].append_menu_item(
     MenuItem(access=c.BANDS, name='Guests', href='../guest_admin/?filter=only-guests')
 )
+
+
+@JinjaEnv.jinja_filter
+def comma_join(xs, conjunction='and'):
+    """
+    Accepts a list of strings and separates them with commas as grammatically
+    appropriate with a conjunction before the final entry. For example::
+
+        >>> comma_join(['foo'])
+        'foo'
+        >>> comma_join(['foo', 'bar'])
+        'foo and bar'
+        >>> comma_join(['foo', 'bar', 'baz'])
+        'foo, bar, and baz'
+        >>> comma_join(['foo', 'bar', 'baz'], 'or')
+        'foo, bar, or baz'
+        >>> comma_join(['foo', 'bar', 'baz'], 'but never')
+        'foo, bar, but never baz'
+
+    """
+    xs = list(xs)
+    if len(xs) > 1:
+        xs[-1] = conjunction + ' ' + xs[-1]
+    return (', ' if len(xs) > 2 else ' ').join(xs)

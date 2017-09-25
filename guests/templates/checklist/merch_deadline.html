@@ -18,33 +18,43 @@
     </td>
   </tr>
 {% else %}
-  <h3>{% block form_headline %}Selling Merch{% endblock %}</h3>
+  {% block form_header %}{% endblock %}
+
+  <h2>{% block form_title %}Selling Merch{% endblock %}</h2>
 
   {% block form_desc %}
-    Space will be provided in our marketplace area for merchandise sales.
+    <p>Space will be provided in our marketplace area for merchandise sales.</p>
   {% endblock %}
 
-  <br/> <br/>
+  <br>
 
-  <form method="post" action="merch" class="form-horizontal">
+  <form method="post" action="merch" class="form-horizontal" role="form" enctype="multipart/form-data">
     {{ csrf_token() }}
     <input type="hidden" name="guest_id" value="{{ guest.id }}" />
     <input type="hidden" name="id" value="{{ guest_merch.db_id }}" />
 
     <div class="form-group">
-      <label class="col-sm-3 control-label">Merch Options</label>
+      <label class="col-sm-3 control-label">Want to sell merch?</label>
       <div class="col-sm-6">
-        <select name="selling_merch" id="selling_merch" class="form-control">
+        <select name="selling_merch" class="form-control">
           <option value="">Tell us how you'd like to sell your merch</option>
           {% if guest.group_type == c.BAND %}
             {{ options(c.GUEST_MERCH_OPTS,guest_merch.selling_merch) }}
           {% else %}
-            {{ options(c.GUEST_MERCH_OPTS|rejectattr('0', "equalto", c.ROCK_ISLAND), guest_merch.selling_merch) }}
+            {{ options(c.GUEST_MERCH_OPTS|rejectattr('0', 'equalto', c.ROCK_ISLAND), guest_merch.selling_merch) }}
           {% endif %}
         </select>
       </div>
     </div>
+
     {% block form_extra %}{% endblock %}
-    <input id="submit" type="submit" class="btn btn-primary" value="Save Merch Preference" />
+
+    <div class="form-group">
+      <div class="col-sm-9 col-sm-offset-3">
+        <input id="submit" type="submit" class="btn btn-primary" value="Save Merch Preference" />
+      </div>
+    </div>
   </form>
+
+  {% block form_footer %}{% endblock %}
 {% endif %}

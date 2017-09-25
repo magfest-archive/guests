@@ -1,4 +1,5 @@
 from guests import *
+from sideboard.config import uniquify
 
 
 def extension(filename):
@@ -237,9 +238,20 @@ class GuestPanel(MagModel):
 
 
 class GuestMerch(MagModel):
+    _inventory_param_regex = re.compile(r'^inventory_([\w_\-]+?)_(\d+)$')
+    _inventory_image_regex = re.compile(r'^image(|\-\d+)$')
+    _inventory_audio_regex = re.compile(r'^audio(|\-\d+)$')
+
     guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
     selling_merch = Column(Choice(c.GUEST_MERCH_OPTS), nullable=True)
+    inventory = Column(JSON, default=[], server_default='[]')
+    bringing_boxes = Column(UnicodeText)
+    extra_info = Column(UnicodeText)
     tax_phone = Column(UnicodeText)
+
+    @property
+    def rock_island_url(self):
+        return '../guest_admin/rock_island?id={}'.format(self.guest_id)
 
     @property
     def status(self):
@@ -249,6 +261,69 @@ class GuestMerch(MagModel):
     def tax_phone_from_poc_phone(self):
         if self.selling_merch == c.OWN_TABLE and not self.tax_phone:
             self.tax_phone = self.guest.info.poc_phone
+
+    def _extract_inventory_params(self, params):
+        inventory = defaultdict(dict)
+        for param_name, value in params.items():
+            match = self._inventory_param_regex.match(param_name)
+            if match:
+                name = match.group(1)
+                item_number = int(match.group(2))
+                inventory[item_number][name] = value
+        for item_number, item in inventory.items():
+            if not item.get('id'):
+                item['id'] = str(uuid.uuid4())
+        return [item for (item_number, item) in sorted(inventory.items())]
+
+    def _save_inventory_item_file(self, item, name, extensions=set()):
+        messages = []
+        download_filename_attr = '{}_download_filename'.format(name)
+        filename_attr = '{}_filename'.format(name)
+        content_type_attr = '{}_content_type'.format(name)
+        file = None
+        if name in item:
+            file = item[name]
+            del item[name]
+            if getattr(file, 'filename', None):
+                if extensions and extension(file.filename) not in extensions:
+                    item[download_filename_attr] = None
+                    item[filename_attr] = None
+                    item[content_type_attr] = None
+                    messages.append('Files must be one of ' + ', '.join(extensions))
+                else:
+                    item[download_filename_attr] = file.filename
+                    item[filename_attr] = str(uuid.uuid4())
+                    item[content_type_attr] = file.content_type.value
+                    with open(self.inventory_path(item[filename_attr]), 'wb') as f:
+                        shutil.copyfileobj(file.file, f)
+
+        for attr in (download_filename_attr, filename_attr, content_type_attr):
+            if not item.get(attr):
+                del item[attr]
+
+        return '\n'.join(uniquify(messages))
+
+    def inventory_url(self, inventory_id, name):
+        return '../guests/view_inventory_file?id={}&inventory_id={}&name={}'.format(self.id, inventory_id, name)
+
+    @classmethod
+    def inventory_path(cls, file):
+        return os.path.join(guests_config['root'], 'uploaded_files', 'inventory', file)
+
+    def inventory_item(self, id):
+        for item in self.inventory:
+            if item.get('id') == id:
+                return item
+        return None
+
+    def merge_inventory(self, params):
+        inventory = self._extract_inventory_params(params)
+        for item in inventory:
+            for name in [s for s in item.keys() if self._inventory_image_regex.match(s)]:
+                self._save_inventory_item_file(item, name, c.ALLOWED_INVENTORY_IMAGE_EXTENSIONS)
+            for name in [s for s in item.keys() if self._inventory_audio_regex.match(s)]:
+                self._save_inventory_item_file(item, name, c.ALLOWED_INVENTORY_AUDIO_EXTENSIONS)
+        self.inventory = inventory
 
 
 class GuestCharity(MagModel):

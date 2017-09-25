@@ -124,3 +124,15 @@ class Root:
                 getattr(guest.merch, 'selling_merch_label', ''),
                 getattr(guest.charity, 'donating_label', ''), getattr(guest.charity, 'desc', '')
             ])
+
+    @site_mappable
+    def rock_island(self, session, message='', id=None, **params):
+        if id:
+            guest_groups = [session.query(GuestGroup).get(id)]
+        else:
+            guest_groups = session.query(GuestGroup).filter(
+                GuestGroup.id == GuestMerch.guest_id,
+                GuestMerch.selling_merch == c.ROCK_ISLAND).all()
+        return {
+            'guest_groups': guest_groups
+        }

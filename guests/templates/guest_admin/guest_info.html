@@ -75,6 +75,21 @@
   {% if guest.travel_plans.modes_text %}{{ macros.form_group(guest.travel_plans, 'modes_text', label='Travel Modes (Other)', is_readonly=True) }}{% endif %}
   {{ macros.form_group(guest.travel_plans, 'details', label='Arrival and Departure Times', is_readonly=True) }}
 
+  {% if guest.payment %}
+    <div class="form-group">
+      <label class="col-sm-3 control-label">W9</label>
+      <div class="col-sm-6">
+        <div class="form-control-static">
+          {% if guest.taxes.w9_url  %}
+            <a href="{{ guest.taxes.w9_url }}">Click here to view the guests's uploaded W9 tax form</a>
+          {% else %}
+            This guest is supposed to be paid, but has not uploaded a W9 tax form yet.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
   {{ macros.form_group(guest, 'payment', type='number',
         help="""The number of dollars we're paying the guest.  If you leave this
         at zero, then no mention of payment will be made in their guest agreement,

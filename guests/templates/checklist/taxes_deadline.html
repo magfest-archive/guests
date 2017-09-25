@@ -21,7 +21,7 @@
     </tr>
   {% endif %}
 {% else %}
-  <h2>{% block form_headline %}Completed W9 for {{ guest.group.name }}{% endblock %}</h2>
+  <h2>{% block form_title %}Completed W9 for {{ guest.group.name }}{% endblock %}</h2>
 
   {% block form_desc %}
     {% if guest.taxes_status %}

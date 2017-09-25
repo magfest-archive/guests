@@ -142,11 +142,14 @@ class Root:
         guest_merch = session.guest_merch(params)
         group_params = dict()
         if cherrypy.request.method == 'POST':
+            message = guest_merch.merge_inventory(params)
             if not guest_merch.selling_merch:
                 message = 'You need to tell us whether and how you want to sell merchandise'
             elif c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE and guest_merch.selling_merch == c.OWN_TABLE and \
                             guest.group_type == c.BAND and not all([coverage, warning]):
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
+            elif guest_merch.selling_merch == c.ROCK_ISLAND and not guest_merch.inventory:
+                message = 'You must add some merch to your inventory!'
             elif guest.group_type == c.GUEST and guest_merch.selling_merch == c.OWN_TABLE:
                 for field_name in ['country', 'region', 'zip_code', 'address1', 'address2', 'city']:
                     group_params[field_name] = params.get(field_name, '')
@@ -241,6 +244,22 @@ class Root:
             'guest_travel_plans': guest.travel_plans or guest_travel_plans,
             'message': message
         }
+
+    def view_inventory_file(self, session, id, inventory_id, name):
+        guest_merch = session.guest_merch(id)
+        if guest_merch:
+            item = guest_merch.inventory_item(inventory_id)
+            if item:
+                filename = item.get('{}_filename'.format(name))
+                download_filename = item.get('{}_download_filename'.format(name), filename)
+                content_type = item.get('{}_content_type'.format(name))
+                if filename and download_filename and content_type:
+                    filepath = guest_merch.inventory_path(filename)
+                    filesize = os.path.getsize(filepath)
+                    cherrypy.response.headers['Accept-Ranges'] = 'bytes'
+                    cherrypy.response.headers['Content-Length'] = filesize
+                    cherrypy.response.headers['Content-Range'] = 'bytes 0-{}'.format(filesize)
+                    return serve_file(filepath, disposition="attachment", name=download_filename, content_type=content_type)
 
     def view_bio_pic(self, session, id):
         guest = session.guest_group(id)
