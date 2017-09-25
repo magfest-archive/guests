@@ -259,7 +259,7 @@ class Root:
                     cherrypy.response.headers['Accept-Ranges'] = 'bytes'
                     cherrypy.response.headers['Content-Length'] = filesize
                     cherrypy.response.headers['Content-Range'] = 'bytes 0-{}'.format(filesize)
-                    return serve_file(filepath, disposition="attachment", name=download_filename, content_type=content_type)
+                    return serve_file(filepath, disposition='inline', name=download_filename, content_type=content_type)
 
     def view_bio_pic(self, session, id):
         guest = session.guest_group(id)

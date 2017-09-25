@@ -1,7 +1,18 @@
 {% import 'macros.html' as macros %}
 
 {% macro inventory_image(item=None, name='image', class='') -%}
-  <img src="{{ guest_merch.inventory_url(item.id, name) }}" class="{{ class }}"/>
+  {%- set inventory_url = guest_merch.inventory_url(item.id, name) -%}
+  <a href="{{ inventory_url }}" target="_blank"><img src="{{ inventory_url }}" class="{{ class }}"/></a>
+{%- endmacro %}
+
+{% macro inventory_audio(item=None, name='audio', class='') -%}
+  {%- set inventory_url = guest_merch.inventory_url(item.id, name) -%}
+  {% set content_type_attr = name ~ '_content_type' %}
+  {% set download_filename_attr = name ~ '_download_filename' %}
+  <audio controls class="{{ class }}" title="{{ item[download_filename_attr] }}">
+    <source src="{{ inventory_url }}" type="{{ item[content_type_attr] }}">
+    <a href="{{ inventory_url }}">Click to download audio file</a>
+  </audio>
 {%- endmacro %}
 
 {% macro inventory_form_file(type, item=None, index='', suffix='', is_required=False) -%}
@@ -26,10 +37,7 @@
     <button class="close remove_file pull-right current-file"><span aria-hidden="true">&times;</span></button>
     <div class="current-file">
       <p>{{ item[download_filename_attr] }}</p>
-      <audio controls>
-        <source src="{{ guest_merch.inventory_url(item.id, file_attr) }}" type="{{ item[content_type_attr] }}">
-        <a href="{{ guest_merch.inventory_url(item.id, file_attr) }}">Click to download audio file</a>
-      </audio>
+      {{ inventory_audio(item, file_attr) }}
     </div>
     <span class="current-file">Update file:</span>
   {% endcall %}
@@ -99,7 +107,8 @@
   </div>
 {%- endmacro %}
 
-{% macro apparel_inventory_form(type, varieties_opts, cut_opts, sizes_opts, item=None, suffix='') -%}
+{% macro apparel_inventory_form(type, item=None, suffix='') -%}
+  {%- set varieties_opts, cuts_opts, sizes_opts = guest_merch.item_subcategories_opts(type) -%}
   {% call base_inventory_form(type, show_quantity=False, item=item, suffix=suffix) %}
     {%- set step_count = varieties_opts|length -%}
     {%- set col_size = ([4, (12 / step_count)|round(0, 'floor')|int] | sort)[-1] -%}
@@ -110,20 +119,20 @@
           {%- set one_size_attr = 'quantity-' ~ variety_value ~ '-0-0' -%}
           {%- set is_one_size = item[one_size_attr] if item and one_size_attr in item else False -%}
           <label><input type="checkbox" class="one_size" {% if is_one_size %}checked{% endif %}> One size only</label>
-          <input type="number" name="inventory_{{ one_size_attr }}{{ suffix }}" class="one_size_quantity" {% if is_one_size %}value="{{ item[one_size_attr] }}"{% endif %} required/>
+          <input type="number" name="inventory_{{ one_size_attr }}{{ suffix }}" class="one_size_quantity" {% if is_one_size %}value="{{ item[one_size_attr] }}"{% endif %} min="0" required/>
         </div>
         <div class="clearfix"></div>
         <div class="panel panel-default panel-sizes">
           <table class="table table-condensed">
             <tbody>
-              {% for cut_value, cut_label in cut_opts %}
+              {% for cut_value, cut_label in cuts_opts %}
                 {% for size_value, size_label in sizes_opts %}
                   <tr>
                     <td>
                       {%- set quantity_attr = 'quantity-' ~ variety_value ~ '-' ~ cut_value ~ '-' ~ size_value -%}
                       {%- set has_quantity = item[quantity_attr] if item and quantity_attr in item else False -%}
-                      {{ size_label }}{% if cut_label|trim %} - {{ cut_label }}{% endif %}
-                      <input type="number" name="inventory_{{ quantity_attr }}{{ suffix }}" {% if has_quantity %}value="{{ item[quantity_attr] }}"{% endif %}/>
+                      {% if cut_label|trim %}{{ cut_label }} - {% endif %}{{ size_label }}
+                      <input type="number" name="inventory_{{ quantity_attr }}{{ suffix }}" {% if has_quantity %}value="{{ item[quantity_attr] }}"{% endif %} min="0"/>
                     </td>
                   </tr>
                 {% endfor %}
@@ -158,13 +167,97 @@
 
 {% macro inventory_form(type, item=None, suffix='') -%}
   {% set type = type|int %}
-  {% if type == c.TSHIRT -%}
-    {{ apparel_inventory_form(c.TSHIRT, c.TSHIRT_VARIETIES_OPTS, c.TSHIRT_CUT_OPTS, c.TSHIRT_SIZES_OPTS, item=item, suffix=suffix) }}
-  {% elif type == c.APPAREL %}
-    {{ apparel_inventory_form(c.APPAREL, c.APPAREL_VARIETIES_OPTS, c.APPAREL_CUT_OPTS, c.APPAREL_SIZES_OPTS, item=item, suffix=suffix) }}
+  {% if type in [c.TSHIRT, c.APPAREL] -%}
+    {{ apparel_inventory_form(type, item=item, suffix=suffix) }}
   {% elif type == c.CD %}
-    {{ cd_inventory_form(c.CD, item=item, suffix=suffix) }}
+    {{ cd_inventory_form(type, item=item, suffix=suffix) }}
   {% else %}
     {{ base_inventory_form(type, item=item, suffix=suffix) }}
   {% endif %}
+{%- endmacro %}
+
+{% macro inventory_table_data_apparel_quantity(item) -%}
+  {%- set varieties_opts, cuts_opts, sizes_opts = guest_merch.item_subcategories_opts(item.type) -%}
+  {%- set total_quantity = guest_merch.total_quantity(item) -%}
+  {%- set line_items = guest_merch.line_items(item) -%}
+  <td class="inventory-item-quantity" data-order="{{ total_quantity }}">
+    <dl>
+      {% for line_item in line_items %}
+        <div class="line-item">
+          <dt>{{ guest_merch.line_item_to_string(item, line_item) }}</dt>
+          <dd>{{ item[line_item] }}</dd>
+        </div>
+      {% endfor %}
+      {% if line_items|length > 1 %}
+        <hr>
+        <div class="line-item">
+          <dt>Total</dt>
+          <dd>{{ total_quantity }}</dd>
+        </div>
+      {% endif %}
+    </dl>
+  </td>
+{%- endmacro %}
+
+{% macro inventory_table_data_cd_name(item) -%}
+  <td class="inventory-item-name">
+    {{ item.name }}
+    <dl>
+      {%- for attr in item.keys()|sort -%}
+        {% if attr.startswith('audio-') and attr.endswith('_download_filename') %}
+          <div class="audio-track">
+            {%- set name = attr.partition('_')[0] -%}
+            <dt><a href="{{ guest_merch.inventory_url(item.id, name) }}">{{ item[attr] }}</a></dt>
+            <dd>{{ inventory_audio(item, name) }}</dd>
+          </div>
+        {% endif %}
+      {%- endfor -%}
+    </dl>
+  </td>
+{%- endmacro %}
+
+{% macro inventory_table_row(item) -%}
+  {% set type = item.type|int %}
+  <tr>
+    <td class="inventory-item-type">{{ c.MERCH_TYPES[type] }}</td>
+    {% if type == c.CD -%}
+      {{ inventory_table_data_cd_name(item) }}
+    {% else %}
+      <td class="inventory-item-name">{{ item.name }}</td>
+    {% endif %}
+    <td class="inventory-item-price">${{ '{:.2f}'.format( item.price|float) }}</td>
+    {% if type in [c.TSHIRT, c.APPAREL] -%}
+      {{ inventory_table_data_apparel_quantity(item) }}
+    {% else %}
+      <td class="inventory-item-quantity" data-order="{{ item.quantity }}">{{ item.quantity }}</td>
+    {% endif %}
+    <td class="inventory-item-image">{{ inventory_image(item, class='') }}</td>
+  </tr>
+{%- endmacro %}
+
+{% macro inventory_table() -%}
+  <table
+      class="table table-hover datatable inventory-table"
+      data-page-length="-1"
+      data-searching="false"
+      data-paging="false"
+      data-info="false"
+      data-auto-width="true"
+      data-order="[[0,'asc'],[1,'asc'],[2,'asc']]"
+      data-order-multi="true">
+    <thead>
+      <tr>
+        <th class="inventory-item-type">Type</th>
+        <th class="inventory-item-name">Name</th>
+        <th class="inventory-item-price">Price</th>
+        <th class="inventory-item-quantity">Quantity</th>
+        <th class="inventory-item-image" data-orderable="false">Promo Picture</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for item in guest_merch.inventory -%}
+      {{ inventory_table_row(item) }}
+    {%- endfor %}
+    </tbody>
+  </table>
 {%- endmacro %}

@@ -2,55 +2,64 @@
 {% block title %}Rock Island Inventory{% endblock %}
 {% include "guests_common.html" %}
 
-{%- set is_multi = guest_groups|length > 1 -%}
 {% block content %}
   <style type="text/css">
-    table img {
-      width: 240px;
-      max-width: 100%;
+    h2 {
+      margin-bottom: 0;
+    }
+
+    h1 span, h1 small, h2 span, h2 small {
+      display: inline-block;
+    }
+
+    h1 span, h2 span {
+      margin: 0 10px 10px 0;
+    }
+
+    h1 small, h2 small {
+      float: right;
     }
   </style>
 
-  <h1>
-    Rock Island
-    {% if not is_multi %}
-      {%- set guest = guest_groups|first -%}
-      Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a>
-    {% endif %}
-  </h1>
-  {% for guest in guest_groups -%}
-    {% if is_multi %}
-      <h2>Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a></h2>
-    {% endif %}
+  {% if guest_groups|length > 1 %}
+    <h1>
+      <span>Rock Island</span>
+      <small><a href="../guest_admin/rock_island_csv">Download CSV for all groups</a></small>
+      <div class="clearfix"></div>
+    </h1>
+    {% for guest in guest_groups -%}
+      {%- set guest_merch = guest.merch -%}
+      {%- import 'guests_macros.html' as guests_macros with context -%}
+      <div class="panel panel-default inventory-table-panel">
+        <div class="panel-body">
+          <h2>
+            <span>Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a></span>
+            <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
+            <div class="clearfix"></div>
+          </h2>
+        </div>
+        {% if guest_merch.selling_merch == c.ROCK_ISLAND %}
+          <div class="table-responsive">{{ guests_macros.inventory_table() }}</div>
+        {% else %}
+          <div class="panel-body">
+            <h3 class="text-danger">This group is not using Rock Island services.</h3>
+          </div>
+        {% endif %}
+      </div>
+    {%- endfor %}
+  {% else %}
+    {%- set guest = guest_groups|first -%}
     {%- set guest_merch = guest.merch -%}
+    {%- import 'guests_macros.html' as guests_macros with context -%}
+    <h1>
+      <span>Rock Island Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a></span>
+      <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
+      <div class="clearfix"></div>
+    </h1>
     {% if guest_merch.selling_merch == c.ROCK_ISLAND %}
-      {% import 'guests_macros.html' as guests_macros with context %}
-      <table class="table table-responsive">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Promo Picture</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for item in guest_merch.inventory -%}
-          <tr>
-            <td>{{ c.MERCH_TYPES[item.type|int] }}</td>
-            <td>{{ item.name }}</td>
-            <td>${{ item.price }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ guests_macros.inventory_image(item, class='') }}</td>
-          </tr>
-        {%- endfor %}
-        </tbody>
-      </table>
+      <div class="table-responsive">{{ guests_macros.inventory_table() }}</div>
     {% else %}
-      <h3 class="text-danger">
-        This group is not using Rock Island services.
-      </h3>
+      <h3 class="text-danger">This group is not using Rock Island services.</h3>
     {% endif %}
-  {%- endfor %}
+  {% endif %}
 {% endblock %}

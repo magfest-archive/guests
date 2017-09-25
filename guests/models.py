@@ -254,6 +254,10 @@ class GuestMerch(MagModel):
         return '../guest_admin/rock_island?id={}'.format(self.guest_id)
 
     @property
+    def rock_island_csv_url(self):
+        return '../guest_admin/rock_island_csv?id={}'.format(self.guest_id)
+
+    @property
     def status(self):
         return self.selling_merch_label
 
@@ -269,7 +273,8 @@ class GuestMerch(MagModel):
             if match:
                 name = match.group(1)
                 item_number = int(match.group(2))
-                inventory[item_number][name] = value
+                if not name.startswith('quantity') or value:
+                    inventory[item_number][name] = value
         for item_number, item in inventory.items():
             if not item.get('id'):
                 item['id'] = str(uuid.uuid4())
@@ -303,12 +308,75 @@ class GuestMerch(MagModel):
 
         return '\n'.join(uniquify(messages))
 
-    def inventory_url(self, inventory_id, name):
-        return '../guests/view_inventory_file?id={}&inventory_id={}&name={}'.format(self.id, inventory_id, name)
+    @classmethod
+    def total_quantity(cls, item):
+        total_quantity = 0
+        for attr in filter(lambda s: s.startswith('quantity'), item.keys()):
+            total_quantity += int(item[attr] if item[attr] else 0)
+        return total_quantity
+
+    @classmethod
+    def item_subcategories(cls, item_type):
+        s = { getattr(c, s): s for s in c.MERCH_TYPES_VARS }[int(item_type)]
+        return (
+            getattr(c, '{}_VARIETIES'.format(s), defaultdict(lambda: {})),
+            getattr(c, '{}_CUTS'.format(s), defaultdict(lambda: {})),
+            getattr(c, '{}_SIZES'.format(s), defaultdict(lambda: {})))
+
+    @classmethod
+    def item_subcategories_opts(cls, item_type):
+        s = { getattr(c, s): s for s in c.MERCH_TYPES_VARS }[int(item_type)]
+        return (
+            getattr(c, '{}_VARIETIES_OPTS'.format(s), defaultdict(lambda: [])),
+            getattr(c, '{}_CUTS_OPTS'.format(s), defaultdict(lambda: [])),
+            getattr(c, '{}_SIZES_OPTS'.format(s), defaultdict(lambda: [])))
+
+    @classmethod
+    def line_items(cls, item):
+        line_items = []
+        for attr in filter(lambda s: s.startswith('quantity-'), item.keys()):
+            if int(item[attr] if item[attr] else 0) > 0:
+                line_items.append(attr)
+
+        varieties, cuts, sizes = [[v for (v, _) in x] for x in cls.item_subcategories_opts(item['type'])]
+        def _line_item_sort_key(line_item):
+            variety, cut, size = cls.line_item_to_types(line_item)
+            return (
+                varieties.index(variety) if variety else 0,
+                cuts.index(cut) if cut else 0,
+                sizes.index(size) if size else 0)
+
+        return sorted(line_items, key=_line_item_sort_key)
+
+    @classmethod
+    def line_item_to_types(cls, line_item):
+        return [int(s) for s in line_item.split('-')[1:]]
+
+    @classmethod
+    def line_item_to_string(cls, item, line_item):
+        variety_value, cut_value, size_value = cls.line_item_to_types(line_item)
+
+        varieties, cuts, sizes = cls.item_subcategories(item['type'])
+        variety_label = varieties.get(variety_value, '').strip()
+        if not size_value and not cut_value:
+            return variety_label + ' - One size only'
+
+        size_label = sizes.get(size_value, '').strip()
+        cut_label = cuts.get(cut_value, '').strip()
+
+        parts = [variety_label]
+        if cut_label:
+            parts.append(cut_label)
+        if size_label:
+            parts.extend(['-', size_label])
+        return ' '.join(parts)
 
     @classmethod
     def inventory_path(cls, file):
         return os.path.join(guests_config['root'], 'uploaded_files', 'inventory', file)
+
+    def inventory_url(self, inventory_id, name):
+        return '../guests/view_inventory_file?id={}&inventory_id={}&name={}'.format(self.id, inventory_id, name)
 
     def inventory_item(self, id):
         for item in self.inventory:
