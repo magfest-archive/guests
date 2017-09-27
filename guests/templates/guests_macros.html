@@ -9,7 +9,7 @@
   {%- set inventory_url = guest_merch.inventory_url(item.id, name) -%}
   {% set content_type_attr = name ~ '_content_type' %}
   {% set download_filename_attr = name ~ '_download_filename' %}
-  <audio controls class="{{ class }}" title="{{ item[download_filename_attr] }}">
+  <audio controls class="{{ class }}" title="{{ item[download_filename_attr] }}" preload="none">
     <source src="{{ inventory_url }}" type="{{ item[content_type_attr] }}">
     <a href="{{ inventory_url }}">Click to download audio file</a>
   </audio>
@@ -150,8 +150,17 @@
     <div class="form-group">
       <label class="col-sm-3 control-label">Sample Tracks</label>
       <div class="col-sm-6">
+        {%- set vars = {'break': False} -%}
         {% for index in range(0, 3) %}
-          {{ inventory_form_audio(item, loop.index0, suffix) }}
+          {%- if not vars['break'] -%}
+            {%- set filename_attr = 'audio-' ~ loop.index0 ~ '_filename' -%}
+            {%- if item and filename_attr in item and item[filename_attr] -%}
+              {{ inventory_form_audio(item, loop.index0, suffix) }}
+            {%- else -%}
+              {{ inventory_form_audio(item, loop.index0, suffix) }}
+              {%- if vars.update({'break': True}) -%}{%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
         {% endfor %}
       </div>
       <div class="clearfix"></div>
@@ -181,7 +190,7 @@
   {%- set total_quantity = guest_merch.total_quantity(item) -%}
   {%- set line_items = guest_merch.line_items(item) -%}
   {%- set is_multi = line_items|length > 1 -%}
-  <td class="inventory-item-quantity" data-order="{{ total_quantity }}">
+  <td class="inventory-item-quantity inventory-item-apparel-quantity" data-order="{{ total_quantity }}">
     {% if is_multi -%}
       <div class="line-item">
         <dt>Total</dt>
@@ -203,9 +212,9 @@
   </td>
 {%- endmacro %}
 
-{% macro inventory_table_data_cd_name(item) -%}
-  <td class="inventory-item-name">
-    {{ item.name }}
+{% macro inventory_table_data_cd_quantity(item) -%}
+  <td class="inventory-item-quantity" data-order="{{ item.quantity }}">
+    {{ item.quantity }}
     <dl>
       {%- for attr in item.keys()|sort -%}
         {% if attr.startswith('audio-') and attr.endswith('_download_filename') %}
@@ -223,16 +232,14 @@
 
 {% macro inventory_table_row(item, show_controls=False) -%}
   {% set type = item.type|int %}
-  <tr id="inventory_row_{{ item.id }}" class="inventory-row" data-inventory_id="{{ item.id }}">
+  <tr id="inventory_row_{{ item.id }}" class="inventory-row" data-item_id="{{ item.id }}">
     <td class="inventory-item-type">{{ c.MERCH_TYPES[type] }}</td>
-    {% if type == c.CD -%}
-      {{ inventory_table_data_cd_name(item) }}
-    {% else %}
-      <td class="inventory-item-name">{{ item.name }}</td>
-    {% endif %}
+    <td class="inventory-item-name">{{ item.name }}</td>
     <td class="inventory-item-price">${{ '{:.2f}'.format( item.price|float) }}</td>
     {% if type in [c.TSHIRT, c.APPAREL] -%}
       {{ inventory_table_data_apparel_quantity(item) }}
+    {% elif type == c.CD -%}
+      {{ inventory_table_data_cd_quantity(item) }}
     {% else %}
       <td class="inventory-item-quantity" data-order="{{ item.quantity }}">{{ item.quantity }}</td>
     {% endif %}
@@ -278,7 +285,7 @@
         </tr>
       </thead>
       <tbody>
-      {% for item in guest_merch.inventory -%}
+      {% for item in guest_merch.inventory.values() -%}
         {{ inventory_table_row(item, show_controls=show_controls) }}
       {%- endfor %}
       </tbody>
@@ -288,10 +295,26 @@
 
 {% macro inventory_table_with_err(err_class='') -%}
   {%- if guest_merch.selling_merch != c.ROCK_ISLAND -%}
-    <h3 class="text-danger text-center {{ err_class }}">This group is not using Rock Island services.</h3>
+    <div class="text-danger text-center {{ err_class }}">This group is not using Rock Island services.</div>
   {%- elif not guest_merch.inventory -%}
-    <h3 class="text-danger text-center {{ err_class }}">This group has not uploaded any inventory.</h3>
+    <div class="text-danger text-center {{ err_class }}">This group has not uploaded any inventory.</div>
   {%- else -%}
     {{ inventory_table() }}
   {%- endif -%}
+{%- endmacro %}
+
+{% macro name_form_group(model=None, label='Name', first_name_attr='first_name', last_name_attr='last_name', prefix='', suffix='', is_required=False) -%}
+  <div class="form-group">
+    <label class="col-sm-3 control-label {% if not is_required %}optional-field{% endif %}">{{ label }}</label>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <div class="col-sm-6">
+          <input class="form-control first_name" type="text" name="{{ prefix }}{{ first_name_attr }}{{ suffix }}" value="{{ model[first_name_attr] if model else '' }}" placeholder="First Name" {% if is_required %}required{% endif %} />
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control last_name" type="text" name="{{ prefix }}{{ last_name_attr }}{{ suffix }}" value="{{ model[last_name_attr] if model else '' }}" placeholder="Last Name" {% if is_required %}required{% endif %} />
+        </div>
+      </div>
+    </div>
+  </div>
 {%- endmacro %}

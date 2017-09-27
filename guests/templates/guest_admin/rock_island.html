@@ -34,22 +34,32 @@
         <div class="panel-body">
           <h2>
             <span>Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a></span>
-            <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
+            {% if guest_merch.inventory -%}
+              <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
+            {%- endif %}
             <div class="clearfix"></div>
           </h2>
         </div>
         {{ guests_macros.inventory_table_with_err('panel-body') }}
       </div>
     {%- endfor %}
-  {% else %}
+  {% elif guest_groups|length > 0 %}
     {%- set guest = guest_groups|first -%}
     {%- set guest_merch = guest.merch -%}
     {%- import 'guests_macros.html' as guests_macros with context -%}
     <h1>
       <span>Rock Island Inventory for <a href="../guest_admin/group_info?id={{ guest.id }}">{{ guest.group.name }}</a></span>
-      <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
+      {% if guest_merch.inventory -%}
+        <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
+      {%- endif %}
       <div class="clearfix"></div>
     </h1>
     {{ guests_macros.inventory_table_with_err() }}
+  {% else %}
+    <h1>
+      <span>Rock Island</span>
+      <div class="clearfix"></div>
+    </h1>
+    <p class="text-danger">No groups have signed up for Rock Island yet.</p>
   {% endif %}
 {% endblock %}

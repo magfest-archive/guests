@@ -140,6 +140,7 @@ class Root:
     def merch(self, session, guest_id, message='', coverage=False, warning=False, **params):
         guest = session.guest_group(guest_id)
         guest_merch = session.guest_merch(params)
+        guest_merch.handlers = guest_merch.extract_handlers(params)
         group_params = dict()
         if cherrypy.request.method == 'POST':
             if not guest_merch.selling_merch:
@@ -185,13 +186,14 @@ class Root:
         message = GuestMerch.validate_inventory(inventory)
         if not message:
             guest_merch.update_inventory(inventory)
+            guest_merch.selling_merch = c.ROCK_ISLAND
             session.add(guest_merch)
             session.commit()
 
         return {'error': message}
 
     @ajax
-    def remove_inventory_item(self, session, guest_id, inventory_id):
+    def remove_inventory_item(self, session, guest_id, item_id):
         guest = session.guest_group(guest_id)
         if guest.merch:
             guest_merch = guest.merch
@@ -200,13 +202,12 @@ class Root:
             guest.merch = guest_merch
 
         message = ''
-        item = guest_merch.remove_inventory_item(inventory_id)
-        if not item:
+        if not guest_merch.remove_inventory_item(item_id):
             message = 'Item not found'
         else:
             session.add(guest_merch)
             session.commit()
-        return {'error': message, 'result': item}
+        return {'error': message}
 
 
     def charity(self, session, guest_id, message='', **params):
@@ -281,10 +282,10 @@ class Root:
             'message': message
         }
 
-    def view_inventory_file(self, session, id, inventory_id, name):
+    def view_inventory_file(self, session, id, item_id, name):
         guest_merch = session.guest_merch(id)
         if guest_merch:
-            item = guest_merch.inventory_item(inventory_id)
+            item = guest_merch.inventory.get(item_id)
             if item:
                 filename = item.get('{}_filename'.format(name))
                 download_filename = item.get('{}_download_filename'.format(name), filename)

@@ -70,7 +70,13 @@ def upgrade():
 
     op.add_column('guest_merch', sa.Column('bringing_boxes', sa.Unicode(), server_default='', nullable=False))
     op.add_column('guest_merch', sa.Column('extra_info', sa.Unicode(), server_default='', nullable=False))
-    op.add_column('guest_merch', sa.Column('inventory', sideboard.lib.sa.JSON(), server_default='[]', nullable=False))
+    op.add_column('guest_merch', sa.Column('inventory', sideboard.lib.sa.JSON(), server_default='{}', nullable=False))
+    op.add_column('guest_merch', sa.Column('handlers', sideboard.lib.sa.JSON(), server_default='[]', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_email', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_first_name', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_last_name', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_mailing_address', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_phone', sa.Unicode(), server_default='', nullable=False))
 
 
 def downgrade():
@@ -89,6 +95,12 @@ def downgrade():
     op.create_unique_constraint('uq_band_bio_band_id', 'guest_bio', ['guest_id'])
     op.drop_constraint(op.f('uq_guest_bio_guest_id'), 'guest_bio', type_='unique')
 
+    op.drop_column('guest_merch', 'poc_phone')
+    op.drop_column('guest_merch', 'poc_mailing_address')
+    op.drop_column('guest_merch', 'poc_last_name')
+    op.drop_column('guest_merch', 'poc_first_name')
+    op.drop_column('guest_merch', 'poc_email')
+    op.drop_column('guest_merch', 'handlers')
     op.drop_column('guest_merch', 'inventory')
     op.drop_column('guest_merch', 'extra_info')
     op.drop_column('guest_merch', 'bringing_boxes')

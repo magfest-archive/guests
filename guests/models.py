@@ -238,17 +238,23 @@ class GuestPanel(MagModel):
 
 
 class GuestMerch(MagModel):
-    _inventory_multi_param_regex = re.compile(r'^inventory_([\w_\-]+?)_(\d+)$')
-    _inventory_single_param_regex = re.compile(r'^inventory_([\w_\-]+?)$')
     _inventory_file_regex = re.compile(r'^(audio|image)(|\-\d+)$')
     _inventory_filename_regex = re.compile(r'^(audio|image)(|\-\d+)_filename$')
 
     guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
     selling_merch = Column(Choice(c.GUEST_MERCH_OPTS), nullable=True)
-    inventory = Column(JSON, default=[], server_default='[]')
+    inventory = Column(JSON, default={}, server_default='{}')
     bringing_boxes = Column(UnicodeText)
     extra_info = Column(UnicodeText)
     tax_phone = Column(UnicodeText)
+
+    poc_first_name = Column(UnicodeText)
+    poc_last_name = Column(UnicodeText)
+    poc_phone = Column(UnicodeText)
+    poc_email = Column(UnicodeText)
+    poc_mailing_address = Column(UnicodeText)
+
+    handlers = Column(JSON, default=[], server_default='[]')
 
     @property
     def rock_island_url(self):
@@ -268,35 +274,47 @@ class GuestMerch(MagModel):
             self.tax_phone = self.guest.info.poc_phone
 
     @classmethod
-    def extract_inventory(cls, params):
-        inventory = defaultdict(dict)
+    def extract_json_params(cls, params, field):
+        multi_param_regex = re.compile(''.join(['^', field, r'_([\w_\-]+?)_(\d+)$']))
+        single_param_regex = re.compile(''.join(['^', field, r'_([\w_\-]+?)$']))
+
+        items = defaultdict(dict)
         single_item = dict()
         for param_name, value in filter(lambda i: i[1], params.items()):
-            match = cls._inventory_multi_param_regex.match(param_name)
+            match = multi_param_regex.match(param_name)
             if match:
                 name = match.group(1)
                 item_number = int(match.group(2))
-                inventory[item_number][name] = value
+                items[item_number][name] = value
             else:
-                match = cls._inventory_single_param_regex.match(param_name)
+                match = single_param_regex.match(param_name)
                 if match:
                     name = match.group(1)
                     single_item[name] = value
 
         if single_item:
-            inventory[len(inventory)] = single_item
+            items[len(items)] = single_item
 
-        for item_number, item in inventory.items():
+        return [item for item_number, item in sorted(items.items())]
+
+    @classmethod
+    def extract_inventory(cls, params):
+        inventory = cls.extract_json_params(params, 'inventory')
+        for item in inventory:
             if not item.get('id'):
                 item['id'] = str(uuid.uuid4())
-        return [item for (item_number, item) in sorted(inventory.items())]
+        return {item['id']: item for (item_number, item) in inventory.items()}
+
+    @classmethod
+    def extract_handlers(cls, params):
+        return cls.extract_json_params(params, 'handlers')
 
     @classmethod
     def validate_inventory(cls, inventory):
         if not inventory:
             return 'You must add some merch to your inventory!'
         messages = []
-        for item in inventory:
+        for item_id, item in inventory.items():
             if int(item.get('quantity') or 0) <= 0 and cls.total_quantity(item) <= 0:
                 messages.append('You must specify some quantity')
             for name, file in [(n, f) for (n, f) in item.items() if f]:
@@ -306,25 +324,24 @@ class GuestMerch(MagModel):
                     extensions = getattr(c, 'ALLOWED_INVENTORY_{}_EXTENSIONS'.format(file_type), [])
                     if extensions and extension(file.filename) not in extensions:
                         messages.append(file_type.title() + ' files must be one of ' + ', '.join(extensions))
-        return '. '.join(uniquify([s.strip() for s in messages if s and s.strip()]))
+        return '. '.join(uniquify([s.strip() for s in messages if s.strip()]))
 
-    def _prune_inventory_file(self, item, inventory_dict, *, prune_missing=False):
+    def _prune_inventory_file(self, item, new_inventory, *, prune_missing=False):
         for name, filename in list(item.items()):
             match = self._inventory_filename_regex.match(name)
             if match and filename:
-                new_item = inventory_dict.get(item['id'])
+                new_item = new_inventory.get(item['id'])
                 if (prune_missing and not new_item) or (new_item and new_item.get(name) != filename):
                     filepath = self.inventory_path(filename)
                     if os.path.exists(filepath):
                         os.remove(filepath)
 
-    def _prune_inventory_files(self, inventory, *, prune_missing=False):
-        new_inventory = {x['id']: x for x in inventory}
-        for item in self.inventory:
+    def _prune_inventory_files(self, new_inventory, *, prune_missing=False):
+        for item_id, item in self.inventory.items():
             self._prune_inventory_file(item, new_inventory, prune_missing=prune_missing)
 
     def _save_inventory_files(self, inventory):
-        for item in inventory:
+        for item_id, item in inventory.items():
             for name, file in [(n, f) for (n, f) in item.items() if f]:
                 match = self._inventory_file_regex.match(name)
                 if match:
@@ -411,46 +428,31 @@ class GuestMerch(MagModel):
     def inventory_path(cls, file):
         return os.path.join(guests_config['root'], 'uploaded_files', 'inventory', file)
 
-    def inventory_url(self, inventory_id, name):
-        return '../guests/view_inventory_file?id={}&inventory_id={}&name={}'.format(self.id, inventory_id, name)
+    def inventory_url(self, item_id, name):
+        return '../guests/view_inventory_file?id={}&item_id={}&name={}'.format(self.id, item_id, name)
 
-    def inventory_item(self, id):
-        for item in self.inventory:
-            if item.get('id') == id:
-                return item
-        return None
-
-    def remove_inventory_item(self, id, *, persist_files=True):
-        found_index = -1
-        found_item = None
-        for index, item in enumerate(self.inventory):
-            if item.get('id') == id:
-                found_index = index
-                found_item = item
-                break
-        if found_item and found_index > -1:
-            inventory = list(self.inventory)
-            del inventory[found_index]
+    def remove_inventory_item(self, item_id, *, persist_files=True):
+        item = None
+        if item_id in self.inventory:
+            inventory = dict(self.inventory)
+            item = inventory[item_id]
+            del inventory[item_id]
             if persist_files:
-                new_inventory = {x['id']: x for x in inventory}
-                self._prune_inventory_file(found_item, new_inventory, prune_missing=True)
+                self._prune_inventory_file(item, inventory, prune_missing=True)
             self.inventory = inventory
-        return found_item
+        return item
 
     def set_inventory(self, inventory, *, persist_files=True):
         if persist_files:
             self._save_inventory_files(inventory)
-            self._prune_inventory_files(inventory)
+            self._prune_inventory_files(inventory, prune_missing=True)
         self.inventory = inventory
 
     def update_inventory(self, inventory, *, persist_files=True):
         if persist_files:
             self._save_inventory_files(inventory)
             self._prune_inventory_files(inventory, prune_missing=False)
-        updated_inventory = OrderedDict([(item['id'], item) for item in self.inventory])
-        for item in inventory:
-            updated_inventory[item['id']] = item
-        self.inventory = [v for v in updated_inventory.values()]
+        self.inventory = dict(self.inventory, **inventory)
 
 
 class GuestCharity(MagModel):
