@@ -16,11 +16,12 @@
 {%- endmacro %}
 
 {% macro inventory_form_file(type, item=None, index='', suffix='', is_required=False) -%}
-  {% set file_attr = type ~ '-' ~ index if index|string else type %}
-  {% set filename_attr = file_attr ~ '_filename' %}
-  {% set download_filename_attr = file_attr ~ '_download_filename' %}
-  {% set content_type_attr = file_attr ~ '_content_type' %}
-  {% set has_file = item and filename_attr in item and item[filename_attr] %}
+  {%- set type = type|lower -%}
+  {%- set file_attr = type ~ '-' ~ index if index|string else type -%}
+  {%- set filename_attr = file_attr ~ '_filename' -%}
+  {%- set download_filename_attr = file_attr ~ '_download_filename' -%}
+  {%- set content_type_attr = file_attr ~ '_content_type' -%}
+  {%- set has_file = item and filename_attr in item and item[filename_attr] -%}
   <div class="well well-sm well-form-control inventory-file inventory-file-{{ type }}">
     <input type="hidden" class="download_filename" name="inventory_{{ download_filename_attr }}{{ suffix }}" value="{{ item[download_filename_attr] }}" />
     <input type="hidden" class="filename" name="inventory_{{ filename_attr }}{{ suffix }}" value="{{ item[filename_attr] }}" />
@@ -28,13 +29,19 @@
     {% if has_file and caller %}
       {{ caller(file_attr, filename_attr, download_filename_attr, content_type_attr) }}
     {% endif %}
-    <input type="file" class="file" name="inventory_{{ file_attr }}{{ suffix }}" {% if is_required and not has_file %}required{% endif %} />
+    {%- set allowed = c['ALLOWED_INVENTORY_' ~ type|upper ~ '_EXTENSIONS'] -%}
+    <input
+      type="file"
+      class="file"
+      name="inventory_{{ file_attr }}{{ suffix }}"
+      {%- if allowed %} accept="{{ type }}/{{ allowed|join(', ' ~ type ~ '/') }}, {{ type }}/x-{{ allowed|join(', ' ~ type ~ '/x-') }}"{% endif -%}
+      {%- if is_required and not has_file %} required {% endif -%} />
   </div>
 {%- endmacro %}
 
 {% macro inventory_form_audio(item=None, index='', suffix='', is_required=False) -%}
   {% call(file_attr, filename_attr, download_filename_attr, content_type_attr) inventory_form_file('audio', item, index, suffix, is_required) %}
-    <button class="close remove_file pull-right current-file"><span aria-hidden="true">&times;</span></button>
+    <button class="close remove_file pull-right current-file" type="button"><span aria-hidden="true">&times;</span></button>
     <div class="current-file">
       <p>{{ item[download_filename_attr] }}</p>
       {{ inventory_audio(item, file_attr) }}
@@ -56,7 +63,7 @@
     <div class="panel-body">
       <h4>
         {{ label }}
-        <button class="btn btn-sm btn-danger remove_inventory pull-right"><span class="glyphicon glyphicon-remove"></span></button>
+        <button class="btn btn-sm btn-danger remove_inventory pull-right" type="button"><span class="glyphicon glyphicon-remove"></span></button>
       </h4>
       <input type="hidden" name="inventory_type{{ suffix }}" value="{{ type }}"/>
       <input type="hidden" name="inventory_id{{ suffix }}" {% if item and item.id %}value="{{ item.id }}"{% endif %}/>
@@ -71,7 +78,7 @@
         <div class="col-sm-6">
           <div class="input-group">
             <span class="input-group-addon">$</span>
-            <input class="form-control" type="text" name="inventory_price{{ suffix }}" value="{{ item.price }}" placeholder="How much do you want to charge?" required />
+            <input class="form-control" type="number" step="any" name="inventory_price{{ suffix }}" value="{{ item.price }}" placeholder="How much do you want to charge?" min="0" required />
           </div>
         </div>
         <div class="clearfix"></div>
@@ -85,7 +92,7 @@
         <div class="form-group">
           <label class="col-sm-3 control-label">Quantity</label>
           <div class="col-sm-6">
-            <input class="form-control" type="number" name="inventory_quantity{{ suffix }}" value="{{ item.quantity }}" placeholder="How many do you have for sale?" required />
+            <input class="form-control" type="number" name="inventory_quantity{{ suffix }}" value="{{ item.quantity }}" placeholder="How many do you have for sale?" min="0" required />
           </div>
         </div>
       {% endif %}
@@ -236,28 +243,42 @@
 {%- endmacro %}
 
 {% macro inventory_table() -%}
-  <table
-      class="table table-hover datatable inventory-table"
-      data-page-length="-1"
-      data-searching="false"
-      data-paging="false"
-      data-info="false"
-      data-auto-width="true"
-      data-order="[[0,'asc'],[1,'asc'],[2,'asc']]"
-      data-order-multi="true">
-    <thead>
-      <tr>
-        <th class="inventory-item-type">Type</th>
-        <th class="inventory-item-name">Name</th>
-        <th class="inventory-item-price">Price</th>
-        <th class="inventory-item-quantity">Quantity</th>
-        <th class="inventory-item-image" data-orderable="false">Promo Picture</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for item in guest_merch.inventory -%}
-      {{ inventory_table_row(item) }}
-    {%- endfor %}
-    </tbody>
-  </table>
+
+{%- endmacro %}
+
+{% macro inventory_table() -%}
+  {%- if guest_merch.selling_merch == c.ROCK_ISLAND and guest_merch.inventory -%}
+    <div class="table-responsive">
+      <table
+          class="table table-hover datatable inventory-table"
+          data-page-length="-1"
+          data-searching="false"
+          data-paging="false"
+          data-info="false"
+          data-auto-width="true"
+          data-order="[[0,'asc'],[1,'asc'],[2,'asc']]"
+          data-order-multi="true">
+        <thead>
+          <tr>
+            <th class="inventory-item-type">Type</th>
+            <th class="inventory-item-name">Name</th>
+            <th class="inventory-item-price">Price</th>
+            <th class="inventory-item-quantity">Quantity</th>
+            <th class="inventory-item-image" data-orderable="false">Promo Picture</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for item in guest_merch.inventory -%}
+          {{ inventory_table_row(item) }}
+        {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+  {%- elif caller -%}
+    {%- if guest_merch.selling_merch != c.ROCK_ISLAND -%}
+      {{ caller('This group is not using Rock Island services.') }}
+    {%- else -%}
+      {{ caller('This group has not uploaded any inventory.') }}
+    {%- endif -%}
+  {%- endif -%}
 {%- endmacro %}

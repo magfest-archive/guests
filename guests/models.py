@@ -239,8 +239,8 @@ class GuestPanel(MagModel):
 
 class GuestMerch(MagModel):
     _inventory_param_regex = re.compile(r'^inventory_([\w_\-]+?)_(\d+)$')
-    _inventory_image_regex = re.compile(r'^image(|\-\d+)$')
-    _inventory_audio_regex = re.compile(r'^audio(|\-\d+)$')
+    _inventory_file_regex = re.compile(r'^(audio|image)(|\-\d+)$')
+    _inventory_filename_regex = re.compile(r'^(audio|image)(|\-\d+)_filename$')
 
     guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
     selling_merch = Column(Choice(c.GUEST_MERCH_OPTS), nullable=True)
@@ -266,10 +266,11 @@ class GuestMerch(MagModel):
         if self.selling_merch == c.OWN_TABLE and not self.tax_phone:
             self.tax_phone = self.guest.info.poc_phone
 
-    def _extract_inventory_params(self, params):
+    @classmethod
+    def extract_inventory(cls, params):
         inventory = defaultdict(dict)
         for param_name, value in params.items():
-            match = self._inventory_param_regex.match(param_name)
+            match = cls._inventory_param_regex.match(param_name)
             if match:
                 name = match.group(1)
                 item_number = int(match.group(2))
@@ -280,33 +281,54 @@ class GuestMerch(MagModel):
                 item['id'] = str(uuid.uuid4())
         return [item for (item_number, item) in sorted(inventory.items())]
 
-    def _save_inventory_item_file(self, item, name, extensions=set()):
+    @classmethod
+    def validate_inventory(cls, inventory):
+        if not inventory:
+            return 'You must add some merch to your inventory!'
         messages = []
-        download_filename_attr = '{}_download_filename'.format(name)
-        filename_attr = '{}_filename'.format(name)
-        content_type_attr = '{}_content_type'.format(name)
-        file = None
-        if name in item:
-            file = item[name]
-            del item[name]
-            if getattr(file, 'filename', None):
-                if extensions and extension(file.filename) not in extensions:
-                    item[download_filename_attr] = None
-                    item[filename_attr] = None
-                    item[content_type_attr] = None
-                    messages.append('Files must be one of ' + ', '.join(extensions))
-                else:
-                    item[download_filename_attr] = file.filename
-                    item[filename_attr] = str(uuid.uuid4())
-                    item[content_type_attr] = file.content_type.value
-                    with open(self.inventory_path(item[filename_attr]), 'wb') as f:
-                        shutil.copyfileobj(file.file, f)
+        for item in inventory:
+            if int(item.get('quantity') or 0) <= 0 and cls.total_quantity(item) <= 0:
+                messages.append('You must specify a quantity for each item')
+            for name, file in [(n, f) for (n, f) in item.items() if f]:
+                match = cls._inventory_file_regex.match(name)
+                if match and getattr(file, 'filename', None):
+                    file_type = match.group(1).upper()
+                    extensions = getattr(c, 'ALLOWED_INVENTORY_{}_EXTENSIONS'.format(file_type), [])
+                    if extensions and extension(file.filename) not in extensions:
+                        messages.append(file_type.title() + ' files must be one of ' + ', '.join(extensions))
+        return '. '.join(uniquify([s.strip() for s in messages if s and s.strip()]))
 
-        for attr in (download_filename_attr, filename_attr, content_type_attr):
-            if not item.get(attr):
-                del item[attr]
+    def _prune_inventory_files(self, inventory):
+        new_inventory = {x['id']: x for x in inventory}
+        for item in self.inventory:
+            for name, filename in list(item.items()):
+                match = self._inventory_filename_regex.match(name)
+                if match and filename:
+                    new_item = new_inventory.get(item['id'])
+                    if not new_item or new_item.get(name) != filename:
+                        filepath = self.inventory_path(filename)
+                        if os.path.exists(filepath):
+                            os.remove(filepath)
 
-        return '\n'.join(uniquify(messages))
+    def _save_inventory_files(self, inventory):
+        for item in inventory:
+            for name, file in [(n, f) for (n, f) in item.items() if f]:
+                match = self._inventory_file_regex.match(name)
+                if match:
+                    download_filename_attr = '{}_download_filename'.format(name)
+                    filename_attr = '{}_filename'.format(name)
+                    content_type_attr = '{}_content_type'.format(name)
+                    del item[name]
+                    if getattr(file, 'filename', None):
+                        item[download_filename_attr] = file.filename
+                        item[filename_attr] = str(uuid.uuid4())
+                        item[content_type_attr] = file.content_type.value
+                        with open(self.inventory_path(item[filename_attr]), 'wb') as f:
+                            shutil.copyfileobj(file.file, f)
+
+                    for attr in [download_filename_attr, filename_attr, content_type_attr]:
+                        if attr in item and not item[attr]:
+                            del item[attr]
 
     @classmethod
     def total_quantity(cls, item):
@@ -317,7 +339,7 @@ class GuestMerch(MagModel):
 
     @classmethod
     def item_subcategories(cls, item_type):
-        s = { getattr(c, s): s for s in c.MERCH_TYPES_VARS }[int(item_type)]
+        s = {getattr(c, s): s for s in c.MERCH_TYPES_VARS}[int(item_type)]
         return (
             getattr(c, '{}_VARIETIES'.format(s), defaultdict(lambda: {})),
             getattr(c, '{}_CUTS'.format(s), defaultdict(lambda: {})),
@@ -325,7 +347,7 @@ class GuestMerch(MagModel):
 
     @classmethod
     def item_subcategories_opts(cls, item_type):
-        s = { getattr(c, s): s for s in c.MERCH_TYPES_VARS }[int(item_type)]
+        s = {getattr(c, s): s for s in c.MERCH_TYPES_VARS}[int(item_type)]
         return (
             getattr(c, '{}_VARIETIES_OPTS'.format(s), defaultdict(lambda: [])),
             getattr(c, '{}_CUTS_OPTS'.format(s), defaultdict(lambda: [])),
@@ -339,6 +361,7 @@ class GuestMerch(MagModel):
                 line_items.append(attr)
 
         varieties, cuts, sizes = [[v for (v, _) in x] for x in cls.item_subcategories_opts(item['type'])]
+
         def _line_item_sort_key(line_item):
             variety, cut, size = cls.line_item_to_types(line_item)
             return (
@@ -384,15 +407,11 @@ class GuestMerch(MagModel):
                 return item
         return None
 
-    def merge_inventory(self, params):
-        inventory = self._extract_inventory_params(params)
-        for item in inventory:
-            for name in [s for s in item.keys() if self._inventory_image_regex.match(s)]:
-                self._save_inventory_item_file(item, name, c.ALLOWED_INVENTORY_IMAGE_EXTENSIONS)
-            for name in [s for s in item.keys() if self._inventory_audio_regex.match(s)]:
-                self._save_inventory_item_file(item, name, c.ALLOWED_INVENTORY_AUDIO_EXTENSIONS)
+    def merge_inventory(self, inventory, persist_files=True):
+        if persist_files:
+            self._save_inventory_files(inventory)
+            self._prune_inventory_files(inventory)
         self.inventory = inventory
-
 
 class GuestCharity(MagModel):
     guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)

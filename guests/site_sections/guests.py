@@ -139,17 +139,18 @@ class Root:
 
     def merch(self, session, guest_id, message='', coverage=False, warning=False, **params):
         guest = session.guest_group(guest_id)
-        guest_merch = session.guest_merch(params)
         group_params = dict()
         if cherrypy.request.method == 'POST':
-            message = guest_merch.merge_inventory(params)
-            if not guest_merch.selling_merch:
+            guest_merch = session.guest_merch(params)
+            if guest_merch.selling_merch == c.ROCK_ISLAND:
+                inventory = GuestMerch.extract_inventory(params)
+                message = GuestMerch.validate_inventory(inventory)
+                guest_merch.merge_inventory(inventory, not message)
+            elif not guest_merch.selling_merch:
                 message = 'You need to tell us whether and how you want to sell merchandise'
             elif c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE and guest_merch.selling_merch == c.OWN_TABLE and \
                             guest.group_type == c.BAND and not all([coverage, warning]):
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
-            elif guest_merch.selling_merch == c.ROCK_ISLAND and not guest_merch.inventory:
-                message = 'You must add some merch to your inventory!'
             elif guest.group_type == c.GUEST and guest_merch.selling_merch == c.OWN_TABLE:
                 for field_name in ['country', 'region', 'zip_code', 'address1', 'address2', 'city']:
                     group_params[field_name] = params.get(field_name, '')
@@ -161,14 +162,17 @@ class Root:
                     message = 'You must provide an address for tax purposes.'
                 else:
                     guest.group.apply(group_params, restricted=True)
+
             if not message:
                 guest.merch = guest_merch
                 session.add(guest_merch)
                 raise HTTPRedirect('index?id={}&message={}', guest.id, 'Your merchandise preferences have been saved')
+        else:
+            guest_merch = guest.merch
 
         return {
             'guest': guest,
-            'guest_merch': guest.merch or guest_merch,
+            'guest_merch': guest_merch,
             'group': group_params or guest.group,
             'message': message
         }
@@ -253,13 +257,15 @@ class Root:
                 filename = item.get('{}_filename'.format(name))
                 download_filename = item.get('{}_download_filename'.format(name), filename)
                 content_type = item.get('{}_content_type'.format(name))
-                if filename and download_filename and content_type:
-                    filepath = guest_merch.inventory_path(filename)
+                filepath = guest_merch.inventory_path(filename)
+                if filename and download_filename and content_type and os.path.exists(filepath):
                     filesize = os.path.getsize(filepath)
                     cherrypy.response.headers['Accept-Ranges'] = 'bytes'
                     cherrypy.response.headers['Content-Length'] = filesize
                     cherrypy.response.headers['Content-Range'] = 'bytes 0-{}'.format(filesize)
                     return serve_file(filepath, disposition='inline', name=download_filename, content_type=content_type)
+                else:
+                    raise cherrypy.HTTPError(404, "File not found")
 
     def view_bio_pic(self, session, id):
         guest = session.guest_group(id)

@@ -18,6 +18,7 @@
         {{ guests_macros.inventory_form(type) }}
       </div>
     {%- endfor %}
+    <div id="inventory_storage" style="display:none"></div>
   {% endblock %}
 {% endif %}
 
@@ -121,9 +122,16 @@
   <script>
       var checkCoverage = function() {
           var isDedicated = $.val('selling_merch') === {{ c.OWN_TABLE }};
-          var isRockisland = $.val('selling_merch') === {{ c.ROCK_ISLAND }};
+          var isRockIsland = $.val('selling_merch') === {{ c.ROCK_ISLAND }};
+
+          if (isRockIsland) {
+              $('#inventory_storage > *').appendTo($('#inventory_container'));
+          } else {
+              $('#inventory_container > *').appendTo($('#inventory_storage'));
+          }
+
           setVisible('#coverage', isDedicated);
-          setVisible('#rockisland', isRockisland);
+          setVisible('#rockisland', isRockIsland);
 
           {% if c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE %}
               var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');

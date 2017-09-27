@@ -38,13 +38,11 @@
             <div class="clearfix"></div>
           </h2>
         </div>
-        {% if guest_merch.selling_merch == c.ROCK_ISLAND %}
-          <div class="table-responsive">{{ guests_macros.inventory_table() }}</div>
-        {% else %}
-          <div class="panel-body">
-            <h3 class="text-danger">This group is not using Rock Island services.</h3>
-          </div>
-        {% endif %}
+        {%- call(error) guests_macros.inventory_table() -%}
+          {%- if error -%}
+            <h3 class="text-danger text-center panel-body">{{ error }}</h3>
+          {%- endif -%}
+        {%- endcall -%}
       </div>
     {%- endfor %}
   {% else %}
@@ -56,10 +54,10 @@
       <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
       <div class="clearfix"></div>
     </h1>
-    {% if guest_merch.selling_merch == c.ROCK_ISLAND %}
-      <div class="table-responsive">{{ guests_macros.inventory_table() }}</div>
-    {% else %}
-      <h3 class="text-danger">This group is not using Rock Island services.</h3>
-    {% endif %}
+    {%- call(error) guests_macros.inventory_table() -%}
+      {%- if error -%}
+        <h3 class="text-danger text-center">{{ error }}</h3>
+      {%- endif -%}
+    {%- endcall -%}
   {% endif %}
 {% endblock %}
