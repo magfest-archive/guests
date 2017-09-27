@@ -139,15 +139,13 @@ class Root:
 
     def merch(self, session, guest_id, message='', coverage=False, warning=False, **params):
         guest = session.guest_group(guest_id)
+        guest_merch = session.guest_merch(params)
         group_params = dict()
         if cherrypy.request.method == 'POST':
-            guest_merch = session.guest_merch(params)
-            if guest_merch.selling_merch == c.ROCK_ISLAND:
-                inventory = GuestMerch.extract_inventory(params)
-                message = GuestMerch.validate_inventory(inventory)
-                guest_merch.merge_inventory(inventory, not message)
-            elif not guest_merch.selling_merch:
+            if not guest_merch.selling_merch:
                 message = 'You need to tell us whether and how you want to sell merchandise'
+            elif guest_merch.selling_merch == c.ROCK_ISLAND and not guest_merch.inventory:
+                message = 'You must add some merch to your inventory!'
             elif c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE and guest_merch.selling_merch == c.OWN_TABLE and \
                             guest.group_type == c.BAND and not all([coverage, warning]):
                 message = 'You cannot staff your own table without checking the boxes to agree to our conditions'
@@ -162,20 +160,54 @@ class Root:
                     message = 'You must provide an address for tax purposes.'
                 else:
                     guest.group.apply(group_params, restricted=True)
-
             if not message:
                 guest.merch = guest_merch
                 session.add(guest_merch)
                 raise HTTPRedirect('index?id={}&message={}', guest.id, 'Your merchandise preferences have been saved')
-        else:
-            guest_merch = guest.merch
 
         return {
             'guest': guest,
-            'guest_merch': guest_merch,
+            'guest_merch': guest.merch or guest_merch,
             'group': group_params or guest.group,
             'message': message
         }
+
+    @ajax
+    def save_inventory_item(self, session, guest_id, **params):
+        guest = session.guest_group(guest_id)
+        if guest.merch:
+            guest_merch = guest.merch
+        else:
+            guest_merch = GuestMerch()
+            guest.merch = guest_merch
+
+        inventory = GuestMerch.extract_inventory(params)
+        message = GuestMerch.validate_inventory(inventory)
+        if not message:
+            guest_merch.update_inventory(inventory)
+            session.add(guest_merch)
+            session.commit()
+
+        return {'error': message}
+
+    @ajax
+    def remove_inventory_item(self, session, guest_id, inventory_id):
+        guest = session.guest_group(guest_id)
+        if guest.merch:
+            guest_merch = guest.merch
+        else:
+            guest_merch = GuestMerch()
+            guest.merch = guest_merch
+
+        message = ''
+        item = guest_merch.remove_inventory_item(inventory_id)
+        if not item:
+            message = 'Item not found'
+        else:
+            session.add(guest_merch)
+            session.commit()
+        return {'error': message, 'result': item}
+
 
     def charity(self, session, guest_id, message='', **params):
         guest = session.guest_group(guest_id)

@@ -38,11 +38,7 @@
             <div class="clearfix"></div>
           </h2>
         </div>
-        {%- call(error) guests_macros.inventory_table() -%}
-          {%- if error -%}
-            <h3 class="text-danger text-center panel-body">{{ error }}</h3>
-          {%- endif -%}
-        {%- endcall -%}
+        {{ guests_macros.inventory_table_with_err('panel-body') }}
       </div>
     {%- endfor %}
   {% else %}
@@ -54,10 +50,6 @@
       <small><a href="{{ guest_merch.rock_island_csv_url }}">Download CSV for {{ guest.group.name }}</a></small>
       <div class="clearfix"></div>
     </h1>
-    {%- call(error) guests_macros.inventory_table() -%}
-      {%- if error -%}
-        <h3 class="text-danger text-center">{{ error }}</h3>
-      {%- endif -%}
-    {%- endcall -%}
+    {{ guests_macros.inventory_table_with_err() }}
   {% endif %}
 {% endblock %}

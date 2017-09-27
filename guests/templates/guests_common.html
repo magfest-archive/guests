@@ -1,9 +1,5 @@
 <style type="text/css">
 
-#rockisland > h3 {
-  margin-bottom: 20px;
-}
-
 .inventory-item > .panel-body > h2 {
   font-size: 1.625em;
   margin-top: 0;
@@ -81,20 +77,24 @@
   margin: 6px 0 6px 12px;
 }
 
+h3 .inventory-add-item {
+  float: right;
+}
+
 .inventory-add-item > h4,
 .inventory-add-item > div {
   margin-bottom: 10px;
   display: block;
 }
 
-.inventory-add-item > div > .glyphicon {
-  font-size: 34px;
+.inventory-add-item .glyphicon {
+  font-size: 32px;
   vertical-align: middle;
-  margin-right: 10px;
 }
 
-.inventory-add-item > div > select {
+.inventory-add-item select {
   display: inline-block;
+  font-weight: normal;
   width: auto;
 }
 
@@ -112,13 +112,25 @@
 }
 
 .inventory-table img {
-  width: 240px;
+  width: 200px;
   max-width: 100%;
+}
+
+.inventory-table .inventory-item-type {
+  font-weight: bold;
 }
 
 .inventory-table .inventory-item-image {
   text-align: right;
   max-width: 25%;
+}
+
+.inventory-table .inventory-item-controls {
+  text-align: center;
+}
+
+.inventory-table th.inventory-item-controls {
+  padding-right: 8px;
 }
 
 .inventory-table dt,
@@ -128,30 +140,39 @@
 }
 
 .inventory-table .audio-track {
-  padding-left: 15px;
-  margin-top: 15px;
+  padding: 1px 10px;
+}
+
+.inventory-table .audio-track dt {
+  margin-right: 4px;
+}
+
+.inventory-table .audio-track audio {
+  margin: 4px 0;
 }
 
 .inventory-table .line-item {
   padding: 1px 10px;
 }
 
+.inventory-table .audio-track:hover,
 .inventory-table .line-item:hover {
   background-color: #e0e0e0;
 }
 
-.inventory-table .audio-track:first-child {
-  margin-top: 10px;
-}
-
+.inventory-table .audio-track dd,
 .inventory-table .inventory-item-quantity dd {
   float: right;
 }
 
-.inventory-table .inventory-item-quantity hr {
-  border-top: 1px solid #e8e8e8;
-  margin-bottom: 5px;
-  margin-top: 5px;
+.inventory-table .inventory-item-quantity > .line-item:first-child {
+  margin-top: -1px;
+}
+
+.inventory-table .inventory-item-quantity > dl {
+  max-height: 292px;
+  overflow: auto;
+  border: 1px solid #e8e8e8;
 }
 
 .panel.inventory-table-panel>.panel-body+.table-responsive {
@@ -183,9 +204,22 @@
   background-image:      -o-linear-gradient(top, #d9edf7 0%, #d9edf7 100%);
   background-image: -webkit-gradient(linear, left top, left bottom, from(#d9edf7), to(#d9edf7));
   background-image:         linear-gradient(to bottom, #d9edf7 0%, #d9edf7 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd1e6ef', endColorstr='#ffd9edf7', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9edf7', endColorstr='#ffd9edf7', GradientType=0);
   background-repeat: repeat-x;
   border-color: #d1e6ef;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.well-success {
+  background-color: #dff0d8;
+  background-image: -webkit-linear-gradient(top, #dff0d8 0%, #dff0d8 100%);
+  background-image:      -o-linear-gradient(top, #dff0d8 0%, #dff0d8 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#dff0d8), to(#dff0d8));
+  background-image:         linear-gradient(to bottom, #dff0d8 0%, #dff0d8 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdff0d8', endColorstr='#ffdff0d8', GradientType=0);
+  background-repeat: repeat-x;
+  border-color: #d8e8d0;
   -webkit-box-shadow: none;
           box-shadow: none;
 }

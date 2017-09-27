@@ -13,12 +13,77 @@
 
 {% if c.ROCK_ISLAND %}
   {% block form_header %}
-    {% for type, label in c.MERCH_TYPES_OPTS -%}
-      <div id="template_inventory_item_{{ type }}" style="display:none">
-        {{ guests_macros.inventory_form(type) }}
+    <style type="text/css">
+
+      #empty_inventory .well {
+        margin-bottom: 0;
+      }
+
+      #inventory_container {
+        margin-left: -15px;
+        margin-right: -15px;
+      }
+
+      #rockisland {
+        padding-top: 10px;
+      }
+
+      #rockisland > h3 {
+        margin-bottom: 20px;
+      }
+
+      .well .inventory-add-item {
+        margin-bottom: 10px;
+      }
+
+      .inventory-item-name audio {
+        display: none;
+      }
+
+    </style>
+
+    <iframe id="upload_frame" name="upload_frame" style="display:none"></iframe>
+
+    {%- macro inventory_modal(type, item=None) -%}
+      {% set type = type|int %}
+      {%- set label = c.MERCH_TYPES[type] -%}
+      <div
+          id="inventory_item_{{ item.id or type }}"
+          class="modal fade inventory-item"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="inventory_item_title_{{ item.id or type }}"
+          style="display:none">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="inventory_item_title_{{ item.id or type }}">{{ label }}</h4>
+            </div>
+            <form method="post" action="save_inventory_item" target="upload_frame" class="form-horizontal" role="form" enctype="multipart/form-data">
+              <div class="modal-body">
+                {{ csrf_token() }}
+                <input type="hidden" name="guest_id" value="{{ guest.id }}" />
+                {{ guests_macros.inventory_form(type, item=item) }}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary save_inventory">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-    {%- endfor %}
-    <div id="inventory_storage" style="display:none"></div>
+    {%- endmacro -%}
+
+    <div id="inventory_modals">
+      {% for type, label in c.MERCH_TYPES_OPTS -%}
+        {{ inventory_modal(type) }}
+      {%- endfor %}
+      {% for item in guest_merch.inventory -%}
+        {{ inventory_modal(item.type, item=item) }}
+      {%- endfor %}
+    </div>
   {% endblock %}
 {% endif %}
 
@@ -79,25 +144,32 @@
 
   {% if c.ROCK_ISLAND %}
     <div id="rockisland" style="display:none">
-      <h3>Your Inventory</h3>
-      <div id="inventory_container">
-        {% for item in guest_merch.inventory -%}
-          {{ guests_macros.inventory_form(item.type, item=item, suffix='_' ~ loop.index0) }}
-        {%- endfor %}
-      </div>
-      <div class="well well-sm well-info inventory-add-item col-sm-6 col-sm-offset-3 text-info text-center">
-        <h4>Add some merch to your inventory!</h4>
-        <div>
-          <span class="glyphicon glyphicon-ok-circle"></span>
-          <select id="add_inventory" class="form-control">
+      <h3>
+        Your Inventory
+        <div class="inventory-add-item text-success">
+          <span class="glyphicon glyphicon-plus-sign"></span>
+          <select class="form-control add_inventory">
             <option value="">Select an item to add it...</option>
             {{ options(c.MERCH_TYPES_OPTS) }}
           </select>
         </div>
+        <div class="clearfix"></div>
+      </h3>
+      <div id="inventory_container"{% if not guest_merch.inventory %} style="display:none"{% endif %}>
+        {{ guests_macros.inventory_table(show_controls=True) }}
       </div>
-      <div class="clearfix"></div>
-      <div class="text-info text-center">
-        <small><i>You can always come back later to update your inventory!</i></small>
+      <div id="empty_inventory"{% if guest_merch.inventory %} style="display:none"{% endif %}>
+        <div class="well well-sm well-success col-sm-6 col-sm-offset-3 text-success text-center">
+          <h4>Add some merch to your inventory!</h4>
+          <div class="inventory-add-item text-success">
+            <span class="glyphicon glyphicon-plus-sign"></span>
+            <select class="form-control add_inventory">
+              <option value="">Select an item to add it...</option>
+              {{ options(c.MERCH_TYPES_OPTS) }}
+            </select>
+          </div>
+        </div>
+        <div class="clearfix"></div>
       </div>
       <h3>Extra Info</h3>
       <div class="form-group">
@@ -124,12 +196,6 @@
           var isDedicated = $.val('selling_merch') === {{ c.OWN_TABLE }};
           var isRockIsland = $.val('selling_merch') === {{ c.ROCK_ISLAND }};
 
-          if (isRockIsland) {
-              $('#inventory_storage > *').appendTo($('#inventory_container'));
-          } else {
-              $('#inventory_container > *').appendTo($('#inventory_storage'));
-          }
-
           setVisible('#coverage', isDedicated);
           setVisible('#rockisland', isRockIsland);
 
@@ -139,70 +205,76 @@
           {% endif %}
       };
 
-      var packInventoryInputNames = function() {
-        var $inventoryItems = $('#inventory_container .inventory-item'),
-            inventoryCount = $inventoryItems.size(),
-            nameRegex = /^([\w_\-]+?_)(\d+)$/;
-        $inventoryItems.each(function(i, item) {
-            var $inputs = $(item).find('input');
-            $inputs.each(function(_, input) {
-                var name = $(input).attr('name'),
-                    match = name ? name.match(nameRegex) : [];
-                if (match && match.length == 3) {
-                  $(input).attr('name', match[1] + i);
-                }
-            });
-        });
+      var onChooseInventoryType = function() {
+        var $addInventory = $(this),
+            $inventoryItem = $('#inventory_item_' + $addInventory.val());
+
+        $inventoryItem.find('.one_size').each(function() { onOneSizeChange.call(this); });
+        $inventoryItem.modal();
+        $addInventory.val('');
       };
 
-      var onChooseInventoryType = function() {
-        var $addInventory = $('#add_inventory'),
-            inventoryTypeValue = $addInventory.val(),
-            $inventoryItem = $('#template_inventory_item_' + inventoryTypeValue + ' > .inventory-item').clone(),
-            $inventoryInputs = $inventoryItem.find('input'),
-            $inventoryContainer = $('#inventory_container'),
-            $inventoryItems = $inventoryContainer.children('.inventory-item'),
-            suffix = '_' + $inventoryItems.size();
+      var onEditInventory = function(e) {
+        e.preventDefault();
+        var $inventoryRow = $(this).closest('.inventory-row'),
+            inventoryId = $inventoryRow.data('inventory_id'),
+            $inventoryItem = $('#inventory_item_' + inventoryId);
 
-        $addInventory.val('');
-        $inventoryInputs.attr('name', function() {
-          var name = $(this).attr('name');
-          return name ? name + suffix : undefined;
-        });
         $inventoryItem.find('.one_size').each(function() { onOneSizeChange.call(this); });
-        $inventoryItem.appendTo($inventoryContainer);
-
-        var offset = $inventoryItem.offset();
-        $('html, body').animate({
-            scrollTop: offset.top - 20,
-            scrollLeft: offset.left
-        });
+        $inventoryItem.modal();
       };
 
       var onRemoveInventory = function(e) {
         e.preventDefault();
-        var $inventoryItem = $(this).parents('.inventory-item'),
-            $title = $inventoryItem.find('> .panel-body > h4'),
-            $titleText = $title.text() || 'item';
-        bootbox.confirm({
-            backdrop: true,
-            message: 'Remove this ' + $titleText + ' from your inventory?',
-            buttons: {
-                confirm: { label: 'Remove', className: 'btn-danger' },
-                cancel: { label: 'Nevermind', className: 'btn-default' }
-            },
-            callback: function (result) {
-                if (result) {
-                    $inventoryItem.remove();
-                    packInventoryInputNames();
-                }
-            }
-        });
+        var $inventoryRow = $(this).closest('.inventory-row'),
+            dataTable = $inventoryRow.closest('.inventory-table').DataTable(),
+            $title = $inventoryRow.find('td.inventory-item-type'),
+            titleText = $title.text().trim() || 'item',
+            inventoryId = $inventoryRow.data('inventory_id');
+        if (inventoryId) {
+          bootbox.confirm({
+              backdrop: true,
+              message: 'Remove this ' + titleText + ' from your inventory?',
+              buttons: {
+                  confirm: { label: 'Remove', className: 'btn-danger' },
+                  cancel: { label: 'Nevermind', className: 'btn-default' }
+              },
+              callback: function (result) {
+                  if (result) {
+                      $.ajax({
+                          method: 'POST',
+                          url: 'remove_inventory_item',
+                          data: {
+                              guest_id: '{{ guest.id }}',
+                              inventory_id: inventoryId,
+                              csrf_token: csrf_token
+                          },
+                          success: function(response, status) {
+                            if (response['error']) {
+                              toastr.error('There was an error removing the item: ' + response['error']);
+                            } else {
+                              dataTable.row($inventoryRow).remove();
+                              dataTable.draw();
+                              if (!dataTable.rows().count()) {
+                                  $('#inventory_container').hide();
+                                  $('#empty_inventory').show();
+                              }
+                              toastr.success('', titleText + ' successfully removed!', {timeOut: 2000});
+                            }
+                          },
+                          error: function(response, status) {
+                            toastr.error('There was an error removing the item: ' + response);
+                          }
+                      });
+                  }
+              }
+          });
+        }
       };
 
       var onRemoveFile = function(e) {
         e.preventDefault();
-        var $inventoryFile = $(this).parents('.inventory-file'),
+        var $inventoryFile = $(this).closest('.inventory-file'),
             $downloadFilename = $inventoryFile.find('.download_filename'),
             $filename = $inventoryFile.find('.filename'),
             $contentType = $inventoryFile.find('.content_type'),
@@ -226,15 +298,15 @@
       };
 
       var onOneSizeChange = function() {
-        var $varietyColumn = $(this).parents('.col-variety'),
+        var $varietyColumn = $(this).closest('.col-variety'),
             $oneSizeQuantity = $varietyColumn.find('.one_size_quantity'),
-            $sizePanel = $varietyColumn.find('.panel-sizes'),
+            $sizesPanel = $varietyColumn.find('.panel-sizes'),
             isOneSize = $(this).prop('checked');
 
         $oneSizeQuantity.toggle(isOneSize);
         $oneSizeQuantity.prop('disabled', !isOneSize);
-        $sizePanel.find('input').prop('disabled', isOneSize);
-        $sizePanel.toggleClass('disabled', isOneSize);
+        $sizesPanel.find('input').prop('disabled', isOneSize);
+        $sizesPanel.toggleClass('disabled', isOneSize);
       };
 
       $(function () {
@@ -242,12 +314,43 @@
           $.field('selling_merch').on('change', checkCoverage);
           $.field('warning').on('click', checkCoverage);
           $.field('coverage').on('click', checkCoverage);
-          $('#add_inventory').on('change', onChooseInventoryType);
-          var $inventoryContainer = $('#inventory_container');
+          $('.add_inventory').on('change', onChooseInventoryType);
+
+          var $inventoryContainer = $('#inventory_container'),
+              $inventoryModals = $('#inventory_modals');
+
           $inventoryContainer.on('click', '.remove_inventory', onRemoveInventory);
-          $inventoryContainer.on('click', '.remove_file', onRemoveFile);
-          $inventoryContainer.on('change', '.one_size', onOneSizeChange);
-          $inventoryContainer.find('.one_size').each(function() { onOneSizeChange.call(this); });
+          $inventoryContainer.on('click', '.edit_inventory', onEditInventory);
+
+          $inventoryModals.on('click', '.remove_file', onRemoveFile);
+          $inventoryModals.on('change', '.one_size', onOneSizeChange);
+          $inventoryModals.find('.one_size').each(function() { onOneSizeChange.call(this); });
+
+          $inventoryModals.find('form').submit(function(e) {
+            $(this).find('.save').prop('disabled', true);
+            return true;
+          });
+
+          $('#upload_frame').load(function() {
+            try {
+              var responseText = $(this.contentDocument.body).text().trim();
+              this.contentDocument.body.innerHTML = '';
+              if (responseText) {
+                try {
+                  var response = $.parseJSON(responseText);
+                  if (!response['error']) {
+                    location.href = '?guest_id={{ guest.id }}';
+                  } else {
+                    toastr.error('', response['error'], {timeOut: 5000});
+                  }
+                } catch(ex) {
+                  toastr.error('', 'There was an error saving the form: ' + responseText, {timeOut: 5000});
+                }
+              }
+            } finally {
+              $inventoryModals.find('.save').prop('disabled', false);
+            }
+          });
       });
   </script>
 {% endblock %}
