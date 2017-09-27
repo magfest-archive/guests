@@ -413,6 +413,7 @@ class GuestMerch(MagModel):
             self._prune_inventory_files(inventory)
         self.inventory = inventory
 
+
 class GuestCharity(MagModel):
     guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
     donating = Column(Choice(c.GUEST_CHARITY_OPTS), nullable=True)
