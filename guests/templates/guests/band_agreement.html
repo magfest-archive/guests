@@ -116,7 +116,7 @@
     <div class="form-group">
       <label class="col-sm-3 control-label">Performer Count</label>
       <div class="col-sm-6">
-        <input class="form-control" type="number" name="performer_count" value="{{ guest_info.performer_count|default(guest.estimated_performer_count) }}" />
+        <input class="form-control" type="number" name="performer_count" min="1" value="{{ guest_info.performer_count|default(guest.estimated_performer_count) }}" />
         <p class="help-text">
           To ensure that we have assigned the correct number of badges to your band, please confirm the number
           of performers in your band.

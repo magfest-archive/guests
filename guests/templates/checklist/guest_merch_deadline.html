@@ -9,7 +9,8 @@
   </div>
   <script type="text/javascript">
       var showOrHideTaxInfo = function() {
-          setVisible('#tax-info', $.val('selling_merch') === {{ c.OWN_TABLE }})
+          setVisible('#tax-info', $.val('selling_merch') === {{ c.OWN_TABLE }});
+          $.field('tax_phone').prop('required', $.val('selling_merch') === {{ c.OWN_TABLE }});
       };
       $(function() {
           showOrHideTaxInfo();
