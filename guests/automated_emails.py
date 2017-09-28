@@ -8,6 +8,7 @@ class BandEmail(AutomatedEmail):
         AutomatedEmail.__init__(self, GuestGroup, subject, template, lambda b: b.group_type == c.BAND and filter(b),
                                 ident, sender=c.BAND_EMAIL, **kwargs)
 
+
 class GuestEmail(AutomatedEmail):
     def __init__(self, subject, template, filter, ident, **kwargs):
         AutomatedEmail.__init__(self, GuestGroup, subject, template, lambda b: b.group_type == c.GUEST and filter(b),
