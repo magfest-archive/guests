@@ -5,7 +5,14 @@ AutomatedEmail.queries[GuestGroup] = lambda session: session.query(GuestGroup).o
 
 class BandEmail(AutomatedEmail):
     def __init__(self, subject, template, filter, ident, **kwargs):
-        AutomatedEmail.__init__(self, GuestGroup, subject, template, lambda b: b.group_type == c.BAND and filter(b), ident, sender=c.BAND_EMAIL, **kwargs)
+        AutomatedEmail.__init__(self, GuestGroup, subject, template, lambda b: b.group_type == c.BAND and filter(b),
+                                ident, sender=c.BAND_EMAIL, **kwargs)
+
+
+class GuestEmail(AutomatedEmail):
+    def __init__(self, subject, template, filter, ident, **kwargs):
+        AutomatedEmail.__init__(self, GuestGroup, subject, template, lambda b: b.group_type == c.GUEST and filter(b),
+                                ident, sender=c.GUEST_EMAIL, **kwargs)
 
 AutomatedEmail(GuestGroup, '{EVENT_NAME} Performer Checklist', 'band_notification.txt', lambda b: b.group_type == c.BAND,
                ident='band_checklist_inquiry')
@@ -37,3 +44,12 @@ BandEmail('{EVENT_NAME} charity auction reminder', 'band_charity_reminder.txt',
 BandEmail('{EVENT_NAME} stage plot reminder', 'band_stage_plot_reminder.txt',
           lambda b: not b.stage_plot_status, when=days_before(3, c.BAND_STAGE_PLOT_DEADLINE),
           ident='band_stage_plot_reminder')
+
+AutomatedEmail(GuestGroup, 'It\'s time to send us your info for {EVENT_NAME}!', 'guest_checklist_reminder.html',
+               lambda g: g.group_type == c.GUEST, ident='guest_checklist_inquiry')
+
+GuestEmail('Reminder: Please complete your Guest Checklist for {EVENT_NAME}!', 'guest_checklist_reminder.html',
+           lambda g: not g.checklist_completed, when=days_before(14, c.GUEST_BIO_DEADLINE), ident='guest_reminder_1')
+
+GuestEmail('Have you forgotten anything? Your {EVENT_NAME} Guest Checklist needs you!', 'guest_checklist_reminder.html',
+           lambda g: not g.checklist_completed, when=days_before(7, c.GUEST_BIO_DEADLINE), ident='guest_reminder_2')
