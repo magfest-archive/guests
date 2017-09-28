@@ -169,7 +169,7 @@ class Root:
             ])
 
         for guest in guest_groups:
-            for item in sorted(guest.merch.inventory, key=_inventory_sort_key):
+            for item in sorted(guest.merch.inventory.values(), key=_inventory_sort_key):
                 merch_type = int(item['type'])
                 if merch_type in (c.TSHIRT, c.APPAREL):
                     for line_item in guest.merch.line_items(item):
