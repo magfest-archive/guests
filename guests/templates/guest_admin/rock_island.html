@@ -2,8 +2,37 @@
 {% block title %}Rock Island Inventory{% endblock %}
 {% include "guests_common.html" %}
 
+
+{% macro guest_merch_contact_info(guest_merch) -%}
+<div class="contact-info">
+  {% if guest_merch.poc_first_name -%}
+    <div class="pull-left poc">
+      <label>{{ guest_merch.poc_first_name }} {{ guest_merch.poc_last_name }}</label>
+      <div>{{ guest_merch.poc_phone }}</div>
+      <div>{{ guest_merch.poc_email }}</div>
+      <div>{{ guest_merch.poc_mailing_address }}</div>
+    </div>
+  {% endif %}
+  {% if guest_merch.handlers -%}
+    <div class="pull-left handlers">
+      <label>Trusted Handlers</label>
+      {% for handler in guest_merch.handlers -%}
+        {% if not loop.first %}<span class="comma">,</span>{% endif %}
+        <span class="text-nowrap">{{ handler.first_name }} {{ handler.last_name }}</span>
+      {%- endfor %}
+    </div>
+  {% endif %}
+  <div class="clearfix"></div>
+</div>
+{%- endmacro %}
+
+
 {% block content %}
   <style type="text/css">
+    h1 {
+      margin-bottom: 15px;
+    }
+
     h2 {
       margin-bottom: 0;
     }
@@ -18,6 +47,21 @@
 
     h1 small, h2 small {
       float: right;
+    }
+
+    .contact-info .poc, .contact-info .handlers {
+      color: #333;
+      margin: 0 20px 20px 20px;
+    }
+
+    .contact-info label {
+      color: #444;
+      display: block;
+      margin-bottom: 0;
+    }
+
+    .contact-info .comma {
+      margin-right: 1em;
     }
   </style>
 
@@ -39,6 +83,7 @@
             {%- endif %}
             <div class="clearfix"></div>
           </h2>
+          {{ guest_merch_contact_info(guest_merch) }}
         </div>
         {{ guests_macros.inventory_table_with_err('panel-body') }}
       </div>
@@ -54,12 +99,10 @@
       {%- endif %}
       <div class="clearfix"></div>
     </h1>
+    {{ guest_merch_contact_info(guest_merch) }}
     {{ guests_macros.inventory_table_with_err() }}
   {% else %}
-    <h1>
-      <span>Rock Island</span>
-      <div class="clearfix"></div>
-    </h1>
+    <h1>Rock Island</h1>
     <p class="text-danger">No groups have signed up for Rock Island yet.</p>
   {% endif %}
 {% endblock %}

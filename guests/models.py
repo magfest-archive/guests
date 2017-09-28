@@ -299,11 +299,12 @@ class GuestMerch(MagModel):
 
     @classmethod
     def extract_inventory(cls, params):
-        inventory = cls.extract_json_params(params, 'inventory')
-        for item in inventory:
+        inventory = {}
+        for item in cls.extract_json_params(params, 'inventory'):
             if not item.get('id'):
                 item['id'] = str(uuid.uuid4())
-        return {item['id']: item for (item_number, item) in inventory.items()}
+            inventory[item['id']] = item
+        return inventory
 
     @classmethod
     def extract_handlers(cls, params):

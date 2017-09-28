@@ -5,6 +5,7 @@
   <a href="{{ inventory_url }}" target="_blank"><img src="{{ inventory_url }}" class="{{ class }}"/></a>
 {%- endmacro %}
 
+
 {% macro inventory_audio(item=None, name='audio', class='') -%}
   {%- set inventory_url = guest_merch.inventory_url(item.id, name) -%}
   {% set content_type_attr = name ~ '_content_type' %}
@@ -14,6 +15,7 @@
     <a href="{{ inventory_url }}">Click to download audio file</a>
   </audio>
 {%- endmacro %}
+
 
 {% macro inventory_form_file(type, item=None, index='', suffix='', is_required=False) -%}
   {%- set type = type|lower -%}
@@ -39,6 +41,7 @@
   </div>
 {%- endmacro %}
 
+
 {% macro inventory_form_audio(item=None, index='', suffix='', is_required=False) -%}
   {% call(file_attr, filename_attr, download_filename_attr, content_type_attr) inventory_form_file('audio', item, index, suffix, is_required) %}
     <button class="close remove_file pull-right current-file" type="button"><span aria-hidden="true">&times;</span></button>
@@ -50,12 +53,14 @@
   {% endcall %}
 {%- endmacro %}
 
+
 {% macro inventory_form_image(item=None, index='', suffix='', is_required=True) -%}
   {% call(file_attr, filename_attr, download_filename_attr, content_type_attr) inventory_form_file('image', item, index, suffix, is_required) %}
     {{ inventory_image(item, file_attr, 'current-file') }}
     <span class="current-file">Update image:</span>
   {% endcall %}
 {%- endmacro %}
+
 
 {% macro base_inventory_form(type, show_quantity=True, item=None, suffix='') -%}
   {%- set label = c.MERCH_TYPES[type] -%}
@@ -107,6 +112,7 @@
   <div class="clearfix"></div>
 {%- endmacro %}
 
+
 {% macro apparel_inventory_form(type, item=None, suffix='') -%}
   {%- set varieties_opts, cuts_opts, sizes_opts = guest_merch.item_subcategories_opts(type) -%}
   {% call base_inventory_form(type, show_quantity=False, item=item, suffix=suffix) %}
@@ -145,6 +151,7 @@
   {% endcall %}
 {%- endmacro %}
 
+
 {% macro cd_inventory_form(type, item=None, suffix='') -%}
   {% call base_inventory_form(type, item=item, suffix=suffix) %}
     <div class="form-group">
@@ -174,6 +181,7 @@
   {% endcall %}
 {%- endmacro %}
 
+
 {% macro inventory_form(type, item=None, suffix='') -%}
   {% set type = type|int %}
   {% if type in [c.TSHIRT, c.APPAREL] -%}
@@ -184,6 +192,7 @@
     {{ base_inventory_form(type, item=item, suffix=suffix) }}
   {% endif %}
 {%- endmacro %}
+
 
 {% macro inventory_table_data_apparel_quantity(item) -%}
   {%- set varieties_opts, cuts_opts, sizes_opts = guest_merch.item_subcategories_opts(item.type) -%}
@@ -212,6 +221,7 @@
   </td>
 {%- endmacro %}
 
+
 {% macro inventory_table_data_cd_quantity(item) -%}
   <td class="inventory-item-quantity" data-order="{{ item.quantity }}">
     {{ item.quantity }}
@@ -229,6 +239,7 @@
     </dl>
   </td>
 {%- endmacro %}
+
 
 {% macro inventory_table_row(item, show_controls=False) -%}
   {% set type = item.type|int %}
@@ -258,6 +269,7 @@
     {%- endif -%}
   </tr>
 {%- endmacro %}
+
 
 {% macro inventory_table(show_controls=False) -%}
   <div class="table-responsive">
@@ -293,6 +305,7 @@
   </div>
 {%- endmacro %}
 
+
 {% macro inventory_table_with_err(err_class='') -%}
   {%- if guest_merch.selling_merch != c.ROCK_ISLAND -%}
     <div class="text-danger text-center {{ err_class }}">This group is not using Rock Island services.</div>
@@ -302,6 +315,7 @@
     {{ inventory_table() }}
   {%- endif -%}
 {%- endmacro %}
+
 
 {% macro name_form_group(model=None, label='Name', first_name_attr='first_name', last_name_attr='last_name', prefix='', suffix='', is_required=False) -%}
   <div class="form-group">
