@@ -98,6 +98,15 @@ class GuestGroup(MagModel):
         return str(len(self.group.leader.panel_applications)) + " Panel Application(s)" \
             if self.group.leader.panel_applications else self.status('panel')
 
+    @property
+    def checklist_completed(self):
+        for list_item in c.CHECKLIST_ITEMS:
+            if self.deadline_from_model(list_item['name']) and not getattr(self, list_item['name'] + "_status", None):
+                return False
+            elif 'Unclaimed' in getattr(self, list_item['name'] + "_status", None):
+                return False
+        return True
+
     def status(self, model):
         """
         This is a safe way to check if a step has been completed and what its status is for a particular group.

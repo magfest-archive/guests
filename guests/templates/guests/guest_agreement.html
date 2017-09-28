@@ -51,6 +51,7 @@
 {% endblock %}
 
 {% block guest_text_parking %}
+  {% if guest.vehicles > 0 %}
   <h3>
     Parking
   </h3>
@@ -61,6 +62,7 @@
       for <b>{{ guest.vehicles }} vehicle{{ guest.vehicles|pluralize }}</b>.
     {% endblock %}
   </p>
+  {% endif %}
 {% endblock %}
 
 {% block guest_text_admission %}
@@ -84,12 +86,12 @@
     {{ csrf_token() }}
 
     <div class="form-group">
-      <label class="col-sm-3 control-label">Performer Count</label>
+      <label class="col-sm-3 control-label">Guest Count</label>
       <div class="col-sm-6">
-        <input class="form-control" type="number" name="performer_count" value="{{ guest_info.performer_count|default(guest.estimated_performer_count) }}" />
+        <input class="form-control" type="number" min="1" name="performer_count" value="{{ guest_info.performer_count|default(guest.estimated_performer_count) }}" />
         <p class="help-text">
-          To ensure that we have assigned the correct number of badges to your guest, please confirm the number
-          of guests in your group.
+          To ensure that we have assigned the correct number of badges to your group, please confirm the number of
+          badges you'd like.
         </p>
       </div>
     </div>
