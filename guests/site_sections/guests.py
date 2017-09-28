@@ -209,7 +209,6 @@ class Root:
             session.commit()
         return {'error': message}
 
-
     def charity(self, session, guest_id, message='', **params):
         guest = session.guest_group(guest_id)
         guest_charity = session.guest_charity(params)
