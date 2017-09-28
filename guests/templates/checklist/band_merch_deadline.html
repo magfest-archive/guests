@@ -37,11 +37,12 @@
         margin-bottom: 10px;
       }
 
-      .inventory-item-quantity .audio-track dd {
-        display: none;
+      .inventory-item-custom .audio-track dd {
+        display: block;
+        float: none;
       }
 
-      .inventory-item-quantity .audio-track dt {
+      .inventory-item-custom .audio-track dt {
         line-height: inherit;
       }
 
@@ -248,7 +249,7 @@
         e.preventDefault();
         var $inventoryRow = $(this).closest('.inventory-row'),
             dataTable = $inventoryRow.closest('.inventory-table').DataTable(),
-            $title = $inventoryRow.find('td.inventory-item-type'),
+            $title = $inventoryRow.find('td.inventory-item-details label'),
             titleText = $title.text().trim() || 'item',
             itemId = $inventoryRow.data('item_id');
         if (itemId) {

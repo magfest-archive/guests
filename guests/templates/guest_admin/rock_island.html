@@ -4,9 +4,9 @@
 
 
 {% macro guest_merch_contact_info(guest_merch) -%}
-<div class="contact-info">
+<div class="contact-info row">
   {% if guest_merch.poc_first_name -%}
-    <div class="pull-left poc">
+    <div class="col-sm-3 header-group poc">
       <label>{{ guest_merch.poc_first_name }} {{ guest_merch.poc_last_name }}</label>
       <div>{{ guest_merch.poc_phone }}</div>
       <div>{{ guest_merch.poc_email }}</div>
@@ -14,15 +14,26 @@
     </div>
   {% endif %}
   {% if guest_merch.handlers -%}
-    <div class="pull-left handlers">
+    <div class="col-sm-3 header-group handlers">
       <label>Trusted Handlers</label>
       {% for handler in guest_merch.handlers -%}
-        {% if not loop.first %}<span class="comma">,</span>{% endif %}
+        {%- if not loop.first %}<span class="comma">, </span>{% endif -%}
         <span class="text-nowrap">{{ handler.first_name }} {{ handler.last_name }}</span>
       {%- endfor %}
     </div>
   {% endif %}
-  <div class="clearfix"></div>
+  {% if guest_merch.bringing_boxes -%}
+    <div class="col-sm-3 header-group boxes">
+      <label>Bringing Boxes</label>
+      <div>{{ guest_merch.bringing_boxes|linebreaksbr }}</div>
+    </div>
+  {% endif %}
+  {% if guest_merch.extra_info -%}
+    <div class="col-sm-3 header-group info">
+      <label>Extra Info</label>
+      <div>{{ guest_merch.extra_info|linebreaksbr }}</div>
+    </div>
+  {% endif %}
 </div>
 {%- endmacro %}
 
@@ -49,9 +60,15 @@
       float: right;
     }
 
-    .contact-info .poc, .contact-info .handlers {
+    .contact-info {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .contact-info .header-group {
       color: #333;
-      margin: 0 20px 20px 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
 
     .contact-info label {
@@ -61,7 +78,7 @@
     }
 
     .contact-info .comma {
-      margin-right: 1em;
+      margin-right: 0.5em;
     }
   </style>
 

@@ -194,45 +194,42 @@
 {%- endmacro %}
 
 
-{% macro inventory_table_data_apparel_quantity(item) -%}
+{% macro inventory_table_data_apparel_custom(item) -%}
   {%- set varieties_opts, cuts_opts, sizes_opts = guest_merch.item_subcategories_opts(item.type) -%}
   {%- set total_quantity = guest_merch.total_quantity(item) -%}
   {%- set line_items = guest_merch.line_items(item) -%}
   {%- set is_multi = line_items|length > 1 -%}
-  <td class="inventory-item-quantity inventory-item-apparel-quantity" data-order="{{ total_quantity }}">
+  <td class="inventory-item-custom inventory-item-apparel-custom">
     {% if is_multi -%}
-      <div class="line-item">
-        <dt>Total</dt>
-        <dd>{{ total_quantity }}</dd>
-        <div class="clearfix"></div>
-      </div>
       <dl>
     {%- endif %}
     {% for line_item in line_items -%}
-      <div class="line-item">
+      <div class="line-item data-item">
         <dt>{{ guest_merch.line_item_to_string(item, line_item) }}</dt>
         <dd>{{ item[line_item] }}</dd>
-        <div class="clearfix"></div>
       </div>
     {%- endfor %}
     {% if is_multi -%}
+      <hr>
+      <div class="line-item data-item">
+        <dt>Total</dt>
+        <dd>{{ total_quantity }}</dd>
+      </div>
       </dl>
     {%- endif %}
   </td>
 {%- endmacro %}
 
 
-{% macro inventory_table_data_cd_quantity(item) -%}
-  <td class="inventory-item-quantity" data-order="{{ item.quantity }}">
-    {{ item.quantity }}
+{% macro inventory_table_data_cd_custom(item) -%}
+  <td class="inventory-item-custom">
     <dl>
       {%- for attr in item.keys()|sort -%}
         {% if attr.startswith('audio-') and attr.endswith('_download_filename') %}
-          <div class="audio-track">
+          <div class="audio-track data-item">
             {%- set name = attr.partition('_')[0] -%}
             <dt><a href="{{ guest_merch.inventory_url(item.id, name) }}">{{ item[attr] }}</a></dt>
             <dd>{{ inventory_audio(item, name) }}</dd>
-            <div class="clearfix"></div>
           </div>
         {% endif %}
       {%- endfor -%}
@@ -242,18 +239,32 @@
 
 
 {% macro inventory_table_row(item, show_controls=False) -%}
-  {% set type = item.type|int %}
+  {%- set type = item.type|int -%}
+  {%- set quantity = guest_merch.total_quantity(item) if type in [c.TSHIRT, c.APPAREL] else item.quantity -%}
   <tr id="inventory_row_{{ item.id }}" class="inventory-row" data-item_id="{{ item.id }}">
-    <td class="inventory-item-type">{{ c.MERCH_TYPES[type] }}</td>
-    <td class="inventory-item-name">{{ item.name }}</td>
-    <td class="inventory-item-price">${{ '{:.2f}'.format( item.price|float) }}</td>
+    <th class="inventory-item-type">{{ c.MERCH_TYPES[type] }}</th>
+    <td class="inventory-item-details" data-order="{{ item.name }}">
+      <dl>
+        <div class="inventory-item-name data-item">
+          <dd>{{ item.name }}</dd>
+        </div>
+        <div class="inventory-item-price data-item">
+          <dt>Price</dt>
+          <dd>${{ '{:.2f}'.format( item.price|float) }}</dd>
+        </div>
+        <div class="inventory-item-quantity data-item">
+          <dt>Quantity</dt>
+          <dd>{{ quantity }}</dd>
+        </div>
+      </dl>
+    </td>
     {% if type in [c.TSHIRT, c.APPAREL] -%}
-      {{ inventory_table_data_apparel_quantity(item) }}
-    {% elif type == c.CD -%}
-      {{ inventory_table_data_cd_quantity(item) }}
-    {% else %}
-      <td class="inventory-item-quantity" data-order="{{ item.quantity }}">{{ item.quantity }}</td>
-    {% endif %}
+      {{ inventory_table_data_apparel_custom(item) }}
+    {%- elif type == c.CD -%}
+      {{ inventory_table_data_cd_custom(item) }}
+    {%- else -%}
+      <td class="inventory-item-custom"></td>
+    {%- endif %}
     <td class="inventory-item-image">{{ inventory_image(item, class='') }}</td>
     {%- if show_controls -%}
       <td class="inventory-item-controls">
@@ -280,15 +291,14 @@
         data-paging="false"
         data-info="false"
         data-auto-width="true"
-        data-order="[[ 0, &quot;asc&quot; ], [ 1, &quot;asc&quot; ], [ 2, &quot;asc&quot; ]]"
+        data-order="[[ 0, &quot;asc&quot; ], [ 1, &quot;asc&quot; ]]"
         data-order-multi="true">
       <thead>
         <tr>
           <th class="inventory-item-type">Type</th>
-          <th class="inventory-item-name">Name</th>
-          <th class="inventory-item-price">Price</th>
-          <th class="inventory-item-quantity">Quantity</th>
-          <th class="inventory-item-image" data-orderable="false">Promo Picture</th>
+          <th class="inventory-item-details">Details</th>
+          <th class="inventory-item-custom" data-orderable="false"></th>
+          <th class="inventory-item-image" data-orderable="false"></th>
           {%- if show_controls -%}
             <th class="inventory-item-controls" data-orderable="false">
               &#9679;&#9679;&#9679;
