@@ -163,16 +163,7 @@
 
   {% if c.ROCK_ISLAND %}
     <div id="rockisland" style="display:none">
-      <h3>
-        Your Inventory
-        <div class="inventory-add-item text-success">
-          <select class="form-control add_inventory">
-            <option value="">Select an item to add it...</option>
-            {{ options(c.MERCH_TYPES_OPTS) }}
-          </select>
-        </div>
-        <div class="clearfix"></div>
-      </h3>
+      <h3>Your Inventory</h3>
       <div id="inventory_container"{% if not guest_merch.inventory %} style="display:none"{% endif %}>
         {{ guests_macros.inventory_table(show_controls=True) }}
       </div>
@@ -207,7 +198,6 @@
           is_required=False) }}
       {{ macros.form_group(guest_merch, 'extra_info', type='textarea', label='Anything else?',
           placeholder='Anything else we might need to know?',
-          help="Please tell us how many boxes you're bringing and how big they are. We would like to plan accordingly.",
           is_required=False) }}
     </div>
   {% endif %}
