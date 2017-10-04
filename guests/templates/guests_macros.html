@@ -1,19 +1,29 @@
 {% import 'macros.html' as macros %}
 
-{% macro inventory_image(item=None, name='image', class='') -%}
+{% macro inventory_image(item=None, name='image', class='', suppress_preview=False) -%}
   {%- set inventory_url = guest_merch.inventory_url(item.id, name) -%}
-  <a href="{{ inventory_url }}" target="_blank"><img src="{{ inventory_url }}" class="{{ class }}"/></a>
+  <a href="{{ inventory_url }}" target="_blank" class="preview image-preview {{ class }}">
+    {%- if suppress_preview -%}
+      <div><span class="glyphicon glyphicon-picture"></span> View image</div>
+    {%- else -%}
+      <img src="{{ inventory_url }}"/>
+    {%- endif -%}
+  </a>
 {%- endmacro %}
 
 
-{% macro inventory_audio(item=None, name='audio', class='') -%}
+{% macro inventory_audio(item=None, name='audio', class='', suppress_preview=False) -%}
   {%- set inventory_url = guest_merch.inventory_url(item.id, name) -%}
   {% set content_type_attr = name ~ '_content_type' %}
   {% set download_filename_attr = name ~ '_download_filename' %}
-  <audio controls class="{{ class }}" title="{{ item[download_filename_attr] }}" preload="none">
-    <source src="{{ inventory_url }}" type="{{ item[content_type_attr] }}">
-    <a href="{{ inventory_url }}">Click to download audio file</a>
-  </audio>
+  {%- if suppress_preview -%}
+    <a href="{{ inventory_url }}" class="preview audio-preview {{ class }}"><div>Download audio file</div></a>
+  {%- else -%}
+    <audio controls class="preview audio-preview {{ class }}" title="{{ item[download_filename_attr] }}" preload="none">
+      <source src="{{ inventory_url }}" type="{{ item[content_type_attr] }}">
+      <a href="{{ inventory_url }}">Click to download audio file</a>
+    </audio>
+  {%- endif -%}
 {%- endmacro %}
 
 
@@ -238,7 +248,7 @@
 {%- endmacro %}
 
 
-{% macro inventory_table_row(item, show_controls=False) -%}
+{% macro inventory_table_row(item, show_controls=False, suppress_preview=False) -%}
   {%- set type = item.type|int -%}
   {%- set quantity = guest_merch.total_quantity(item) if type in [c.TSHIRT, c.APPAREL] else item.quantity -%}
   <tr id="inventory_row_{{ item.id }}" class="inventory-row" data-item_id="{{ item.id }}">
@@ -265,7 +275,7 @@
     {%- else -%}
       <td class="inventory-item-custom"></td>
     {%- endif %}
-    <td class="inventory-item-image">{{ inventory_image(item, class='') }}</td>
+    <td class="inventory-item-image">{{ inventory_image(item, class='', suppress_preview=suppress_preview) }}</td>
     {%- if show_controls -%}
       <td class="inventory-item-controls">
         <div class="btn-group-vertical" role="group">
@@ -282,7 +292,7 @@
 {%- endmacro %}
 
 
-{% macro inventory_table(show_controls=False) -%}
+{% macro inventory_table(show_controls=False, suppress_preview=False) -%}
   <div class="table-responsive">
     <table
         class="table table-hover datatable inventory-table"
@@ -300,16 +310,14 @@
           <th class="inventory-item-custom" data-orderable="false"></th>
           <th class="inventory-item-image" data-orderable="false"></th>
           {%- if show_controls -%}
-            <th class="inventory-item-controls" data-orderable="false">
-              &#9679;&#9679;&#9679;
-            </th>
+            <th class="inventory-item-controls" data-orderable="false"></th>
           {%- endif -%}
         </tr>
       </thead>
       <tbody>
         {% if guest_merch.inventory -%}
           {% for item in guest_merch.inventory.values() -%}
-            {{ inventory_table_row(item, show_controls=show_controls) }}
+            {{ inventory_table_row(item, show_controls=show_controls, suppress_preview=suppress_preview) }}
           {%- endfor %}
         {%- endif %}
       </tbody>
@@ -318,12 +326,12 @@
 {%- endmacro %}
 
 
-{% macro inventory_table_with_err(err_class='') -%}
+{% macro inventory_table_with_err(err_class='', suppress_preview=False) -%}
   {%- if guest_merch.selling_merch != c.ROCK_ISLAND -%}
     <div class="text-danger text-center {{ err_class }}">This group is not using Rock Island services.</div>
   {%- elif not guest_merch.inventory -%}
     <div class="text-danger text-center {{ err_class }}">This group has not uploaded any inventory.</div>
   {%- else -%}
-    {{ inventory_table() }}
+    {{ inventory_table(suppress_preview=suppress_preview) }}
   {%- endif -%}
 {%- endmacro %}
