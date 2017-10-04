@@ -75,8 +75,14 @@ def upgrade():
     op.add_column('guest_merch', sa.Column('poc_email', sa.Unicode(), server_default='', nullable=False))
     op.add_column('guest_merch', sa.Column('poc_first_name', sa.Unicode(), server_default='', nullable=False))
     op.add_column('guest_merch', sa.Column('poc_last_name', sa.Unicode(), server_default='', nullable=False))
-    op.add_column('guest_merch', sa.Column('poc_mailing_address', sa.Unicode(), server_default='', nullable=False))
     op.add_column('guest_merch', sa.Column('poc_phone', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_zip_code', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_address1', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_address2', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_city', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_region', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_country', sa.Unicode(), server_default='', nullable=False))
+    op.add_column('guest_merch', sa.Column('poc_is_group_leader', sa.Boolean(), server_default='False', nullable=False))
 
 
 def downgrade():
@@ -95,8 +101,14 @@ def downgrade():
     op.create_unique_constraint('uq_band_bio_band_id', 'guest_bio', ['guest_id'])
     op.drop_constraint(op.f('uq_guest_bio_guest_id'), 'guest_bio', type_='unique')
 
+    op.drop_column('guest_merch', 'poc_is_group_leader')
+    op.drop_column('guest_merch', 'poc_country')
+    op.drop_column('guest_merch', 'poc_region')
+    op.drop_column('guest_merch', 'poc_city')
+    op.drop_column('guest_merch', 'poc_address2')
+    op.drop_column('guest_merch', 'poc_address1')
+    op.drop_column('guest_merch', 'poc_zip_code')
     op.drop_column('guest_merch', 'poc_phone')
-    op.drop_column('guest_merch', 'poc_mailing_address')
     op.drop_column('guest_merch', 'poc_last_name')
     op.drop_column('guest_merch', 'poc_first_name')
     op.drop_column('guest_merch', 'poc_email')

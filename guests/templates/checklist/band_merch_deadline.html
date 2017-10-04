@@ -179,17 +179,34 @@
       </div>
       <div class="clearfix"></div>
       <h3>Merch Point of Contact</h3>
-      {{ guests_macros.name_form_group(guest_merch, first_name_attr='poc_first_name', last_name_attr='poc_last_name', is_required=True) }}
-      {{ macros.form_group(guest_merch, 'poc_phone', label='Phone Number', type='tel', placeholder='555-555-1234', is_required=True) }}
-      {{ macros.form_group(guest_merch, 'poc_email', label='Email', type='email', placeholder='merch@example.com', is_required=True) }}
-      {{ macros.form_group(guest_merch, 'poc_mailing_address', label='Mailing Address', placeholder='123 Main St, Anytown 12345', is_required=True) }}
+
+      <div class="form-group">
+        <div class="col-sm-9 col-sm-offset-3 checkbox">
+          {{ macros.toggle_checkbox(
+              '.form-group-poc',
+              'Use group leader, ' ~ guest.group.leader.full_name ~ ', as point of contact?',
+              suffix='_poc',
+              name='poc_is_group_leader',
+              mode='.form-group-poc .form-control',
+              required_selector='.form-group-poc .form-control',
+              hide_on_checked=True,
+              checked=guest_merch.poc_is_group_leader) }}
+        </div>
+      </div>
+
+      {{ macros.name_form_group(guest_merch, first_name_attr='poc_first_name', last_name_attr='poc_last_name', form_class='form-group-poc', is_required=True) }}
+      {{ macros.form_group(guest_merch, 'poc_phone', label='Phone Number', type='tel', placeholder='555-555-1234', form_class='form-group-poc', is_required=True) }}
+      {{ macros.form_group(guest_merch, 'poc_email', label='Email', type='email', placeholder='merch@example.com', form_class='form-group-poc', is_required=True) }}
+
+      <h4>Mailing Address</h4>
+      {{ macros.address_form(guest_merch, name_prefix='poc_', model_prefix='poc_', is_required=True) }}
       <h3>Trusted Merch Handlers</h3>
       <p class="help-block">
         Please include the first and last names of trusted people authorized to drop-off/pick-up your merch.
       </p>
       <div class="clearfix"></div>
       {% for index in range(0, 6) -%}
-        {{ guests_macros.name_form_group(guest_merch.handlers[index], label='Merch Handler', prefix='handlers_', suffix='_' ~ index) }}
+        {{ macros.name_form_group(guest_merch.handlers[index], label='Merch Handler', prefix='handlers_', suffix='_' ~ index) }}
       {%- endfor %}
       <h3>Extra Info</h3>
       {{ macros.form_group(guest_merch, 'bringing_boxes', type='textarea', label='Bringing any boxes?',
@@ -212,7 +229,7 @@
 
           {% if c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE %}
               var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');
-              $('#submit').prop('disabled', isDedicated && !allChecked);
+              $('input[type="submit"]').prop('disabled', isDedicated && !allChecked);
           {% endif %}
       };
 

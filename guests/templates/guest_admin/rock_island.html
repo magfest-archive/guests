@@ -5,12 +5,21 @@
 
 {% macro guest_merch_contact_info(guest_merch) -%}
 <div class="contact-info row">
-  {% if guest_merch.poc_first_name -%}
+  {% if guest_merch.full_name -%}
     <div class="col-sm-3 header-group poc">
-      <label>{{ guest_merch.poc_first_name }} {{ guest_merch.poc_last_name }}</label>
-      <div>{{ guest_merch.poc_phone }}</div>
-      <div>{{ guest_merch.poc_email }}</div>
-      <div>{{ guest_merch.poc_mailing_address }}</div>
+      <label>{{ guest_merch.full_name }}</label>
+      <div>{{ guest_merch.phone }}</div>
+      <div>{{ guest_merch.email }}</div>
+      {%- for attrs in [['poc_address1'], ['poc_address2'], ['poc_city', 'poc_region', 'poc_country', 'poc_zip_code']] -%}
+        <div>
+        {%- set comma = joiner(', ') -%}
+        {%- for attr in attrs -%}
+          {%- if guest_merch[attr] and (attr != 'poc_country' or guest_merch[attr] != 'United States') -%}
+            {{ comma() }}{{ guest_merch[attr] }}
+          {%- endif -%}
+        {%- endfor -%}
+        </div>
+      {%- endfor -%}
     </div>
   {% endif %}
   {% if guest_merch.handlers -%}

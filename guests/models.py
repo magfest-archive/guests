@@ -257,13 +257,42 @@ class GuestMerch(MagModel):
     extra_info = Column(UnicodeText)
     tax_phone = Column(UnicodeText)
 
+    poc_is_group_leader = Column(Boolean, default=False)
     poc_first_name = Column(UnicodeText)
     poc_last_name = Column(UnicodeText)
     poc_phone = Column(UnicodeText)
     poc_email = Column(UnicodeText)
-    poc_mailing_address = Column(UnicodeText)
+    poc_zip_code = Column(UnicodeText)
+    poc_address1 = Column(UnicodeText)
+    poc_address2 = Column(UnicodeText)
+    poc_city = Column(UnicodeText)
+    poc_region = Column(UnicodeText)
+    poc_country = Column(UnicodeText)
 
     handlers = Column(JSON, default=[], server_default='[]')
+
+    @property
+    def full_name(self):
+        return self.guest.group.leader.full_name if self.poc_is_group_leader else ' '.join(self.poc_first_name, self.poc_last_name)
+
+    @property
+    def first_name(self):
+        return self.guest.group.leader.first_name if self.poc_is_group_leader else self.poc_first_name
+
+    @property
+    def last_name(self):
+        return self.guest.group.leader.last_name if self.poc_is_group_leader else self.poc_last_name
+
+    @property
+    def phone(self):
+        if self.poc_is_group_leader:
+            return self.guest.group.leader.cellphone or self.tax_phone or self.guest.info.poc_phone
+        else:
+            return self.poc_phone
+
+    @property
+    def email(self):
+        return self.guest.group.leader.email if self.poc_is_group_leader else self.poc_email
 
     @property
     def rock_island_url(self):
@@ -275,6 +304,8 @@ class GuestMerch(MagModel):
 
     @property
     def status(self):
+        if check(self):
+            return None
         return self.selling_merch_label
 
     @presave_adjustment
