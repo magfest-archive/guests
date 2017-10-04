@@ -357,7 +357,12 @@
           $inventoryModals.find('.one_size').each(function() { onOneSizeChange.call(this); });
 
           $inventoryModals.find('form').submit(function(e) {
-            $(this).find('.save').prop('disabled', true);
+            $('body').prepend(
+              '<div id="overlay" style="display: none;">' +
+                '<h1>Saving...</h1>' +
+              '</div>');
+            $('#overlay').fadeIn('fast');
+            $(this).find('.save_inventory').prop('disabled', true);
             return true;
           });
 
@@ -369,7 +374,11 @@
                 try {
                   var response = $.parseJSON(responseText);
                   if (!response['error']) {
-                    location.href = '?guest_id={{ guest.id }}';
+                    var $modals = $inventoryModals.find('.modal');
+                    $modals.on('hidden.bs.modal', function (e) {
+                      location.href = '?guest_id={{ guest.id }}';
+                    });
+                    $modals.modal('hide');
                   } else {
                     toastr.error('', response['error'], {timeOut: 5000});
                   }
@@ -378,7 +387,10 @@
                 }
               }
             } finally {
-              $inventoryModals.find('.save').prop('disabled', false);
+              $('#overlay').fadeOut('fast', function() {
+                $('#overlay').remove();
+                $inventoryModals.find('.save_inventory').prop('disabled', false);
+              });
             }
           });
       });
