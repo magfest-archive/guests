@@ -114,7 +114,7 @@
 
 
 {% macro apparel_inventory_form(type, item=None, suffix='') -%}
-  {%- set varieties_opts, cuts_opts, sizes_opts = guest_merch.item_subcategories_opts(type) -%}
+  {%- set varieties_opts, cuts_opts, sizes_opts = GuestMerch.item_subcategories_opts(type) -%}
   {% call base_inventory_form(type, show_quantity=False, item=item, suffix=suffix) %}
     {%- set step_count = varieties_opts|length -%}
     {%- set col_size = ([4, (12 / step_count)|round(0, 'floor')|int] | sort)[-1] -%}
@@ -307,9 +307,11 @@
         </tr>
       </thead>
       <tbody>
-      {% for item in guest_merch.inventory.values() -%}
-        {{ inventory_table_row(item, show_controls=show_controls) }}
-      {%- endfor %}
+        {% if guest_merch.inventory -%}
+          {% for item in guest_merch.inventory.values() -%}
+            {{ inventory_table_row(item, show_controls=show_controls) }}
+          {%- endfor %}
+        {%- endif %}
       </tbody>
     </table>
   </div>

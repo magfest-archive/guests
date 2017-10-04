@@ -273,7 +273,7 @@ class GuestMerch(MagModel):
 
     @property
     def full_name(self):
-        return self.guest.group.leader.full_name if self.poc_is_group_leader else ' '.join(self.poc_first_name, self.poc_last_name)
+        return self.guest.group.leader.full_name if self.poc_is_group_leader else ' '.join([self.poc_first_name, self.poc_last_name])
 
     @property
     def first_name(self):
