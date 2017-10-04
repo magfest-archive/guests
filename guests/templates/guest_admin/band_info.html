@@ -67,7 +67,11 @@
         label='Stage Plot',
         is_readonly=True) }}
 
-  {{ macros.form_group(guest.merch, 'selling_merch_label', label='Merchandise', is_readonly=True) }}
+  {%- set is_rock_island = guest.merch.selling_merch == c.ROCK_ISLAND -%}
+  {{ macros.form_group(guest.merch, 'selling_merch_label', label='Merchandise',
+        url_field=('rock_island_url' if is_rock_island else False),
+        url_is_relative=is_rock_island,
+        is_readonly=True) }}
   {{ macros.form_group(guest.charity, 'donating_label', label='Charity', is_readonly=True) }}
   {{ macros.form_group(guest.charity, 'desc', label='Donation', is_readonly=True) }}
 

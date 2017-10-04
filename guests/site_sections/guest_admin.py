@@ -124,3 +124,69 @@ class Root:
                 getattr(guest.merch, 'selling_merch_label', ''),
                 getattr(guest.charity, 'donating_label', ''), getattr(guest.charity, 'desc', '')
             ])
+
+    @site_mappable
+    def rock_island(self, session, message='', id=None, **params):
+        query = session.query(GuestGroup).options(
+                subqueryload(GuestGroup.group)).options(
+                subqueryload(GuestGroup.merch))
+        if id:
+            guest_groups = [query.get(id)]
+        else:
+            guest_groups = query.filter(
+                GuestGroup.id == GuestMerch.guest_id,
+                GuestMerch.selling_merch == c.ROCK_ISLAND,
+                GuestGroup.group_id == Group.id).order_by(
+                Group.name).all()
+
+        return {
+            'guest_groups': guest_groups
+        }
+
+    @site_mappable
+    @csv_file
+    def rock_island_csv(self, out, session, id=None, **params):
+        out.writerow([
+            'Group Name', 'Inventory Type', 'Inventory Name', 'Price', 'Quantity', 'Promo Picture URL'
+        ])
+        query = session.query(GuestGroup).options(
+                subqueryload(GuestGroup.group)).options(
+                subqueryload(GuestGroup.merch))
+        if id:
+            guest_groups = [query.get(id)]
+        else:
+            guest_groups = query.filter(
+                GuestGroup.id == GuestMerch.guest_id,
+                GuestMerch.selling_merch == c.ROCK_ISLAND,
+                GuestGroup.group_id == Group.id).order_by(
+                Group.name).all()
+
+        def _inventory_sort_key(item):
+            return ' '.join([
+                c.MERCH_TYPES[int(item['type'])],
+                item['name'],
+                item['price']
+            ])
+
+        for guest in guest_groups:
+            for item in sorted(guest.merch.inventory.values(), key=_inventory_sort_key):
+                merch_type = int(item['type'])
+                if merch_type in (c.TSHIRT, c.APPAREL):
+                    for line_item in guest.merch.line_items(item):
+                        out.writerow([
+                            guest.group.name,
+                            c.MERCH_TYPES[merch_type],
+                            '{} - {}'.format(item['name'], guest.merch.line_item_to_string(item, line_item)),
+                            '${:.2f}'.format(float(item['price'])),
+                            item[line_item],
+                            convert_to_absolute_url(guest.merch.inventory_url(item['id'], 'image'))
+                        ])
+                else:
+                    out.writerow([
+                        guest.group.name,
+                        c.MERCH_TYPES[merch_type],
+                        item['name'],
+                        '${:.2f}'.format(float(item['price'])),
+                        guest.merch.total_quantity(item),
+                        convert_to_absolute_url(guest.merch.inventory_url(item['id'], 'image'))
+                    ])

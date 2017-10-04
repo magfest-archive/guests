@@ -1,4 +1,5 @@
 from guests import *
+from sideboard.config import uniquify
 
 
 def extension(filename):
@@ -246,18 +247,253 @@ class GuestPanel(MagModel):
 
 
 class GuestMerch(MagModel):
+    _inventory_file_regex = re.compile(r'^(audio|image)(|\-\d+)$')
+    _inventory_filename_regex = re.compile(r'^(audio|image)(|\-\d+)_filename$')
+
     guest_id = Column(UUID, ForeignKey('guest_group.id'), unique=True)
     selling_merch = Column(Choice(c.GUEST_MERCH_OPTS), nullable=True)
+    inventory = Column(JSON, default={}, server_default='{}')
+    bringing_boxes = Column(UnicodeText)
+    extra_info = Column(UnicodeText)
     tax_phone = Column(UnicodeText)
+
+    poc_is_group_leader = Column(Boolean, default=False)
+    poc_first_name = Column(UnicodeText)
+    poc_last_name = Column(UnicodeText)
+    poc_phone = Column(UnicodeText)
+    poc_email = Column(UnicodeText)
+    poc_zip_code = Column(UnicodeText)
+    poc_address1 = Column(UnicodeText)
+    poc_address2 = Column(UnicodeText)
+    poc_city = Column(UnicodeText)
+    poc_region = Column(UnicodeText)
+    poc_country = Column(UnicodeText)
+
+    handlers = Column(JSON, default=[], server_default='[]')
+
+    @property
+    def full_name(self):
+        return self.guest.group.leader.full_name if self.poc_is_group_leader else ' '.join(self.poc_first_name, self.poc_last_name)
+
+    @property
+    def first_name(self):
+        return self.guest.group.leader.first_name if self.poc_is_group_leader else self.poc_first_name
+
+    @property
+    def last_name(self):
+        return self.guest.group.leader.last_name if self.poc_is_group_leader else self.poc_last_name
+
+    @property
+    def phone(self):
+        if self.poc_is_group_leader:
+            return self.guest.group.leader.cellphone or self.tax_phone or self.guest.info.poc_phone
+        else:
+            return self.poc_phone
+
+    @property
+    def email(self):
+        return self.guest.group.leader.email if self.poc_is_group_leader else self.poc_email
+
+    @property
+    def rock_island_url(self):
+        return '../guest_admin/rock_island?id={}'.format(self.guest_id)
+
+    @property
+    def rock_island_csv_url(self):
+        return '../guest_admin/rock_island_csv?id={}'.format(self.guest_id)
 
     @property
     def status(self):
+        if check(self):
+            return None
         return self.selling_merch_label
 
     @presave_adjustment
     def tax_phone_from_poc_phone(self):
         if self.selling_merch == c.OWN_TABLE and not self.tax_phone:
             self.tax_phone = self.guest.info.poc_phone
+
+    @classmethod
+    def extract_json_params(cls, params, field):
+        multi_param_regex = re.compile(''.join(['^', field, r'_([\w_\-]+?)_(\d+)$']))
+        single_param_regex = re.compile(''.join(['^', field, r'_([\w_\-]+?)$']))
+
+        items = defaultdict(dict)
+        single_item = dict()
+        for param_name, value in filter(lambda i: i[1], params.items()):
+            match = multi_param_regex.match(param_name)
+            if match:
+                name = match.group(1)
+                item_number = int(match.group(2))
+                items[item_number][name] = value
+            else:
+                match = single_param_regex.match(param_name)
+                if match:
+                    name = match.group(1)
+                    single_item[name] = value
+
+        if single_item:
+            items[len(items)] = single_item
+
+        return [item for item_number, item in sorted(items.items())]
+
+    @classmethod
+    def extract_inventory(cls, params):
+        inventory = {}
+        for item in cls.extract_json_params(params, 'inventory'):
+            if not item.get('id'):
+                item['id'] = str(uuid.uuid4())
+            inventory[item['id']] = item
+        return inventory
+
+    @classmethod
+    def extract_handlers(cls, params):
+        return cls.extract_json_params(params, 'handlers')
+
+    @classmethod
+    def validate_inventory(cls, inventory):
+        if not inventory:
+            return 'You must add some merch to your inventory!'
+        messages = []
+        for item_id, item in inventory.items():
+            if int(item.get('quantity') or 0) <= 0 and cls.total_quantity(item) <= 0:
+                messages.append('You must specify some quantity')
+            for name, file in [(n, f) for (n, f) in item.items() if f]:
+                match = cls._inventory_file_regex.match(name)
+                if match and getattr(file, 'filename', None):
+                    file_type = match.group(1).upper()
+                    extensions = getattr(c, 'ALLOWED_INVENTORY_{}_EXTENSIONS'.format(file_type), [])
+                    if extensions and extension(file.filename) not in extensions:
+                        messages.append(file_type.title() + ' files must be one of ' + ', '.join(extensions))
+        return '. '.join(uniquify([s.strip() for s in messages if s.strip()]))
+
+    def _prune_inventory_file(self, item, new_inventory, *, prune_missing=False):
+        for name, filename in list(item.items()):
+            match = self._inventory_filename_regex.match(name)
+            if match and filename:
+                new_item = new_inventory.get(item['id'])
+                if (prune_missing and not new_item) or (new_item and new_item.get(name) != filename):
+                    filepath = self.inventory_path(filename)
+                    if os.path.exists(filepath):
+                        os.remove(filepath)
+
+    def _prune_inventory_files(self, new_inventory, *, prune_missing=False):
+        for item_id, item in self.inventory.items():
+            self._prune_inventory_file(item, new_inventory, prune_missing=prune_missing)
+
+    def _save_inventory_files(self, inventory):
+        for item_id, item in inventory.items():
+            for name, file in [(n, f) for (n, f) in item.items() if f]:
+                match = self._inventory_file_regex.match(name)
+                if match:
+                    download_filename_attr = '{}_download_filename'.format(name)
+                    filename_attr = '{}_filename'.format(name)
+                    content_type_attr = '{}_content_type'.format(name)
+                    del item[name]
+                    if getattr(file, 'filename', None):
+                        item[download_filename_attr] = file.filename
+                        item[filename_attr] = str(uuid.uuid4())
+                        item[content_type_attr] = file.content_type.value
+                        with open(self.inventory_path(item[filename_attr]), 'wb') as f:
+                            shutil.copyfileobj(file.file, f)
+
+                    for attr in [download_filename_attr, filename_attr, content_type_attr]:
+                        if attr in item and not item[attr]:
+                            del item[attr]
+
+    @classmethod
+    def total_quantity(cls, item):
+        total_quantity = 0
+        for attr in filter(lambda s: s.startswith('quantity'), item.keys()):
+            total_quantity += int(item[attr] if item[attr] else 0)
+        return total_quantity
+
+    @classmethod
+    def item_subcategories(cls, item_type):
+        s = {getattr(c, s): s for s in c.MERCH_TYPES_VARS}[int(item_type)]
+        return (
+            getattr(c, '{}_VARIETIES'.format(s), defaultdict(lambda: {})),
+            getattr(c, '{}_CUTS'.format(s), defaultdict(lambda: {})),
+            getattr(c, '{}_SIZES'.format(s), defaultdict(lambda: {})))
+
+    @classmethod
+    def item_subcategories_opts(cls, item_type):
+        s = {getattr(c, s): s for s in c.MERCH_TYPES_VARS}[int(item_type)]
+        return (
+            getattr(c, '{}_VARIETIES_OPTS'.format(s), defaultdict(lambda: [])),
+            getattr(c, '{}_CUTS_OPTS'.format(s), defaultdict(lambda: [])),
+            getattr(c, '{}_SIZES_OPTS'.format(s), defaultdict(lambda: [])))
+
+    @classmethod
+    def line_items(cls, item):
+        line_items = []
+        for attr in filter(lambda s: s.startswith('quantity-'), item.keys()):
+            if int(item[attr] if item[attr] else 0) > 0:
+                line_items.append(attr)
+
+        varieties, cuts, sizes = [[v for (v, _) in x] for x in cls.item_subcategories_opts(item['type'])]
+
+        def _line_item_sort_key(line_item):
+            variety, cut, size = cls.line_item_to_types(line_item)
+            return (
+                varieties.index(variety) if variety else 0,
+                cuts.index(cut) if cut else 0,
+                sizes.index(size) if size else 0)
+
+        return sorted(line_items, key=_line_item_sort_key)
+
+    @classmethod
+    def line_item_to_types(cls, line_item):
+        return [int(s) for s in line_item.split('-')[1:]]
+
+    @classmethod
+    def line_item_to_string(cls, item, line_item):
+        variety_value, cut_value, size_value = cls.line_item_to_types(line_item)
+
+        varieties, cuts, sizes = cls.item_subcategories(item['type'])
+        variety_label = varieties.get(variety_value, '').strip()
+        if not size_value and not cut_value:
+            return variety_label + ' - One size only'
+
+        size_label = sizes.get(size_value, '').strip()
+        cut_label = cuts.get(cut_value, '').strip()
+
+        parts = [variety_label]
+        if cut_label:
+            parts.append(cut_label)
+        if size_label:
+            parts.extend(['-', size_label])
+        return ' '.join(parts)
+
+    @classmethod
+    def inventory_path(cls, file):
+        return os.path.join(guests_config['root'], 'uploaded_files', 'inventory', file)
+
+    def inventory_url(self, item_id, name):
+        return '../guests/view_inventory_file?id={}&item_id={}&name={}'.format(self.id, item_id, name)
+
+    def remove_inventory_item(self, item_id, *, persist_files=True):
+        item = None
+        if item_id in self.inventory:
+            inventory = dict(self.inventory)
+            item = inventory[item_id]
+            del inventory[item_id]
+            if persist_files:
+                self._prune_inventory_file(item, inventory, prune_missing=True)
+            self.inventory = inventory
+        return item
+
+    def set_inventory(self, inventory, *, persist_files=True):
+        if persist_files:
+            self._save_inventory_files(inventory)
+            self._prune_inventory_files(inventory, prune_missing=True)
+        self.inventory = inventory
+
+    def update_inventory(self, inventory, *, persist_files=True):
+        if persist_files:
+            self._save_inventory_files(inventory)
+            self._prune_inventory_files(inventory, prune_missing=False)
+        self.inventory = dict(self.inventory, **inventory)
 
 
 class GuestCharity(MagModel):
