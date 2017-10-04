@@ -99,9 +99,11 @@
       {% for type, label in c.MERCH_TYPES_OPTS -%}
         {{ inventory_modal(type) }}
       {%- endfor %}
-      {% for item in guest_merch.inventory.values() -%}
-        {{ inventory_modal(item.type, item=item) }}
-      {%- endfor %}
+      {% if guest_merch.inventory -%}
+        {% for item in guest_merch.inventory.values() -%}
+          {{ inventory_modal(item.type, item=item) }}
+        {%- endfor %}
+      {%- endif %}
     </div>
   {% endblock %}
 {% endif %}
@@ -206,7 +208,8 @@
       </p>
       <div class="clearfix"></div>
       {% for index in range(0, 6) -%}
-        {{ macros.name_form_group(guest_merch.handlers[index], label='Merch Handler', prefix='handlers_', suffix='_' ~ index) }}
+        {%- set handler = guest_merch.handlers[index] if guest_merch.handlers else None -%}
+        {{ macros.name_form_group(handler, label='Merch Handler', prefix='handlers_', suffix='_' ~ index) }}
       {%- endfor %}
       <h3>Extra Info</h3>
       {{ macros.form_group(guest_merch, 'bringing_boxes', type='textarea', label='Bringing any boxes?',
