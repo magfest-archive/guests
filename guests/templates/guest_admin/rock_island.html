@@ -111,7 +111,7 @@
           </h2>
           {{ guest_merch_contact_info(guest_merch) }}
         </div>
-        {{ guests_macros.inventory_table_with_err('panel-body') }}
+        {{ guests_macros.inventory_table_with_err('panel-body', suppress_preview=True) }}
       </div>
     {%- endfor %}
   {% elif guest_groups|length > 0 %}
@@ -126,7 +126,7 @@
       <div class="clearfix"></div>
     </h1>
     {{ guest_merch_contact_info(guest_merch) }}
-    {{ guests_macros.inventory_table_with_err() }}
+    {{ guests_macros.inventory_table_with_err(suppress_preview=False) }}
   {% else %}
     <h1>Rock Island</h1>
     <p class="text-danger">No groups have signed up for Rock Island yet.</p>

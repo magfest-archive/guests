@@ -139,9 +139,23 @@ h3 .inventory-add-item {
   padding-bottom: 0;
 }
 
-.inventory-table img {
+.inventory-table .image-preview > img {
   width: 200px;
   max-width: 100%;
+}
+
+.inventory-table .image-preview > div {
+  max-width: 100%;
+  display: inline-block;
+  background-color: #f8f8ff;
+  border: 1px solid #428bca;
+  padding: 25px 10px;
+  text-align: center;
+}
+
+.inventory-table .image-preview > div:hover {
+  background-color: #f0f0f8;
+  border-color: #2a6496;
 }
 
 .inventory-table dt {
