@@ -304,8 +304,6 @@ class GuestMerch(MagModel):
 
     @property
     def status(self):
-        if check(self):
-            return None
         return self.selling_merch_label
 
     @presave_adjustment
