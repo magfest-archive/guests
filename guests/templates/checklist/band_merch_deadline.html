@@ -230,6 +230,11 @@
           setVisible('#coverage', isDedicated);
           setVisible('#rockisland', isRockIsland);
 
+          $('#rockisland input, #rockisland textarea, #rockisland select').prop('disabled', !isRockIsland);
+          if (isRockIsland) {
+              toggleVisibility_poc();
+          }
+
           {% if c.REQUIRE_DEDICATED_GUEST_TABLE_PRESENCE %}
               var allChecked = $.field('coverage').prop('checked') && $.field('warning').prop('checked');
               $('input[type="submit"]').prop('disabled', isDedicated && !allChecked);

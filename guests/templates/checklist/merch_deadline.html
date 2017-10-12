@@ -31,7 +31,7 @@
   <form method="post" action="merch" class="form-horizontal" role="form" enctype="multipart/form-data">
     {{ csrf_token() }}
     <input type="hidden" name="guest_id" value="{{ guest.id }}" />
-    <input type="hidden" name="id" value="{{ guest_merch.db_id }}" />
+    <input type="hidden" name="id" value="{{ guest_merch.db_id or 'None' }}" />
 
     <div class="form-group">
       <label class="col-sm-3 control-label">Want to sell merch?</label>
