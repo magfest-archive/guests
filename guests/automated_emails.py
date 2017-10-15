@@ -45,7 +45,7 @@ BandEmail('{EVENT_NAME} stage plot reminder', 'band_stage_plot_reminder.txt',
           lambda b: not b.stage_plot_status, when=days_before(3, c.BAND_STAGE_PLOT_DEADLINE),
           ident='band_stage_plot_reminder')
 
-AutomatedEmail(GuestGroup, 'It\'s time to send us your info for {EVENT_NAME}!', 'guest_checklist_reminder.html',
+AutomatedEmail(GuestGroup, 'It\'s time to send us your info for {EVENT_NAME}!', 'guest_checklist_announce.html',
                lambda g: g.group_type == c.GUEST, ident='guest_checklist_inquiry', sender=c.GUEST_EMAIL)
 
 GuestEmail('Reminder: Please complete your Guest Checklist for {EVENT_NAME}!', 'guest_checklist_reminder.html',
