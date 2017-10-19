@@ -53,6 +53,15 @@ sqlite_reflect_kwargs = {
 
 def upgrade():
     # Leftover renaming from the bands -> guests refactor
+
+    op.create_unique_constraint(op.f('uq_guest_bio_guest_id'), 'guest_bio', ['guest_id'])
+    op.create_unique_constraint(op.f('uq_guest_charity_guest_id'), 'guest_charity', ['guest_id'])
+    op.create_unique_constraint(op.f('uq_guest_info_guest_id'), 'guest_info', ['guest_id'])
+    op.create_unique_constraint(op.f('uq_guest_merch_guest_id'), 'guest_merch', ['guest_id'])
+    op.create_unique_constraint(op.f('uq_guest_panel_guest_id'), 'guest_panel', ['guest_id'])
+    op.create_unique_constraint(op.f('uq_guest_stage_plot_guest_id'), 'guest_stage_plot', ['guest_id'])
+    op.create_unique_constraint(op.f('uq_guest_taxes_guest_id'), 'guest_taxes', ['guest_id'])
+
     constraints = [
         ('uq_band_bio_band_id', 'guest_bio'),
         ('band_bio_band_id_key', 'guest_bio'),
@@ -75,14 +84,6 @@ def upgrade():
         except:
             # We expect that these constraints may not exist on our older servers
             pass
-
-    op.create_unique_constraint(op.f('uq_guest_bio_guest_id'), 'guest_bio', ['guest_id'])
-    op.create_unique_constraint(op.f('uq_guest_charity_guest_id'), 'guest_charity', ['guest_id'])
-    op.create_unique_constraint(op.f('uq_guest_info_guest_id'), 'guest_info', ['guest_id'])
-    op.create_unique_constraint(op.f('uq_guest_merch_guest_id'), 'guest_merch', ['guest_id'])
-    op.create_unique_constraint(op.f('uq_guest_panel_guest_id'), 'guest_panel', ['guest_id'])
-    op.create_unique_constraint(op.f('uq_guest_stage_plot_guest_id'), 'guest_stage_plot', ['guest_id'])
-    op.create_unique_constraint(op.f('uq_guest_taxes_guest_id'), 'guest_taxes', ['guest_id'])
 
     op.add_column('guest_merch', sa.Column('bringing_boxes', sa.Unicode(), server_default='', nullable=False))
     op.add_column('guest_merch', sa.Column('extra_info', sa.Unicode(), server_default='', nullable=False))
