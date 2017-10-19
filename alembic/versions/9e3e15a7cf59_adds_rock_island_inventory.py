@@ -15,7 +15,7 @@ depends_on = None
 
 from alembic import op
 import sqlalchemy as sa
-import sideboard
+import sideboard.lib.sa
 
 
 try:
@@ -80,7 +80,7 @@ def upgrade():
 
     for name, table in constraints:
         try:
-            op.drop_constraint(name, table, type_='unique')
+            op.drop_constraint(op.f(name), table, type_='unique')
         except:
             # We expect that these constraints may not exist on our older servers
             pass
