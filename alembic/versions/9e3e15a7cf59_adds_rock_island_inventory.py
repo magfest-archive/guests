@@ -53,6 +53,23 @@ sqlite_reflect_kwargs = {
 
 def upgrade():
     # Leftover renaming from the bands -> guests refactor
+    from sqlalchemy.engine import reflection
+    inspector = reflection.Inspector(op.get_bind())
+
+    table_constraints = [
+        ('guest_bio', ('uq_band_bio_band_id', 'band_bio_band_id_key')),
+        ('guest_charity', ('uq_band_charity_band_id', 'band_charity_band_id_key')),
+        ('guest_info', ('uq_band_info_band_id', 'band_info_band_id_key')),
+        ('guest_merch', ('uq_band_merch_band_id', 'band_merch_band_id_key')),
+        ('guest_panel', ('uq_band_panel_band_id', 'band_panel_band_id_key')),
+        ('guest_stage_plot', ('uq_band_stage_plot_band_id', 'band_stage_plot_band_id_key')),
+        ('guest_taxes', ('uq_band_taxes_band_id', 'band_taxes_band_id_key'))]
+
+    for table, constraints_to_drop in table_constraints:
+        constraints = set(map(lambda x: x['name'], inspector.get_unique_constraints(table)))
+        for constraint in constraints_to_drop:
+            if constraint in constraints:
+                op.drop_constraint(constraint, table, type_='unique')
 
     op.create_unique_constraint(op.f('uq_guest_bio_guest_id'), 'guest_bio', ['guest_id'])
     op.create_unique_constraint(op.f('uq_guest_charity_guest_id'), 'guest_charity', ['guest_id'])
@@ -61,29 +78,6 @@ def upgrade():
     op.create_unique_constraint(op.f('uq_guest_panel_guest_id'), 'guest_panel', ['guest_id'])
     op.create_unique_constraint(op.f('uq_guest_stage_plot_guest_id'), 'guest_stage_plot', ['guest_id'])
     op.create_unique_constraint(op.f('uq_guest_taxes_guest_id'), 'guest_taxes', ['guest_id'])
-
-    constraints = [
-        ('uq_band_bio_band_id', 'guest_bio'),
-        ('band_bio_band_id_key', 'guest_bio'),
-        ('uq_band_charity_band_id', 'guest_charity'),
-        ('band_charity_band_id_key', 'guest_charity'),
-        ('uq_band_info_band_id', 'guest_info'),
-        ('band_info_band_id_key', 'guest_info'),
-        ('uq_band_merch_band_id', 'guest_merch'),
-        ('band_merch_band_id_key', 'guest_merch'),
-        ('uq_band_panel_band_id', 'guest_panel'),
-        ('band_panel_band_id_key', 'guest_panel'),
-        ('uq_band_stage_plot_band_id', 'guest_stage_plot'),
-        ('band_stage_plot_band_id_key', 'guest_stage_plot'),
-        ('uq_band_taxes_band_id', 'guest_taxes'),
-        ('band_taxes_band_id_key', 'guest_taxes')]
-
-    for name, table in constraints:
-        try:
-            op.drop_constraint(op.f(name), table, type_='unique')
-        except:
-            # We expect that these constraints may not exist on our older servers
-            pass
 
     op.add_column('guest_merch', sa.Column('bringing_boxes', sa.Unicode(), server_default='', nullable=False))
     op.add_column('guest_merch', sa.Column('extra_info', sa.Unicode(), server_default='', nullable=False))
