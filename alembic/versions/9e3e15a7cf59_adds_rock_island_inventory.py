@@ -55,12 +55,19 @@ def upgrade():
     # Leftover renaming from the bands -> guests refactor
     constraints = [
         ('uq_band_bio_band_id', 'guest_bio'),
+        ('band_bio_band_id', 'guest_bio'),
         ('uq_band_charity_band_id', 'guest_charity'),
+        ('band_charity_band_id', 'guest_charity'),
         ('uq_band_info_band_id', 'guest_info'),
+        ('band_info_band_id', 'guest_info'),
         ('uq_band_merch_band_id', 'guest_merch'),
+        ('band_merch_band_id', 'guest_merch'),
         ('uq_band_panel_band_id', 'guest_panel'),
+        ('band_panel_band_id', 'guest_panel'),
         ('uq_band_stage_plot_band_id', 'guest_stage_plot'),
-        ('uq_band_taxes_band_id', 'guest_taxes')]
+        ('band_stage_plot_band_id', 'guest_stage_plot'),
+        ('uq_band_taxes_band_id', 'guest_taxes'),
+        ('band_taxes_band_id', 'guest_taxes')]
 
     for name, table in constraints:
         try:
