@@ -38,7 +38,7 @@
       <div class="col-sm-6">
         <select name="selling_merch" class="form-control">
           <option value="">Tell us how you'd like to sell your merch</option>
-          {% if guest.group_type == c.BAND %}
+          {% if guest.group_type in c.ROCK_BAND_GROUPS %}
             {{ options(c.GUEST_MERCH_OPTS,guest_merch.selling_merch) }}
           {% else %}
             {{ options(c.GUEST_MERCH_OPTS|rejectattr('0', 'equalto', c.ROCK_ISLAND), guest_merch.selling_merch) }}
