@@ -308,7 +308,10 @@ class GuestMerch(MagModel):
 
     @presave_adjustment
     def tax_phone_from_poc_phone(self):
-        if self.selling_merch == c.OWN_TABLE and not self.tax_phone:
+        if self.selling_merch == c.OWN_TABLE \
+                and not self.tax_phone \
+                and self.guest \
+                and self.guest.info:
             self.tax_phone = self.guest.info.poc_phone
 
     @classmethod

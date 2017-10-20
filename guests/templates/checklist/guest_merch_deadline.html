@@ -1,5 +1,10 @@
 {% extends "checklist/merch_deadline.html" %}
+
+{%- set HAS_ROCK_ISLAND = c.ROCK_ISLAND and guest.group_type in c.ROCK_ISLAND_GROUPS -%}
+
 {% block form_extra %}
+  {{ super() }}
+
   <div id="tax-info">
     <div class="form-group">
       <div class="col-sm-6 col-sm-offset-3">Please provide tax info for selling your merch.</div>
