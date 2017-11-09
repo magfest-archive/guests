@@ -273,7 +273,12 @@ class GuestMerch(MagModel):
 
     @property
     def full_name(self):
-        return self.guest.group.leader.full_name if self.poc_is_group_leader else ' '.join([self.poc_first_name, self.poc_last_name])
+        if self.poc_is_group_leader:
+            return self.guest.group.leader.full_name
+        elif self.poc_first_name or self.poc_last_name:
+            return ' '.join([self.poc_first_name, self.poc_last_name])
+        else:
+            return '';
 
     @property
     def first_name(self):
@@ -304,6 +309,9 @@ class GuestMerch(MagModel):
 
     @property
     def status(self):
+        if self.selling_merch == c.ROCK_ISLAND:
+            return self.selling_merch_label + \
+                ('' if self.inventory else ' (No Merch)')
         return self.selling_merch_label
 
     @presave_adjustment
