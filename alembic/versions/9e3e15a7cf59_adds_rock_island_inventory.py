@@ -167,7 +167,7 @@ def upgrade():
             if constraints_to_add[2]:
                 op.create_foreign_key(op.f(constraints_to_add[2][0]), table, constraints_to_add[2][1], [constraints_to_add[2][2]], ['id'])
             if constraints_to_add[3]:
-                batch_op.create_foreign_key(op.f(constraints_to_add[3][0]), table, constraints_to_add[3][1], [constraints_to_add[3][2]], ['id'])
+                op.create_foreign_key(op.f(constraints_to_add[3][0]), table, constraints_to_add[3][1], [constraints_to_add[3][2]], ['id'])
 
 
     if is_sqlite:
