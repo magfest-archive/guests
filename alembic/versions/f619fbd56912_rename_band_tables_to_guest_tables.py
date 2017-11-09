@@ -56,25 +56,53 @@ def upgrade():
     op.rename_table('band', 'guest_group')
 
     op.rename_table('band_bio', 'guest_bio')
-    op.alter_column('guest_bio', 'band_id', new_column_name='guest_id')
+    if is_sqlite:
+        with op.batch_alter_table('guest_bio', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.alter_column('band_id', new_column_name='guest_id')
+    else:
+        op.alter_column('guest_bio', 'band_id', new_column_name='guest_id')
 
     op.rename_table('band_charity', 'guest_charity')
-    op.alter_column('guest_charity', 'band_id', new_column_name='guest_id')
+    if is_sqlite:
+        with op.batch_alter_table('guest_charity', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.alter_column('band_id', new_column_name='guest_id')
+    else:
+        op.alter_column('guest_charity', 'band_id', new_column_name='guest_id')
 
     op.rename_table('band_info', 'guest_info')
-    op.alter_column('guest_info', 'band_id', new_column_name='guest_id')
+    if is_sqlite:
+        with op.batch_alter_table('guest_info', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.alter_column('band_id', new_column_name='guest_id')
+    else:
+        op.alter_column('guest_info', 'band_id', new_column_name='guest_id')
 
     op.rename_table('band_merch', 'guest_merch')
-    op.alter_column('guest_merch', 'band_id', new_column_name='guest_id')
+    if is_sqlite:
+        with op.batch_alter_table('guest_merch', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.alter_column('band_id', new_column_name='guest_id')
+    else:
+        op.alter_column('guest_merch', 'band_id', new_column_name='guest_id')
 
     op.rename_table('band_panel', 'guest_panel')
-    op.alter_column('guest_panel', 'band_id', new_column_name='guest_id')
+    if is_sqlite:
+        with op.batch_alter_table('guest_panel', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.alter_column('band_id', new_column_name='guest_id')
+    else:
+        op.alter_column('guest_panel', 'band_id', new_column_name='guest_id')
 
     op.rename_table('band_stage_plot', 'guest_stage_plot')
-    op.alter_column('guest_stage_plot', 'band_id', new_column_name='guest_id')
+    if is_sqlite:
+        with op.batch_alter_table('guest_stage_plot', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.alter_column('band_id', new_column_name='guest_id')
+    else:
+        op.alter_column('guest_stage_plot', 'band_id', new_column_name='guest_id')
 
     op.rename_table('band_taxes', 'guest_taxes')
-    op.alter_column('guest_taxes', 'band_id', new_column_name='guest_id')
+    if is_sqlite:
+        with op.batch_alter_table('guest_taxes', reflect_kwargs=sqlite_reflect_kwargs) as batch_op:
+            batch_op.alter_column('band_id', new_column_name='guest_id')
+    else:
+        op.alter_column('guest_taxes', 'band_id', new_column_name='guest_id')
 
 
 def downgrade():

@@ -278,7 +278,7 @@ class GuestMerch(MagModel):
         elif self.poc_first_name or self.poc_last_name:
             return ' '.join([self.poc_first_name, self.poc_last_name])
         else:
-            return '';
+            return ''
 
     @property
     def first_name(self):
