@@ -126,21 +126,26 @@ class Root:
             ])
 
     @site_mappable
-    def rock_island(self, session, message='', id=None, **params):
+    def rock_island(self, session, message='', only_empty=None, id=None, **params):
         query = session.query(GuestGroup).options(
                 subqueryload(GuestGroup.group)).options(
                 subqueryload(GuestGroup.merch))
         if id:
             guest_groups = [query.get(id)]
         else:
+            if only_empty:
+                empty_filter = [GuestMerch.inventory == '{}']
+            else:
+                empty_filter = []
             guest_groups = query.filter(
                 GuestGroup.id == GuestMerch.guest_id,
                 GuestMerch.selling_merch == c.ROCK_ISLAND,
-                GuestGroup.group_id == Group.id).order_by(
-                Group.name).all()
+                GuestGroup.group_id == Group.id).filter(
+                *empty_filter).order_by(Group.name).all()
 
         return {
-            'guest_groups': guest_groups
+            'guest_groups': guest_groups,
+            'only_empty': only_empty
         }
 
     @site_mappable

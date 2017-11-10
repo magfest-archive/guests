@@ -19,6 +19,25 @@
       <br/></br>
     </td>
   </tr>
+  {% if HAS_ROCK_ISLAND and guest.merch.selling_merch == c.ROCK_ISLAND %}
+    <tr>
+      <td></td>
+      <td>{{ macros.checklist_image(guest.merch.inventory) }} <b><a href="merch?guest_id={{ guest.id }}">Rock Island Inventory</a></b></td>
+      <td><i>Deadline:</i> {{ c.ROCK_ISLAND_DEADLINE|datetime_local }}</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td colspan="2">
+        {% if not guest.merch.inventory %}
+          You haven't uploaded any inventory for Rock Island yet!
+        {% else %}
+           Thanks for uploading your Rock Island inventory!
+        {% endif %}
+        You can update your inventory using the link above.
+        <br/></br>
+      </td>
+    </tr>
+  {% endif %}
 {% else %}
 
   {% import 'guests_macros.html' as guests_macros with context %}
