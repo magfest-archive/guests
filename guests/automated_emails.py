@@ -14,7 +14,8 @@ class GuestEmail(AutomatedEmail):
         AutomatedEmail.__init__(self, GuestGroup, subject, template, lambda b: b.group_type == c.GUEST and filter(b),
                                 ident, sender=c.GUEST_EMAIL, **kwargs)
 
-AutomatedEmail(GuestGroup, '{EVENT_NAME} Performer Checklist', 'band_notification.txt', lambda b: b.group_type == c.BAND,
+AutomatedEmail(GuestGroup, '{EVENT_NAME} Performer Checklist', 'band_notification.txt',
+               lambda b: b.group_type == c.BAND, sender=c.BAND_EMAIL,
                ident='band_checklist_inquiry')
 
 BandEmail('Last chance to apply for a {EVENT_NAME} Panel', 'band_panel_reminder.txt',
