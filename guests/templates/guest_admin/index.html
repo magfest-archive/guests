@@ -24,48 +24,48 @@
       <thead>
       <tr>
         <th>Group</th>
-        {% for item in c.CHECKLIST_ITEMS %}
-          {% if item.header %}
+        {% for item in c.CHECKLIST_ITEMS -%}
+          {% if item.header -%}
             <th>{{ item.header }}</th>
-          {% endif %}
-        {% endfor %}
+          {% endif -%}
+        {% endfor -%}
         <th>Group Type</th>
       </tr>
       </thead>
       <tbody>
-      {% for group in groups %}
+      {% for group in groups -%}
         <tr id="{{ group.id }}" class="{{ group.guest.group_type_label|lower if group.guest else "" }} group-row">
           <td>
             <a href="../groups/form?id={{ group.id }}">{{ group.name }}</a>
             <span class="guest_info">
-                {% if group.guest %}
+                {% if group.guest -%}
                   (<a href="group_info?id={{ group.guest.id }}" class="text-nowrap">{{ group.guest.group_type_label }} Info</a>)
                 {% endif %}</span>
           </td>
-          {% for item in c.CHECKLIST_ITEMS %}
-            {% if item.header %}
-              {% set item_display = group.guest[item.name ~ '_status'] if group.guest else '' %}
+          {% for item in c.CHECKLIST_ITEMS -%}
+            {% if item.header -%}
+              {% set item_display = group.guest[item.name ~ '_status'] if group.guest else '' -%}
 
-              {% if item.is_link %}
-                <td>{{ item_display|url_to_link("Yes", "_blank") if '../' in item_display else item_display }}</td>
-              {% else %}
-                <td>{{ item_display }}</td>
-              {% endif %}
-            {% endif %}
-          {% endfor %}
+              {% if item.is_link -%}
+                <td>{{ item_display|url_to_link("Yes", "_blank") if '../' in item_display else item_display -}}</td>
+              {% else -%}
+                <td>{{ item_display -}}</td>
+              {% endif -%}
+            {% endif -%}
+          {% endfor -%}
           <td class="guest">
-            {% if group.guest %}
+            {% if group.guest -%}
               <button class="btn btn-sm btn-danger btn-unmark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Unmark as {{ group.guest.group_type_label }}</button>
-            {% else %}
+            {% else -%}
               <select class="form-control" class="group_type" name="group_type">
                 <option value="">Select a group type</option>
                 {{ options(c.GROUP_TYPE_OPTS) }}
               </select>
               <button class="btn btn-sm btn-primary btn-mark" data-group_id="{{ group.id }}" data-group_name="{{ group.name }}">Mark as Group Type</button>
-            {% endif %}
+            {% endif -%}
           </td>
         </tr>
-      {% endfor %}
+      {% endfor -%}
       </tbody>
     </table>
   </div>
